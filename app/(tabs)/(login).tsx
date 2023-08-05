@@ -1,0 +1,107 @@
+import global from '@/assets/styles/styles';
+import login from '@/assets/styles/login';
+const styles = { ...global, ...login };
+
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform, } from 'react-native';
+import { Link } from 'expo-router';
+
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+import { userLogin } from '@/helpers'
+import { setupUser } from '@/store'
+
+function Login() {
+  const [username, setUsername] = useState('');
+  const [password, setPIN] = useState('');
+  const [loginWithNetworx, setLoginWithNetworx] = useState(false);
+
+  const [showPIN, setShowPIN] = useState(false);
+  const [setCredentials, setSetCredentials] = useState(true);
+  
+  const handleLogin = () => {
+    const data = {
+      provider: '',
+      email: setCredentials ? username : 'sholeka+1@googlemail.com',
+      password: setCredentials ? password : '1234',
+    };
+    if (loginWithNetworx) {
+      Object.assign(data, {
+        provider: 'networx',
+      })
+    }
+    userLogin(data)
+      .then( ({status, user}: {status: boolean, user: any}) => {
+        if (status) {
+          setupUser(user);
+        } else {
+          Alert.alert('Error', 'Invalid credentials');
+        }
+      })
+  };
+
+  const handleLostPIN = () => {
+    Alert.alert('Lost PIN', 'Please contact our support team at support@example.com to reset your PIN.');
+  };
+
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+    <ScrollView keyboardShouldPersistTaps="never" contentContainerStyle={{ flexGrow: 1, paddingBottom: 70 }}>
+    
+      <View style={styles.container}>
+        <Text onPress={() => { setSetCredentials(!setCredentials) }} style={styles.title}>Login</Text>
+        <TextInput placeholder="Email" keyboardType="email-address" autoCapitalize="none" onChangeText={setUsername} style={{...styles.input}} />
+        <View style={styles.passwordContainer}>
+          <TextInput
+            placeholder="PIN"
+            onChangeText={setPIN}
+            secureTextEntry={!showPIN} // Control whether the password is shown
+            style={{...styles.input, ...styles.inputPIN}}
+          />
+          <TouchableOpacity
+            onPress={() => setShowPIN(!showPIN)} // Toggle the showPassword state
+            style={styles.showPasswordButton}
+          >
+            <Icon
+              name={showPIN ? 'eye-slash' : 'eye'}
+              size={20}
+              color="black"
+              style={styles.showPasswordButton.icon}
+            />
+          </TouchableOpacity>
+        </View>
+        
+        <View>
+          <TouchableOpacity
+              style={styles.checkboxContainer} 
+              onPress={() => setLoginWithNetworx(!loginWithNetworx)}
+            >
+            <Icon
+              name={loginWithNetworx ? 'check-square-o' : 'square-o'}
+              size={20}
+              color="black"
+              style={styles.checkbox}
+            />
+            <Text style={styles.label}>Login with Networx</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity onPress={handleLogin} style={styles.button}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+        <Link href="/register">
+          <Text style={styles.link}>Don't have an account? Register</Text>
+        </Link>
+        <TouchableOpacity onPress={handleLostPIN} style={styles.lostPasswordButton}>
+          <Text style={styles.lostPasswordText}>Lost Your PIN?</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}
+
+export default Login;

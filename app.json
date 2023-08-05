@@ -3,6 +3,7 @@
     "name": "gc-client-new",
     "slug": "gc-client-new",
     "version": "1.0.0",
+    "scheme": "gigacharger",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -24,7 +25,14 @@
       }
     },
     "web": {
+      "bundler": "metro",
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "experiments": {
+      "tsconfigPaths": true
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
