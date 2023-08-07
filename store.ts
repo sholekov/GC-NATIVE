@@ -31,6 +31,24 @@ export const resetUser: Function = (): void => {
   store.user = null
 }
 
-export const store = proxy<{ user: User, }>({
+
+
+export const setupStation: Function = (station: any): void => {
+  store.station = station
+}
+
+export const addStationToFavourites: Function = (id: any): void => {
+  const { axiosInstance } = useSnapshot(helpers)
+  return axiosInstance.get({
+    method: 'post',
+    url: 'favorites',
+    params: {
+      l_id: id,
+    }
+  })
+}
+
+export const store = proxy<{ user: User, station: any, }>({
   user: null,
+  station: null,
 })

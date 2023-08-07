@@ -163,6 +163,29 @@ export const fetchCaptcha: Function = () => {
 }
 
 
+export const getStations = () => {
+  return helpers.axiosInstance('locations')
+}
+
+export const getStation = (loc_id: string) => {
+  console.log('loc_id', loc_id);
+  
+  return helpers.axiosInstance({
+    method: 'GET',
+    url: `stations?loc_id=${loc_id}`,
+  })
+}
+
+export const favoriteStation = (loc_id: string) => {
+  console.log('loc_id', loc_id);
+  
+  return helpers.axiosInstance({
+    method: 'POST',
+    url: `favorites`,
+    data: `l_id=${encodeURIComponent(loc_id)}`
+  })
+}
+
 export const helpers = proxy<{ axiosInstance: axiosInstance, }>({
   axiosInstance: initAxios(),
 })

@@ -7,10 +7,6 @@ const Loggedin = () => {
   return (
     <View style={styles.container}>
       <Text>Home</Text>
-      
-      <Link href='/news' >
-        <Text>news</Text>
-      </Link>
     </View>
   );
 };
@@ -18,7 +14,7 @@ const Loggedin = () => {
 // define your styles
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

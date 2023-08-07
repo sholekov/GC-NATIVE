@@ -15,9 +15,6 @@ import { store, setupUser } from '@/store'
 import { helpers, userRegister, userLogin, fetchCaptcha } from '@/helpers'
 
 const Register = () => {
-  const { axiosInstance } = useSnapshot(helpers);
-  const BASE_URI = process.env.EXPO_PUBLIC_API_URL;
-
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
 
