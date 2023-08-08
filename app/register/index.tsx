@@ -15,6 +15,7 @@ import { store, setupUser } from '@/store'
 import { helpers, userRegister, userLogin, fetchCaptcha } from '@/helpers'
 
 const Register = () => {
+  const { axiosInstance } = useSnapshot(helpers)
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
 
@@ -95,12 +96,23 @@ const Register = () => {
           };
           userLogin(data)
             .then( ({status, user}: {status: boolean, user: any}) => {
-              if (status) {
-                setupUser(user);
-                router.push('/home');
-                setLoading(false);
+              if (status && user) {
+                Promise.all([
+                    axiosInstance.get('me'),
+                    axiosInstance.get('favorites')
+                  ])
+                  .then( ([result_of_user, result_of_favourite]) => {
+                    setupUser(result_of_user.data, result_of_favourite.data);
+                    router.push('/home');
+                    setLoading(false);
+                  })
+                  .catch((e: Error) => {
+                    console.log('e', e);
+                    setLoading(false);
+                  })
               } else {
                 Alert.alert('Error', 'Invalid credentials');
+                setLoading(false);
               }
             })
         } else {

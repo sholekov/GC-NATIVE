@@ -96,6 +96,9 @@ export const userLogin: Function = ({email, password, provider}: {email: string,
       data: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&provider=${encodeURIComponent(provider)}`
     })
     .then((response: any) => {
+      console.log('Login response:', response);
+      console.log('Login data:', response.data);
+      
       const errors = response.data?.form?.errors;
       if(errors) {
         console.log('errors', errors);
@@ -168,23 +171,23 @@ export const getStations = () => {
 }
 
 export const getStation = (loc_id: string) => {
-  console.log('loc_id', loc_id);
-  
   return helpers.axiosInstance({
     method: 'GET',
     url: `stations?loc_id=${loc_id}`,
   })
 }
 
-export const favoriteStation = (loc_id: string) => {
-  console.log('loc_id', loc_id);
-  
+export const toggleStationToFavourites: Function = (id: any, csrf: any): void => {
   return helpers.axiosInstance({
     method: 'POST',
-    url: `favorites`,
-    data: `l_id=${encodeURIComponent(loc_id)}`
+    url: 'favorites',
+    data: `l_id=${encodeURIComponent(id)}&manix-csrf=${encodeURIComponent(csrf)}`,
   })
 }
+export const getFavouriteStations = () => {
+  return helpers.axiosInstance('favorites')
+}
+
 
 export const helpers = proxy<{ axiosInstance: axiosInstance, }>({
   axiosInstance: initAxios(),

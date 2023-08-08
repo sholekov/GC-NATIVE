@@ -3,15 +3,18 @@ import login from '@/assets/styles/login';
 const styles = { ...global, ...login };
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform, } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform, Pressable, } from 'react-native';
 import { Link } from 'expo-router';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import { userLogin } from '@/helpers'
+import { helpers, userLogin } from '@/helpers'
 import { setupUser } from '@/store'
+import { useSnapshot } from 'valtio';
 
 function Login() {
+  const { axiosInstance } = useSnapshot(helpers)
+
   const [username, setUsername] = useState('');
   const [password, setPIN] = useState('');
   const [loginWithNetworx, setLoginWithNetworx] = useState(false);
@@ -30,10 +33,21 @@ function Login() {
         provider: 'networx',
       })
     }
+
     userLogin(data)
       .then( ({status, user}: {status: boolean, user: any}) => {
-        if (status) {
-          setupUser(user);
+        if (status && user) {
+          Promise.all([
+              axiosInstance.get('me'),
+              axiosInstance.get('favorites')
+            ])
+            .then( ([result_of_user, result_of_favourite]) => {
+              setupUser(result_of_user.data, result_of_favourite.data);
+            })
+            .catch((e: Error) => {
+              console.log('e', e);
+              setupUser(null, null)
+            })
         } else {
           Alert.alert('Error', 'Invalid credentials');
         }
@@ -92,9 +106,13 @@ function Login() {
         <TouchableOpacity onPress={handleLogin} style={styles.button}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
-        <Link href="/register">
-          <Text style={styles.link}>Don't have an account? Register</Text>
+
+        <Link href="/register" style={{ width: '100%' }} asChild>
+          <Pressable>
+            <Text style={styles.link}>Don't have an account? Register</Text>
+          </Pressable>
         </Link>
+        
         <TouchableOpacity onPress={handleLostPIN} style={styles.lostPasswordButton}>
           <Text style={styles.lostPasswordText}>Lost Your PIN?</Text>
         </TouchableOpacity>

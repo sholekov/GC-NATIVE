@@ -7,17 +7,16 @@ import { View, Image, Text, StyleSheet, TouchableOpacity, Alert, } from 'react-n
 import { Link } from 'expo-router';
 import * as Location from 'expo-location';
 import { ScrollView, FlatList, } from 'react-native-gesture-handler';
-
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import BottomSheet from '@gorhom/bottom-sheet';
 
 import LoggedIn from '@/app/(tabs)/(loggedin)'
 import Login from '@/app/(tabs)/(login)'
-import StationRow from '@/app/(tabs)/partials/(station_row)'
+import Place from '@/app/(tabs)/partials/(place)'
 
 import { useSnapshot } from 'valtio'
 import { getStations, getStation } from '@/helpers'
-import { store } from '@/store'
+import { store, setupStationLocation } from '@/store'
 
 const Home = () => {
   
@@ -29,16 +28,16 @@ const Home = () => {
       return;
     }
   }
-  useEffect(() => {
-    handleUserPermissionLocation();
-  }, []);
+  // useEffect(() => {
+  //   handleUserPermissionLocation();
+  // }, []);
 
   const { user } = useSnapshot(store)
   const mapRef = useRef(null);
 
   const [stations, setStations] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedStations, setSelectedStations] = useState(null);
+  const [selectedStation, setSelectedStation] = useState(null);
   const [showPinTitle, setShowPinTitle] = useState(true);
   const _bottomSheetShowStationRef = useRef(null);
 
@@ -82,18 +81,6 @@ const Home = () => {
           },
           250
         )
-        // mapRef.current.fitToCoordinates([
-        //   { latitude: station.lat, longitude: station.lng },
-        // ], {
-        //   edgePadding: {
-        //     top: 20,
-        //     right: 20,
-        //     bottom: 20,
-        //     left: 20,
-        //   },
-        //   animated: true,
-        // });
-        console.log(response.data);
         // [
         //   {
         //     "billing": null,
@@ -116,20 +103,23 @@ const Home = () => {
         //   }
         // ]
         const selected_station = {station: station, stations: response.data};
-        setSelectedStations(selected_station);
+        setupStationLocation(station)
+        setSelectedStation(selected_station);
         _bottomSheetShowStationRef.current.snapToIndex(0);
       })
   }
 
   const setMap = () => {
-    mapRef.current.animateToRegion(
-      {
-        latitude: selectedStations.station.lat - 0.015, longitude: selectedStations.station.lng,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      },
-      150
-    )
+    if (selectedStation) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: selectedStation.station.lat - 0.015, longitude: selectedStation.station.lng,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        },
+        150
+      )
+    }
   }
 
 	return (
@@ -178,27 +168,8 @@ const Home = () => {
           snapPoints={['75%', '90%']}
           enablePanDownToClose={true}
           onClose={() => setMap() } >
-          { selectedStations ? (
-            <View style={{flex: 1, backgroundColor: 'red', }}>
-              <Text>name: {selectedStations.station.name}</Text>
-              <Text>region: {selectedStations.station.region}</Text>
-              {
-                selectedStations.station.is_public ? (<Text>public</Text>) : (<Text>private</Text>)
-              }
-              <Text>destination</Text>
-              <Text>favourite</Text>
-              <View style={{ flex: 1 }}>
-                <FlatList
-                  contentContainerStyle={{
-                    paddingBottom: 120,
-                    backgroundColor: 'pink',
-                  }}
-                  data={selectedStations.stations}
-                  renderItem={({item}) => <StationRow place={selectedStations} station={item} />}
-                  keyExtractor={item => Math.random().toString(36).substr(2, 9)}
-                />
-              </View>
-            </View>
+          { selectedStation ? (
+            <Place station={selectedStation}></Place>
           ) : null }
         </BottomSheet>
       </>) : <Login /> }

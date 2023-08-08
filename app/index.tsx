@@ -2,16 +2,24 @@ import { Redirect } from 'expo-router';
 // import { useEffect } from 'react';
 // import { Keyboard } from 'react-native';
 
-import { getUserData, setupUser } from '@/store'
+import { useSnapshot } from 'valtio';
+import { setupUser } from '@/store'
+import { helpers } from '@/helpers'
 
 const StartPage = () => {
 
-  getUserData()
-    .then((response: Response) => {
-      setupUser(response.data);
+  const { axiosInstance } = useSnapshot(helpers)
+  // getUserData()
+  Promise.all([
+      axiosInstance.get('me'),
+      axiosInstance.get('favorites')
+    ])
+    .then( ([result_of_user, result_of_favourite]) => {
+      setupUser(result_of_user.data, result_of_favourite.data);
     })
     .catch((e: Error) => {
-      setupUser(null)
+      console.log('e', e);
+      setupUser(null, null)
     })
 
   // useEffect(() => {
