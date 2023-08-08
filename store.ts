@@ -30,7 +30,7 @@ export const setupStationLocation: Function = (_object: any): void => {
   store.station_location = _object
 }
 export const setupStation: Function = (station: any): void => {
-  store.station =  station ? station : null
+  store.station =  station
 }
 
 

@@ -66,6 +66,9 @@ export default () => {
           <Tabs.Screen name="partials/(logout)" options={{ href: null }} />
           <Tabs.Screen name="partials/(station_row)" options={{ href: null }} />
           <Tabs.Screen name="partials/(place)" options={{ href: null }} />
+          <Tabs.Screen name="partials/(placeHeading)" options={{ href: null }} />
+          <Tabs.Screen name="partials/(placeFavourite)" options={{ href: null }} />
+          <Tabs.Screen name="partials/(placeAccessAndDirections)" options={{ href: null }} />
         </Tabs>
       </SafeAreaProvider>
     </GestureHandlerRootView>

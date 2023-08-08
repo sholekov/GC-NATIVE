@@ -1,10 +1,10 @@
 const formatPower: Function = (watts: number) => {
-    return (watts / 1000).toFixed(1);
+    return (watts / 1000).toFixed(0);
 }
 
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 
 import { useSnapshot } from 'valtio'
 import { store, setupUser } from '@/store'
@@ -12,29 +12,16 @@ import { toggleStationToFavourites, getFavouriteStations } from '@/helpers'
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
+// Components
+import PlaceHeading from '@/app/(tabs)/partials/(placeHeading)'
+import PlaceFavourite from '@/app/(tabs)/partials/(placeFavourite)'
+import PlaceAccessAndDirections from '@/app/(tabs)/partials/(placeAccessAndDirections)'
+
 const StationInfo = () => {
-    const { user } = useSnapshot(store)
+    const { user, station, station_location } = useSnapshot(store)
 
     const { id, name, region } = useLocalSearchParams();
-    const { station } = useSnapshot(store)
     
-    const handleFavouriteStation = (id, csrf) => {
-        console.log('handleFavouriteStation', id, csrf);
-        
-        toggleStationToFavourites(id, csrf)
-            .then( response => {
-                getFavouriteStations()
-                    .then( response => {
-                        setupUser(user, response.data)
-                    })
-                    .catch( error => {
-                        console.log('getFavouriteStations error', error);
-                    })
-            })
-            .catch( error => {
-                console.log('toggleStationToFavourites error', error);
-            })
-    }
     //   {
     //     "billing": null,
     //     "meta": [],
@@ -56,40 +43,67 @@ const StationInfo = () => {
     //   }
 
     return (
-        <View style={styles.container}>
-            {/* <Text>name: {name}</Text> */}
-            <Text style={{ paddingVertical: 8, }}>{region}</Text>
-            <TouchableOpacity onPress={() => handleFavouriteStation(id, user.csrf)}>
-                {
-                user.favourite_stations.filter(_ => {
-                    return _.l_id == id
-                }).length ? 
-                    <Icon name="star" solid></Icon> : <Icon name="star"></Icon>
-                }
+        <SafeAreaView style={{...styles.container, backgroundColor: 'white'}}>
+        <View style={{...styles.container, backgroundColor: 'white', width: '100%', }}>
+            <TouchableOpacity onPress={() => router.back()} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 12, padding: 12, backgroundColor: 'white', width: '100%', borderBottomColor: '#00000015', borderBottomWidth: .5, }}>
+                <View style={{ position: 'absolute', top: 6, left: 0, padding: 8, }}>
+                    <Icon name="chevron-left" size={18} color="grey" />
+                </View>
+                <Text style={{ fontSize: 16, fontWeight: '600', }}>Station#: {station.user_id}</Text>
             </TouchableOpacity>
-            <View style={styles.container}>
-                <Text>Station#: {station.user_id}</Text>
-                <Text>{station.pref_user_id}</Text>
-                <Text style={{ borderWidth: 1, borderColor: '#000', }}>{station.billing}</Text>
-                {
-                    station.pref_user_id ? <Icon name="user" solid></Icon> : <Icon name="user-slash"></Icon>
-                }
-                {
-                    station.billing ? (<Text>{station.billing} lv.</Text>) : <Text>0 lv.</Text>
-                }
-                <Text>{formatPower(station.model.maxPow)} kW</Text>
+
+            <View style={{ position: 'relative', width: '100%', }}>
+                <PlaceHeading station={station_location} />
+                <PlaceFavourite station={station_location} />
+            </View>
+            
+            <PlaceAccessAndDirections station={station_location} />
+
+            {/* <View style={{ marginTop: 12,  position: 'relative', width: '75%', borderBottomColor: 'grey', borderBottomWidth: 1, }}> */}
+            {/* </View> */}
+
+            <View style={{ position: 'relative', width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 18, }}>
                 {
                     station.model.outlets === 'type2' ? (
-                    <Image source={require('@/assets/type2.png')} style={{ width: 50, height: 50 }} />
+                    <>
+                    <Image source={require('@/assets/type2.png')} style={{ width: 36, height: 36 }} />
+                    <Text style={{ marginLeft: 8, fontSize: 20, fontWeight: '300', }} >TYPE 2</Text>
+                    </>
                     ) : null
                 }
                 {
                     station.model.outlets === 'shuko' ? (
-                    <Image source={require('@/assets/shuko.png')} style={{ width: 50, height: 50 }} />
+                    <Image source={require('@/assets/shuko.png')} style={{ width: 36, height: 36 }} />
                     ) : null
                 }
+                <Text style={{ marginLeft: 8, fontSize: 18, fontWeight: '300', }} >- {formatPower(station.model.maxPow)}kW</Text>
             </View>
+
+            <View style={{ position: 'relative', width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, padding: 18, backgroundColor: '#00000001', borderTopColor: 'silver', borderTopWidth: 1, borderBottomColor: 'silver', borderBottomWidth: 1,  }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                    <Icon name="tag" style={{ marginRight: 8, opacity: .65, }} size={18} />
+                    {
+                        station.billing ? (<Text>{station.billing} lv.</Text>) : <Text style={{ fontSize: 16, fontWeight: '400', }}>BGN 0.90 / kWh</Text>
+                    }
+                </View>
+                <Icon name="chevron-right" style={{ opacity: .65, color: 'grey', }} size={20} />
+            </View>
+
+            <View style={{...styles.container, flexDirection: 'row', }}>
+                <Text style={{ marginRight: 8, }}>{station.pref_user_id}</Text>
+                {
+                    station.pref_user_id ? <Icon name="user" solid></Icon> : <Icon name="user-slash"></Icon>
+                }                
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 12, padding: 12, paddingHorizontal: 24, backgroundColor: '#00000005', borderColor: '#00000050', borderWidth: .5, borderRadius: 32, }}>
+                <TouchableOpacity onPress={() => router.back()} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', }}>
+                    <Icon name="charging-station" size={18} style={{marginRight: 8 }} />
+                    <Text style={{ fontSize: 14, fontWeight: '600', }}>Start charging</Text>
+                </TouchableOpacity>
+            </View>
+            
         </View>
+        </SafeAreaView>
     );
 };
 
