@@ -6,11 +6,10 @@ import React, { Component } from 'react';
 
 import { View, Text, FlatList, TouchableOpacity, } from 'react-native';
 
-import Icon from 'react-native-vector-icons/FontAwesome5';
-import PlaceHeading from '@/app/(tabs)/partials/(placeHeading)'
-import PlaceFavourite from '@/app/(tabs)/partials/(placeFavourite)'
-import PlaceAccessAndDirections from '@/app/(tabs)/partials/(placeAccessAndDirections)'
-import StationRow from '@/app/(tabs)/partials/(station_row)'
+import PlaceHeading from '@/app/partials/(tabs)/(placeHeading)'
+import PlaceFavourite from '@/app/partials/(tabs)/(placeFavourite)'
+import PlaceAccessAndDirections from '@/app/partials/(tabs)/(placeAccessAndDirections)'
+import StationRow from '@/app/partials/(tabs)/(station_row)'
 
 const Place = ({station}) => {
 

@@ -4,15 +4,13 @@ const styles = { ...global, ...home };
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Image, Text, StyleSheet, TouchableOpacity, Alert, } from 'react-native';
-import { Link } from 'expo-router';
 import * as Location from 'expo-location';
-import { ScrollView, FlatList, } from 'react-native-gesture-handler';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import BottomSheet from '@gorhom/bottom-sheet';
 
 import LoggedIn from '@/app/(tabs)/(loggedin)'
 import Login from '@/app/(tabs)/(login)'
-import Place from '@/app/(tabs)/partials/(place)'
+import Place from '@/app/partials/(tabs)/(place)'
 
 import { useSnapshot } from 'valtio'
 import { getStations, getStation } from '@/helpers'
@@ -42,33 +40,50 @@ const Home = () => {
   const _bottomSheetShowStationRef = useRef(null);
 
   const loadStations = async () => {
+    console.log('in loadStations - user: ', user);
     setIsLoading(true);
     try {
       // const response = await fetch('https://api.openchargemap.io/v3/poi/?output=json&countrycode=BG&maxresults=10&key=2282e7f4-8f08-4cce-b41a-41293a92fcc4');
       // const data = await response.json();
-      getStations()
-        .then(response => {
-          // console.log(response.data);
-          // {
-              // "id": 117,
-              // "name": "10202 - ElBo",
-              // "stations": 1,
-              // "is_public": 0,
-              // "region": "Sofia",
-              // "lat": 42.656907,
-              // "lng": 23.2645
-          // }
-          setStations(response.data);
-        })
+      if (user) {
+        getStations()
+          .then(response => {
+            // console.log(response.data);
+            // {
+                // "id": 117,
+                // "name": "10202 - ElBo",
+                // "stations": 1,
+                // "is_public": 0,
+                // "region": "Sofia",
+                // "lat": 42.656907,
+                // "lng": 23.2645
+            // }
+            setStations(response.data);
+          })        
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
-      setIsLoading(false);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
     }
   };
   useEffect(() => {
+    console.log('in useEffect loadStations');
     loadStations()
-  }, [user])
+  }, [user?.id]);
+  
+  // const navigation = useNavigation();
+  // React.useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', (e) => {
+  //     if (_bottomSheetShowStationRef && _bottomSheetShowStationRef.current) { 
+  //       _bottomSheetShowStationRef.current.close()
+  //     }
+  //   });
+  //   return unsubscribe;
+  // }, [navigation]);
+
 
   const handleMarkerPress = (station) => {
     getStation(station.id)

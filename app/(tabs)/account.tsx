@@ -1,0 +1,154 @@
+import global from '@/assets/styles/styles';
+import page from '@/assets/styles/page';
+const styles = { ...global, ...page };
+
+import React, { Component } from 'react';
+import { View, Text, Image, TouchableOpacity, FlatList, SafeAreaView, StyleSheet, Pressable } from 'react-native';
+import { Link, Redirect } from 'expo-router';
+
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
+import { useSnapshot } from 'valtio'
+import { store } from '@/store'
+
+// Components
+import Logout from '@/app/partials/(tabs)/(logout)'
+import AccountHeader from '@/app/partials/(tabs)/account/accountHeader'
+import Divider from '@/app/partials/divider'
+
+const AccountComponent = () => {
+    const { user } = useSnapshot(store)
+
+    return (
+    <>
+        {user ? (
+            <SafeAreaView style={{ flex: 1, paddingHorizontal: 16, paddingVertical: 32, }}>
+                <View style={{ ...styles.btns_container, paddingTop: 14, }}>
+                    <AccountHeader user={user} />
+                </View>
+
+                <View style={styles.btns_container}>
+                    <Link href='pages/account/details' asChild>
+                        <Pressable>
+                        <View style={{...styles.btn_container, ...styles.roundedTop, ...styles.roundedBottom}}>
+                            <View style={styles.btn_container.textWrapper}>
+                                <Icon 
+                                    name='user-circle'
+                                    size={18}
+                                    color={'#333'}
+                                    solid
+                                />
+                                <Text style={styles.btn_container.textWrapper.text}>Account details</Text>
+                            </View>
+                            <Icon
+                                name='chevron-right'
+                                size={18}
+                                color={'grey'}
+                                />
+                        </View>
+                        </Pressable>
+                    </Link>
+                </View>
+                
+
+                <View style={styles.btns_container}>
+                    <Link href='pages/account/favourites' asChild>
+                        <Pressable>
+                        <View style={{...styles.btn_container, ...styles.roundedTop, ...styles.roundedBottom}}>
+                            <View style={styles.btn_container.textWrapper}>
+                                <Icon 
+                                    name='star'
+                                    size={18}
+                                    color={'#333'}
+                                    solid
+                                />
+                                <Text style={styles.btn_container.textWrapper.text}>Favourites</Text>
+                            </View>
+                            <Icon
+                                name='chevron-right'
+                                size={18}
+                                color={'grey'}
+                                />
+                        </View>
+                        </Pressable>
+                    </Link>
+                </View>
+                
+
+                    
+                <View style={styles.btns_container}>
+                    <Link href='pages/account/payment-methods' asChild>
+                        <Pressable>
+                        <View style={{...styles.btn_container, ...styles.roundedTop, }}>
+                            <View style={styles.btn_container.textWrapper}>
+                                <Icon 
+                                    name='credit-card'
+                                    size={18}
+                                    color={'#333'}
+                                />
+                                <Text style={styles.btn_container.textWrapper.text}>Payment methods</Text>
+                            </View>
+                            <Icon
+                                name='chevron-right'
+                                size={18}
+                                color={'grey'}
+                                />
+                        </View>
+                        </Pressable>
+                    </Link>
+                    <Divider />
+                    <Link href='/news' asChild>
+                        <Pressable>
+                        <View style={{...styles.btn_container, }}>
+                            <View style={styles.btn_container.textWrapper}>
+                                <Icon 
+                                    name='wallet'
+                                    size={18}
+                                    color={'#333'}
+                                    solid
+                                />
+                                <Text style={styles.btn_container.textWrapper.text}>Promotional balance</Text>
+                            </View>
+                            <Icon
+                                name='chevron-right'
+                                size={18}
+                                color={'grey'}
+                                />
+                        </View>
+                        </Pressable>
+                    </Link>
+                    <Divider />
+                    <Link href='/news' asChild>
+                        <Pressable>
+                        <View style={{...styles.btn_container, ...styles.roundedBottom}}>
+                            <View style={styles.btn_container.textWrapper}>
+                                <Icon 
+                                    name='chart-bar'
+                                    size={18}
+                                    color={'#333'}
+                                />
+                                <Text style={styles.btn_container.textWrapper.text}>Billing</Text>
+                            </View>
+                            <Icon
+                                name='chevron-right'
+                                size={18}
+                                color={'grey'}
+                                />
+                        </View>
+                        </Pressable>
+                    </Link>
+                </View>
+
+                <View style={styles.btns_container}>
+                    <Logout styles={styles} />
+                </View>
+            </SafeAreaView>
+        ) : (
+        <Redirect href={'/home'} />
+        )}
+    </>
+    )
+};
+
+export default AccountComponent;

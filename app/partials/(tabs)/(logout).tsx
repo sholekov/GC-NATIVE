@@ -4,12 +4,14 @@ const styles = { ...global, };
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { router, Link, Redirect } from 'expo-router';
-import { useSnapshot } from 'valtio'
 
+import Icon from 'react-native-vector-icons/FontAwesome5';
+
+import { useSnapshot } from 'valtio'
 import { userLogout } from '@/helpers'
 import { store, setupUser } from '@/store'
 
-const Logout = () => {
+const Logout = ({styles}) => {
   const { user } = useSnapshot(store)
 
   const handleLogout = () => {
@@ -30,8 +32,15 @@ const Logout = () => {
   
   return user ? (
     <>
-    <TouchableOpacity onPress={handleLogout} style={styles.button}>
-      <Text style={styles.buttonText}>Logout</Text>
+    <TouchableOpacity onPress={handleLogout} style={{...styles.btn_container, ...styles.roundedTop, ...styles.roundedBottom}}>
+      <View style={styles.btn_container.textWrapper}>
+          <Icon 
+              name='sign-out-alt'
+              size={18}
+              color={'#333'}
+          />
+          <Text style={styles.btn_container.textWrapper.text}>Logout</Text>
+      </View>
     </TouchableOpacity>
     </>
   ) : <Text>You should not see this screen!</Text>

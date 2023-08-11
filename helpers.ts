@@ -96,9 +96,6 @@ export const userLogin: Function = ({email, password, provider}: {email: string,
       data: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&provider=${encodeURIComponent(provider)}`
     })
     .then((response: any) => {
-      console.log('Login response:', response);
-      console.log('Login data:', response.data);
-      
       const errors = response.data?.form?.errors;
       if(errors) {
         console.log('errors', errors);

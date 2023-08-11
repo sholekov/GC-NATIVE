@@ -1,7 +1,11 @@
 // styles.js
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet, StatusBar } from 'react-native';
 
 export default StyleSheet.create({
+  droidSafeArea: {
+    flex: 1,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 6 : 0,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',

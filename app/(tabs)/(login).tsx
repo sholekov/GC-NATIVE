@@ -2,7 +2,9 @@ import global from '@/assets/styles/styles';
 import login from '@/assets/styles/login';
 const styles = { ...global, ...login };
 
-import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform, Pressable, } from 'react-native';
 import { Link } from 'expo-router';
 
@@ -13,8 +15,8 @@ import { setupUser } from '@/store'
 import { useSnapshot } from 'valtio';
 
 function Login() {
+  const { t } = useTranslation();
   const { axiosInstance } = useSnapshot(helpers)
-
   const [username, setUsername] = useState('');
   const [password, setPIN] = useState('');
   const [loginWithNetworx, setLoginWithNetworx] = useState(false);
@@ -66,7 +68,9 @@ function Login() {
     <ScrollView keyboardShouldPersistTaps="never" contentContainerStyle={{ flexGrow: 1, paddingBottom: 70 }}>
     
       <View style={styles.container}>
-        <Text onPress={() => { setSetCredentials(!setCredentials) }} style={styles.title}>Login</Text>
+        <Text onPress={() => { setSetCredentials(!setCredentials) }} style={styles.title}>
+          {t('loginNamespace.title')}
+        </Text>
         <TextInput placeholder="Email" keyboardType="email-address" autoCapitalize="none" onChangeText={setUsername} style={{...styles.input}} />
         <View style={styles.passwordContainer}>
           <TextInput
@@ -99,12 +103,16 @@ function Login() {
               color="black"
               style={styles.checkbox}
             />
-            <Text style={styles.label}>Login with Networx</Text>
+            <Text style={styles.label}>
+              {t('loginNamespace.login_with_networx_label')}
+            </Text>
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity onPress={handleLogin} style={styles.button}>
-          <Text style={styles.buttonText}>Login</Text>
+          <Text style={styles.buttonText}>
+            {t('loginNamespace.cta_label')}
+          </Text>
         </TouchableOpacity>
 
         <Link href="/register" style={{ width: '100%' }} asChild>
