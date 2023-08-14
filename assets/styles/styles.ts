@@ -44,4 +44,48 @@ export default StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+
+  bottomSheetShadow: {
+    backgroundColor: 'white',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
+  },
+
+  customCallout: {
+    width: 150,
+    paddingBottom: 4,
+  },
+  calloutContainer: {
+      alignItems: 'center',
+      padding: 8,
+      borderRadius: 12,
+      backgroundColor: 'white',
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 4,
+  },
+  calloutHeader: {
+    marginBottom: 4,
+    fontSize: 16,
+    fontWeight: '600',
+    width: '100%',
+    textAlign: 'center',
+  },
+  calloutDescription: {
+      fontSize: 12,
+      fontWeight: '500',
+      color: '#999', 
+  },
+
 });

@@ -2,10 +2,9 @@ import global from '@/assets/styles/styles';
 import place from '@/assets/styles/place';
 const styles = { ...global, ...place };
 
-import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, Text } from 'react-native';
 
-// create a component
 const PlaceHeading = ({station}) => {
   return (
     <View>

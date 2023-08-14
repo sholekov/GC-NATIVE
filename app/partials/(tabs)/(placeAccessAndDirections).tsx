@@ -26,7 +26,7 @@ const placeAccessAndDirections = ({station}) => {
       <View style={{ flexDirection: 'row', }}>
         {
           station.is_public ? (<>
-            <Icon style={{ marginRight: 4, fontSize: 20, color: 'grey', }} name="route"></Icon>
+            <Icon style={{ marginRight: 4, fontSize: 20, color: '#3c8f09', }} name="route"></Icon>
             <Text style={{ marginVertical: 4, fontWeight: '600', color: 'grey', opacity: 1, }}>Publicly accessible</Text>
           </>) : (<>
             <Icon style={{ marginRight: 4, marginTop: 2, fontSize: 18, color: 'brown', }} name="map-marker-alt"></Icon>

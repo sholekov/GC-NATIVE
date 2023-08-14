@@ -2,7 +2,7 @@ import global from '@/assets/styles/styles';
 import place from '@/assets/styles/place';
 const styles = { ...global, ...place };
 
-import React, { Component } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -35,7 +35,7 @@ const PlaceFavourite = ({station}) => {
   return (
     <TouchableOpacity style={{ flexDirection: 'row', position: 'absolute', top: -12, right: 0, padding: 16, }} onPress={() => handleFavouriteStation(station.id, user.csrf)}>
       {
-        user.favourite_stations.filter(_ => _.l_id == station.id).length ? 
+        user.favourite_places.filter(_ => _.l_id == station.id).length ? 
           <Icon size={26} name="star" solid style={{ color: 'rgb(255, 212, 59)', }}></Icon> : <Icon size={26} name="star" style={{ opacity: .25, }}></Icon>
       }
     </TouchableOpacity>

@@ -21,7 +21,7 @@ import { proxy, useSnapshot } from 'valtio'
 export const setupUser: Function = (user_data: User, favourites: any[]): void => {
   store.user = user_data
   if (favourites) {
-    Object.assign(store.user, { favourite_stations: favourites })
+    Object.assign(store.user, { favourite_places: favourites })
   }
 }
 
@@ -33,6 +33,10 @@ export const setupStation: Function = (station: any): void => {
   store.station =  station
 }
 
+export const setStations: Function = (data: any): void => {
+  store.stations =  data
+}
+
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 type Lang = 'bg' | 'en' | 'ro' | 'de' | 'ru' | 'fr' | 'it' | 'es' | 'pt' | 'pl' | 'hu' | 'cs' | 'sk' | 'sl' | 'hr' | 'sr' | 'mk' | 'sq' | 'el' | 'tr' | 'ar' | 'fa' | 'ur' | 'hi' | 'bn' | 'th' | 'zh' | 'ja' | 'ko' | 'he' | 'id' | 'ms' | 'vi' | 'tl' | 'ta' | 'ml' | 'kn' | 'te' | 'mr' | 'ne' | 'si' | 'my' | 'km' | 'lo' | 'am' | 'ti' | 'so' | 'sw' | 'rw' | 'ny' | 'ha' | 'ig' | 'yo' | 'zu' | 'xh' | 'st' | 'tn' | 'ts' | 'ss' | 've' | 'nr' | 'wo' | 'ff' | 'ak' | 'tw' | 'ee' | 'fo' | 'is' | 'et' | 'lv' | 'lt' | 'pl' | 'uk' | 'be' | 'kk' | 'ky' | 'uz' | 'tt' | 'tr' | 'tk' | 'az' | 'hy' | 'eu' | 'ca' | 'gl' | 'eu' | 'mt' | 'gd' | 'cy' | 'ga' | 'sq' | 'mk' | 'bs' | 'hr' | 'sr' | 'sl' | 'sk' | 'cs' | 'hu' | 'pl' | 'ru' | 'uk' | 'be' | 'kk' | 'ky' | 'uz' | 'tt' | 'tr' | 'tk' | 'az' | 'hy' | 'eu' | 'ca' | 'gl' | 'eu' | 'mt' | 'gd' | 'cy' | 'ga' | 'sq' | 'mk' | 'bs' | 'hr' | 'sr' | 'sl' | 'sk' | 'cs' | 'hu' | 'pl' | 'ru' | 'uk' | 'be' | 'kk' | 'ky' | 'uz' | 'tt' | 'tr' | 'tk' | 'az' | 'hy' | 'eu' | 'ca' | 'gl' | 'eu' | 'mt' | 'gd' | 'cy' | 'ga' | 'sq' | 'mk' | 'bs' | 'hr' | 'sr' | 'sl' | 'sk' | 'cs' | 'hu' | 'pl' | 'ru' | 'uk' | 'be' | 'kk' | 'ky' | 'uz';
@@ -42,9 +46,10 @@ export const setAppUILanguage: Function = (selectedLang: Lang, i18n: any): void 
   store.language =  selectedLang
 }
 
-export const store = proxy<{ user: User, station_location: any, station: any, language: string | null }>({
+export const store = proxy<{ user: User, station_location: any, station: any, language: string | null, stations: any, }>({
   language: null,
   user: null,
   station_location: null,
   station: null,
+  stations: null,
 })

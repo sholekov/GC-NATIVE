@@ -15,10 +15,8 @@ import { helpers } from '@/helpers'
 const StartPage = () => {
   const { i18n } = useTranslation();
 
-  // setup language
   AsyncStorage.getItem('user_preffered_UI_language')
     .then((value) => {
-      console.log('user_preffered_UI_language', value);
       setAppUILanguage(value || i18n.language, i18n)
     })
 

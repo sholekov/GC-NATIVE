@@ -5,7 +5,7 @@ const styles = { ...global, ...home };
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Image, Text, StyleSheet, TouchableOpacity, Alert, } from 'react-native';
 import * as Location from 'expo-location';
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 import BottomSheet from '@gorhom/bottom-sheet';
 
 import LoggedIn from '@/app/(tabs)/(loggedin)'
@@ -14,10 +14,13 @@ import Place from '@/app/partials/(tabs)/(place)'
 
 import { useSnapshot } from 'valtio'
 import { getStations, getStation } from '@/helpers'
-import { store, setupStationLocation } from '@/store'
+import { store, setupStationLocation, setStations } from '@/store'
+
+import { usePlace } from '@/app/hooks/usePlace'
 
 const Home = () => {
-  
+  const { PlaceComponent, placeSheetRef, selectedStation, setSelectedStation } = usePlace();
+  const { stations } = useSnapshot(store);
   const handleUserPermissionLocation = async () => {
     // Request permission to access the location
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -33,14 +36,10 @@ const Home = () => {
   const { user } = useSnapshot(store)
   const mapRef = useRef(null);
 
-  const [stations, setStations] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedStation, setSelectedStation] = useState(null);
   const [showPinTitle, setShowPinTitle] = useState(true);
-  const _bottomSheetShowStationRef = useRef(null);
 
   const loadStations = async () => {
-    console.log('in loadStations - user: ', user);
     setIsLoading(true);
     try {
       // const response = await fetch('https://api.openchargemap.io/v3/poi/?output=json&countrycode=BG&maxresults=10&key=2282e7f4-8f08-4cce-b41a-41293a92fcc4');
@@ -70,7 +69,6 @@ const Home = () => {
     }
   };
   useEffect(() => {
-    console.log('in useEffect loadStations');
     loadStations()
   }, [user?.id]);
   
@@ -85,7 +83,7 @@ const Home = () => {
   // }, [navigation]);
 
 
-  const handleMarkerPress = (station) => {
+  const handleSelectedPlace = (station) => {
     getStation(station.id)
       .then(response => {
         mapRef.current.animateToRegion(
@@ -117,10 +115,10 @@ const Home = () => {
         //     "user_id": 10085
         //   }
         // ]
-        const selected_station = {station: station, stations: response.data};
+        const selected_station = {data: station, stations: response.data};
         setupStationLocation(station)
         setSelectedStation(selected_station);
-        _bottomSheetShowStationRef.current.snapToIndex(0);
+        placeSheetRef.current.snapToIndex(0);
       })
   }
 
@@ -145,12 +143,12 @@ const Home = () => {
         provider={PROVIDER_GOOGLE}
         style={{ ...StyleSheet.absoluteFillObject, flex: 1, zIndex: 0 }}
         initialRegion={{
-          latitude: 43.828805,
+          latitude: 43.828805 + 0.02,
           longitude: 25.9582707,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
-        onPress={() => {_bottomSheetShowStationRef.current.close()}}>
+        onPress={() => {placeSheetRef.current.close()}}>
         {
           (stations) ?  
           stations.map(place => (
@@ -159,12 +157,18 @@ const Home = () => {
               coordinate={{ latitude: parseFloat(place.lat), longitude: parseFloat(place.lng) }}
               title={showPinTitle ? place.name : undefined}
               description={place.region}
-              onPress={() => handleMarkerPress(place)}
+              onPress={() => handleSelectedPlace(place)}
               pinColor={'#5dac30'}
             >
               <View>
-                <Image source={require('@/assets/images/pin-charging.png')} style={{ width: 30, height: 30 }} />
+                <Image source={require('@/assets/images/pin-gigacharger.png')} style={{ width: 42, height: 42 }} />
               </View>
+              <Callout tooltip={true} style={styles.customCallout}>
+                  <View style={styles.calloutContainer}>
+                      <Text style={styles.calloutHeader}>{place.name}</Text>
+                      <Text style={styles.calloutDescription}>{place.region}</Text>
+                  </View>
+              </Callout>
             </Marker>
           )): null
         }
@@ -177,16 +181,7 @@ const Home = () => {
       )}
       { user ? (<>
         <LoggedIn />
-        <BottomSheet
-          ref={_bottomSheetShowStationRef}
-          index={-1}
-          snapPoints={['75%', '90%']}
-          enablePanDownToClose={true}
-          onClose={() => setMap() } >
-          { selectedStation ? (
-            <Place station={selectedStation}></Place>
-          ) : null }
-        </BottomSheet>
+        <PlaceComponent placeSheetRef={placeSheetRef} selectedStation={selectedStation} callback={setMap} />
       </>) : <Login /> }
     </View>
 	);

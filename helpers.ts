@@ -168,6 +168,7 @@ export const getStations = () => {
 }
 
 export const getStation = (loc_id: string) => {
+  
   return helpers.axiosInstance({
     method: 'GET',
     url: `stations?loc_id=${loc_id}`,

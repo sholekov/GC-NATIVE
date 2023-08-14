@@ -12,16 +12,16 @@ import PlaceAccessAndDirections from '@/app/partials/(tabs)/(placeAccessAndDirec
 import StationRow from '@/app/partials/(tabs)/(station_row)'
 
 const Place = ({station}) => {
-
+  
   return (
     <View style={{flex: 1, backgroundColor: 'white', }}>
 
       <View style={{ position: 'relative', width: '100%' }}>
-          <PlaceHeading station={station.station} />
-          <PlaceFavourite station={station.station} />
+          <PlaceHeading station={station.data} />
+          <PlaceFavourite station={station.data} />
       </View>
       
-      <PlaceAccessAndDirections station={station.station} />
+      <PlaceAccessAndDirections station={station.data} />
       
       <View style={{ flex: 1, borderTopWidth: 1, borderColor: '#00000010', }}>
         <FlatList
@@ -30,7 +30,7 @@ const Place = ({station}) => {
             paddingBottom: 170,
           }}
           data={station.stations}
-          renderItem={({item}) => <StationRow place={station.station} station={item} />}
+          renderItem={({item}) => <StationRow place={station.data} station={item} />}
           keyExtractor={item => Math.random().toString(36).substr(2, 9)}
         />
       </View>
