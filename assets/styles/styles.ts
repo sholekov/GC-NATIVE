@@ -58,22 +58,30 @@ export default StyleSheet.create({
   },
 
   customCallout: {
-    width: 150,
+    width: 175,
     paddingBottom: 4,
   },
   calloutContainer: {
-      alignItems: 'center',
-      padding: 8,
+      padding: 4,
       borderRadius: 12,
-      backgroundColor: 'white',
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 2
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 4,
+      backgroundColor: '#ffffff90',
+  },
+  calloutInnerContainer: {
+    padding: 4,
+    width: '100%',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 12,
+    borderColor: '#3c8f09',
+    borderWidth: 1,
+    shadowColor: "#00000090",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 4,
   },
   calloutHeader: {
     marginBottom: 4,
@@ -82,9 +90,15 @@ export default StyleSheet.create({
     width: '100%',
     textAlign: 'center',
   },
+  calloutDevider: {
+    marginBottom: 4,
+      width: 50,
+      height: .5,
+      backgroundColor: '#3c8f09', 
+  },
   calloutDescription: {
       fontSize: 12,
-      fontWeight: '500',
+      fontWeight: '600',
       color: '#999', 
   },
 

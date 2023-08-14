@@ -159,8 +159,10 @@ const UserFavourites = () => {
                                 </View>
                                 <Callout tooltip={true} style={styles.customCallout}>
                                     <View style={styles.calloutContainer}>
-                                        <Text style={styles.calloutHeader}>{place.name}</Text>
-                                        <Text style={styles.calloutDescription}>{place.region}</Text>
+                                        <View style={styles.calloutInnerContainer}>
+                                            <Text style={styles.calloutHeader}>{place.name}</Text>
+                                            <Text style={styles.calloutDescription}>{place.region}</Text>
+                                        </View>
                                     </View>
                                 </Callout>
                             </Marker>
