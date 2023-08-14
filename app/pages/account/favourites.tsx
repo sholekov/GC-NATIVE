@@ -62,10 +62,13 @@ const UserFavourites = () => {
     const { stations } = useSnapshot(store);
     
     const [user_stations, setUserStations] = useState(null);
+    const [shown_stations, setShownStations] = useState(null);
+
     useEffect(() => {
         // 1) set user_stations
         const _user_stations = stations.filter( station => user.favourite_places.some(place => place.l_id === station.id) )
         setUserStations(_user_stations);
+        setShownStations(_user_stations);
 
         // 2) set Region
         if (_user_stations?.length && !isCollapsed) {
@@ -97,7 +100,7 @@ const UserFavourites = () => {
           .then(response => {
             mapRef.current.animateToRegion(
               {
-                latitude: station.lat - 0.03,
+                latitude: station.lat - 0.027,
                 longitude: station.lng,
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
@@ -105,6 +108,9 @@ const UserFavourites = () => {
             250)
             const selected_station = {data: station, stations: response.data};
             setSelectedStation(selected_station);
+
+            setShownStations([selected_station.data]);
+        
             setIsCollapsed(prev => true);
             placeSheetRef.current.snapToIndex(0);
         })
@@ -116,6 +122,9 @@ const UserFavourites = () => {
         if (index === -1 ) {
             // 2) set Region
             if (user_stations?.length) {
+                const _user_stations = stations.filter( station => user.favourite_places.some(place => place.l_id === station.id) )
+                setShownStations(_user_stations);
+
                 const region = calculateRegion(user_stations);
                 mapRef.current.animateToRegion(region, 250)
             }
@@ -144,8 +153,8 @@ const UserFavourites = () => {
                         longitudeDelta: 0.0421,
                       }}
                     onPress={resetScreenView} >
-                    { (user_stations?.length) ?  
-                        user_stations.map((place, index) => (
+                    { (shown_stations?.length) ?  
+                        shown_stations.map((place, index) => (
                             <Marker
                                 ref={(ref) => markerRefs.current[index] = ref}
                                 key={place.id}
@@ -169,11 +178,11 @@ const UserFavourites = () => {
                         )): null }
                 </MapView>
 
-                <SafeAreaView>
+                <SafeAreaView style={{ height: '100%', backgroundColor: 'transparent', }}>
                     <>
                         {
                             (user_stations?.length && !isCollapsed) ?(
-                                <View style={{ margin: 16, height: 256, 
+                                <View style={{ margin: 16,
                                     backgroundColor: '#ffffff50',
                                     borderRadius: 16,
                                     paddingVertical: 4,
