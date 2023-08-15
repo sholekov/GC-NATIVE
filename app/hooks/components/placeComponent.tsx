@@ -1,37 +1,61 @@
 import global from '@/assets/styles/styles';
-const styles = { ...global, };
+import place from '@/assets/styles/place';
+const styles = { ...global, ...place };
 
-import React, { useCallback, useState } from 'react';
+import React, { Component } from 'react';
 
-import BottomSheet from '@gorhom/bottom-sheet';
+import { View, Text, FlatList, TouchableOpacity, } from 'react-native';
 
-import Place from '@/app/partials/(tabs)/(place)'
+import PlaceHeading from '@/app/partials/(tabs)/(placeHeading)'
+import PlaceFavourite from '@/app/partials/(tabs)/(placeFavourite)'
+import PlaceAccessAndDirections from '@/app/partials/(tabs)/(placeAccessAndDirections)'
+import StationRow from '@/app/hooks/components/(station_row)'
 
-const PlaceComponent = ({ placeSheetRef, selectedStation, callback, handleSheetChanges }) => {
-
-  const [currentPosition, setCurrentPosition] = useState(1);
-
-  const handleAnimate = useCallback((fromIndex, toIndex) => {
-    if (fromIndex > toIndex && fromIndex === currentPosition) {
-      handleSheetChanges(-1, {lat: selectedStation.data.lat, lng: selectedStation.data.lng});
-    }
-    setCurrentPosition(toIndex);
-  }, [currentPosition]);
+const PlaceComponent = ({ station }) => {
 
   return (
-    <BottomSheet
-      style={styles.bottomSheetShadow}
-      ref={placeSheetRef}
-      index={-1}
-      snapPoints={['75%', '90%']}
-      enablePanDownToClose={true}
-      onClose={ () => callback() }
-      onAnimate={handleAnimate}
-      >
-      { selectedStation ? (
-        <Place station={selectedStation}></Place>
-      ) : null }
-    </BottomSheet>
+    <View style={{ flex: 1, backgroundColor: 'white', }}>
+
+      <View style={{ position: 'relative', paddingVertical: 12, width: '100%', }}>
+        <PlaceHeading station={station.data} />
+        <PlaceFavourite station={station.data} />
+      </View>
+
+      <View style={{
+        alignSelf: 'center',
+
+        marginHorizontal: 12,
+        marginBottom: 18,
+
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+
+        width: '90%',
+        
+        borderColor: '#00000025',
+        borderWidth: 0.5,
+        borderRadius: 120,
+        backgroundColor: 'white',
+        backgroundColor: '#00000005',
+
+      }}>
+        <PlaceAccessAndDirections station={station.data} />
+      </View>
+
+
+      <View style={{ flex: 1, borderTopWidth: 1, borderColor: '#00000010', }}>
+        <FlatList
+          contentContainerStyle={{
+            marginVertical: 0,
+            paddingBottom: 170,
+          }}
+          data={station.stations}
+          renderItem={({ item }) => <StationRow place={station.data} station={item} />}
+          keyExtractor={item => Math.random().toString(36).substr(2, 9)}
+        />
+      </View>
+
+    </View>
   );
 };
 

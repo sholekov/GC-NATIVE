@@ -5,12 +5,13 @@ const styles = { ...global, ...home };
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Image, Text, StyleSheet, TouchableOpacity, Alert, } from 'react-native';
 import * as Location from 'expo-location';
-import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import BottomSheet from '@gorhom/bottom-sheet';
 
+// Components
 import LoggedIn from '@/app/(tabs)/(loggedin)'
 import Login from '@/app/(tabs)/(login)'
-import Place from '@/app/partials/(tabs)/(place)'
+import CustomCalloutComponent from '@/app/partials/CustomCallout'
 
 import { useSnapshot } from 'valtio'
 import { getStations, getStation } from '@/helpers'
@@ -19,7 +20,7 @@ import { store, setupStationLocation, setStations } from '@/store'
 import { usePlace } from '@/app/hooks/usePlace'
 
 const Home = () => {
-  const { PlaceComponent, placeSheetRef, selectedStation, setSelectedStation } = usePlace();
+  const { PlaceBottomSheetComponent, placeSheetRef, selectedStation, setSelectedStation } = usePlace();
   const { stations } = useSnapshot(store);
   const handleUserPermissionLocation = async () => {
     // Request permission to access the location
@@ -71,17 +72,6 @@ const Home = () => {
   useEffect(() => {
     loadStations()
   }, [user?.id]);
-  
-  // const navigation = useNavigation();
-  // React.useEffect(() => {
-  //   const unsubscribe = navigation.addListener('focus', (e) => {
-  //     if (_bottomSheetShowStationRef && _bottomSheetShowStationRef.current) { 
-  //       _bottomSheetShowStationRef.current.close()
-  //     }
-  //   });
-  //   return unsubscribe;
-  // }, [navigation]);
-
 
   const handleSelectedPlace = (station) => {
     getStation(station.id)
@@ -94,27 +84,6 @@ const Home = () => {
           },
           250
         )
-        // [
-        //   {
-        //     "billing": null,
-        //     "meta": [],
-        //     "model": {
-        //       "id": "PAM",
-        //       "maxPow": 7400,
-        //       "outlets": "type2"
-        //     },
-        //     "operating": 0,
-        //     "ppkw": 250550,
-        //     "pref_ppkw": 1,
-        //     "pref_user_id": 12548,
-        //     "ps": "116",
-        //     "user": {
-        //       "id": 10085,
-        //       "name": null
-        //     },
-        //     "user_id": 10085
-        //   }
-        // ]
         const selected_station = {data: station, stations: response.data};
         setupStationLocation(station)
         setSelectedStation(selected_station);
@@ -163,14 +132,7 @@ const Home = () => {
               <View>
                 <Image source={require('@/assets/images/pin-gigacharger.png')} style={{ width: 42, height: 42 }} />
               </View>
-              <Callout tooltip={true} style={styles.customCallout}>
-                  <View style={styles.calloutContainer}>
-                      <View style={styles.calloutInnerContainer}>
-                        <Text style={styles.calloutHeader}>{place.name}</Text>
-                        <Text style={styles.calloutDescription}>{place.region}</Text>
-                      </View>
-                  </View>
-              </Callout>
+              <CustomCalloutComponent name={place.name} region={place.region}/>
             </Marker>
           )): null
         }
@@ -183,7 +145,7 @@ const Home = () => {
       )}
       { user ? (<>
         <LoggedIn />
-        <PlaceComponent placeSheetRef={placeSheetRef} selectedStation={selectedStation} callback={setMap} />
+        <PlaceBottomSheetComponent placeSheetRef={placeSheetRef} selectedStation={selectedStation} callback={setMap} />
       </>) : <Login /> }
     </View>
 	);

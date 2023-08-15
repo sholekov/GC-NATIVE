@@ -13,7 +13,7 @@ const StationRow = ({place, station}) => {
 
   const handleSetupStation = () => {
     setupStation(station)
-    router.push(`/station?id=${place.id}&name=${place.name}&region=${place.region}`);
+    router.push(`/station`);
   }
 
   return (

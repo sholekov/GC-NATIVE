@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 
-import PlaceComponent from '@/app/hooks/components/placeComponent'
+import PlaceBottomSheetComponent from '@/app/hooks/components/placeBottomSheetComponent'
 
 export const usePlace = () => {
 
@@ -8,5 +8,5 @@ export const usePlace = () => {
   
   const placeSheetRef = useRef(null);
 
-  return { PlaceComponent, placeSheetRef, selectedStation, setSelectedStation };
+  return { PlaceBottomSheetComponent, placeSheetRef, selectedStation, setSelectedStation };
 };

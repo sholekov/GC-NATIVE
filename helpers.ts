@@ -168,7 +168,27 @@ export const getStations = () => {
 }
 
 export const getStation = (loc_id: string) => {
-  
+  // [
+  //   {
+  //     "billing": null,
+  //     "meta": [],
+  //     "model": {
+  //       "id": "PAM",
+  //       "maxPow": 7400,
+  //       "outlets": "type2"
+  //     },
+  //     "operating": 0,
+  //     "ppkw": 250550,
+  //     "pref_ppkw": 1,
+  //     "pref_user_id": 12548,
+  //     "ps": "116",
+  //     "user": {
+  //       "id": 10085,
+  //       "name": null
+  //     },
+  //     "user_id": 10085
+  //   }
+  // ]
   return helpers.axiosInstance({
     method: 'GET',
     url: `stations?loc_id=${loc_id}`,

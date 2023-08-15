@@ -7,11 +7,11 @@ import { View, Text } from 'react-native';
 
 const PlaceHeading = ({station}) => {
   return (
-    <View>
-      <Text style={{...styles.placeHeading, }}>{station.name}</Text>
-      <View style={styles.placeRegionWrapper}>
-        <View style={styles.placeRegionRounded}>
-          <Text style={styles.placeRegionLabel}>{station.region}</Text>
+    <View style={{...styles.placeHeadingWrapper, }}>
+      <Text style={{...styles.placeHeadingTitle, }}>{station.name}</Text>
+      <View style={styles.placeHeadingRegionWrapper}>
+        <View style={styles.placeHeadingRegionRounded}>
+          <Text style={styles.placeHeadingRegionLabel}>{station.region}</Text>
         </View>
       </View>
     </View>
