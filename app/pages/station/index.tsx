@@ -54,15 +54,7 @@ const StationInfo = () => {
     //   }
 
     const [imageHeight, setImageHeight] = useState(128);
-    const setImageVisibility = () => {
-        console.log('setImageVisibility', imageHeight);
-        
-        if (imageHeight === 128) {
-            setImageHeight('100%')
-        } else {
-            setImageHeight(128)
-        }
-    }
+    const setImageVisibility = () => setImageHeight( imageHeight => imageHeight === 128 ? '100%' : 128 )
 
     return (
         <>
@@ -108,6 +100,17 @@ const StationInfo = () => {
                                 zIndex: 1,
                                 width: '100%', height: imageHeight,
                             }}>
+                            <Image source={require('@/assets/images/placeholder.png')} style={{
+                                borderRadius: 36,
+                                position: 'absolute', top: 0, right: 0,
+                                width: '100%', height: '100%', resizeMode: 'cover',
+                            }} />
+                            {/* <Image source={require('@/assets/images/pin-charging.png')} style={{
+                                borderRadius: 36,
+                                position: 'absolute', top: 32, left: '22%',
+                                width: 52, height: 52, resizeMode: 'cover',
+                                opacity: .75,
+                            }} /> */}
                             <Image source={{ uri: bgImage }} style={{
                                 borderRadius: 36,
                                 width: '100%', height: '100%', resizeMode: 'cover',
@@ -178,12 +181,10 @@ const StationInfo = () => {
 
                         </View>
 
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginBottom: 32, padding: 12, paddingHorizontal: 32, backgroundColor: '#5dac30', borderColor: '#fff', borderWidth: 3, borderRadius: 32, }}>
-                            <TouchableOpacity onPress={() => router.back()} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', }}>
-                                <Icon name="charging-station" size={18} color='white' style={{ marginRight: 8 }} />
-                                <Text style={{ fontSize: 14, fontWeight: '600', color: 'white', }}>Start charging</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <TouchableOpacity onPress={() => router.back()} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginBottom: 32, padding: 12, paddingHorizontal: 32, backgroundColor: '#5dac30', borderColor: '#fff', borderWidth: 3, borderRadius: 32, }}>
+                            <Icon name="charging-station" size={18} color='white' style={{ marginRight: 8 }} />
+                            <Text style={{ fontSize: 14, fontWeight: '600', color: 'white', }}>Start charging</Text>
+                        </TouchableOpacity>
 
                     </View>
 

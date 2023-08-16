@@ -15,14 +15,28 @@ type User = {
   favorite_stations: [],
 } | null
 
-import { helpers } from '@/helpers'
-import { proxy, useSnapshot } from 'valtio'
+import { proxy } from 'valtio'
 
-export const setupUser: Function = (user_data: User, favourites: any[]): void => {
+export const setupUser: Function = (user_data: User, favourites: any[], imageRequest: AxiosPromise): void => {
   store.user = user_data
+
   if (favourites) {
     Object.assign(store.user, { favourite_places: favourites })
   }
+
+  if (imageRequest === null) {
+    return
+  }
+  imageRequest
+    .then((response) => {
+      console.log("imageRequest");
+      if (response.status === 200) {
+        Object.assign(store.user, { image: response.config.url })
+      }
+    })
+    .catch((error) => {
+      console.log("Image error", error);
+    })
 }
 
 export const setupStationLocation: Function = (_object: any): void => {
@@ -39,6 +53,8 @@ export const setStations: Function = (data: any): void => {
 
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { use } from 'i18next';
+import { AxiosPromise } from 'axios';
 type Lang = 'bg' | 'en' | 'ro' | 'de' | 'ru' | 'fr' | 'it' | 'es' | 'pt' | 'pl' | 'hu' | 'cs' | 'sk' | 'sl' | 'hr' | 'sr' | 'mk' | 'sq' | 'el' | 'tr' | 'ar' | 'fa' | 'ur' | 'hi' | 'bn' | 'th' | 'zh' | 'ja' | 'ko' | 'he' | 'id' | 'ms' | 'vi' | 'tl' | 'ta' | 'ml' | 'kn' | 'te' | 'mr' | 'ne' | 'si' | 'my' | 'km' | 'lo' | 'am' | 'ti' | 'so' | 'sw' | 'rw' | 'ny' | 'ha' | 'ig' | 'yo' | 'zu' | 'xh' | 'st' | 'tn' | 'ts' | 'ss' | 've' | 'nr' | 'wo' | 'ff' | 'ak' | 'tw' | 'ee' | 'fo' | 'is' | 'et' | 'lv' | 'lt' | 'pl' | 'uk' | 'be' | 'kk' | 'ky' | 'uz' | 'tt' | 'tr' | 'tk' | 'az' | 'hy' | 'eu' | 'ca' | 'gl' | 'eu' | 'mt' | 'gd' | 'cy' | 'ga' | 'sq' | 'mk' | 'bs' | 'hr' | 'sr' | 'sl' | 'sk' | 'cs' | 'hu' | 'pl' | 'ru' | 'uk' | 'be' | 'kk' | 'ky' | 'uz' | 'tt' | 'tr' | 'tk' | 'az' | 'hy' | 'eu' | 'ca' | 'gl' | 'eu' | 'mt' | 'gd' | 'cy' | 'ga' | 'sq' | 'mk' | 'bs' | 'hr' | 'sr' | 'sl' | 'sk' | 'cs' | 'hu' | 'pl' | 'ru' | 'uk' | 'be' | 'kk' | 'ky' | 'uz' | 'tt' | 'tr' | 'tk' | 'az' | 'hy' | 'eu' | 'ca' | 'gl' | 'eu' | 'mt' | 'gd' | 'cy' | 'ga' | 'sq' | 'mk' | 'bs' | 'hr' | 'sr' | 'sl' | 'sk' | 'cs' | 'hu' | 'pl' | 'ru' | 'uk' | 'be' | 'kk' | 'ky' | 'uz';
 export const setAppUILanguage: Function = (selectedLang: Lang, i18n: any): void => {
   AsyncStorage.setItem('user_preffered_UI_language', selectedLang)

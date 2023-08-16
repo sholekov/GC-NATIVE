@@ -7,7 +7,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 
 import PlaceComponent from '@/app/hooks/components/placeComponent'
 
-const PlaceBottomSheetComponent = ({ placeSheetRef, selectedStation, callback, handleSheetChanges }) => {
+const PlaceBottomSheetComponent = ({ placeSheetRef, selectedStation, handleSheetChanges }) => {
 
   const [currentPosition, setCurrentPosition] = useState(1);
   const handleAnimate = useCallback((fromIndex, toIndex) => {
@@ -24,7 +24,6 @@ const PlaceBottomSheetComponent = ({ placeSheetRef, selectedStation, callback, h
       index={-1}
       snapPoints={['75%', '90%']}
       enablePanDownToClose={true}
-      onClose={callback}
       onAnimate={handleAnimate}
       >
       { selectedStation ? (

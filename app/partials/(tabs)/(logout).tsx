@@ -8,8 +8,8 @@ import { router, Link, Redirect } from 'expo-router';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import { useSnapshot } from 'valtio'
-import { userLogout } from '@/helpers'
-import { store, setupUser } from '@/store'
+import { userLogout, setLocalUser } from '@/helpers'
+import { store } from '@/store'
 
 const Logout = ({styles}) => {
   const { user } = useSnapshot(store)
@@ -19,8 +19,10 @@ const Logout = ({styles}) => {
       userLogout(user.csrf)
         .then((status: boolean) => {
           if (status) {
-            setupUser(null);
-            router.push('/home');
+            setLocalUser()
+            .then(() => {
+              router.push('/home');
+            })
           } else {
             Alert.alert('Logout failed');
           }

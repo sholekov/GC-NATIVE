@@ -6,17 +6,16 @@ import { useTranslation } from 'react-i18next';
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform, Pressable, } from 'react-native';
-import { Link } from 'expo-router';
+import { router, Link } from 'expo-router';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import { helpers, userLogin } from '@/helpers'
+import { helpers, userLogin, setLocalUser } from '@/helpers'
 import { setupUser } from '@/store'
 import { useSnapshot } from 'valtio';
 
 function Login() {
   const { t } = useTranslation();
-  const { axiosInstance } = useSnapshot(helpers)
   const [username, setUsername] = useState('');
   const [password, setPIN] = useState('');
   const [loginWithNetworx, setLoginWithNetworx] = useState(false);
@@ -39,17 +38,7 @@ function Login() {
     userLogin(data)
       .then( ({status, user}: {status: boolean, user: any}) => {
         if (status && user) {
-          Promise.all([
-              axiosInstance.get('me'),
-              axiosInstance.get('favorites')
-            ])
-            .then( ([result_of_user, result_of_favourite]) => {
-              setupUser(result_of_user.data, result_of_favourite.data);
-            })
-            .catch((e: Error) => {
-              console.log('e', e);
-              setupUser(null, null)
-            })
+          setLocalUser()
         } else {
           Alert.alert('Error', 'Invalid credentials');
         }

@@ -76,6 +76,7 @@ const Home = () => {
   const handleSelectedPlace = (station) => {
     getStation(station.id)
       .then(response => {
+        placeSheetRef.current.snapToIndex(0);
         mapRef.current.animateToRegion(
           {
             latitude: station.lat - 0.03, longitude: station.lng,
@@ -87,20 +88,35 @@ const Home = () => {
         const selected_station = {data: station, stations: response.data};
         setupStationLocation(station)
         setSelectedStation(selected_station);
-        placeSheetRef.current.snapToIndex(0);
       })
   }
 
-  const setMap = () => {
-    if (selectedStation) {
-      mapRef.current.animateToRegion(
-        {
-          latitude: selectedStation.station.lat - 0.015, longitude: selectedStation.station.lng,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        },
-        150
-      )
+
+  const markerRefs = useRef([]);
+  const showSpecificMarkerCallout = (index) => {
+    if (index === -1) {
+      markerRefs.current.forEach(marker => {
+        marker.hideCallout();
+      });
+    }
+    if (markerRefs.current[index]) {
+      markerRefs.current[index].showCallout();
+    }
+  };
+  const handleSheetChanges = (index) => {
+    if (index === -1) {
+      // 2) set Region
+      if (selectedStation) {
+        showSpecificMarkerCallout(-1);
+        mapRef.current.animateToRegion(
+          {
+            latitude: selectedStation.data.lat - 0.015, longitude: selectedStation.data.lng,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          },
+          150
+        )
+      }
     }
   }
 
@@ -120,14 +136,14 @@ const Home = () => {
         onPress={() => {placeSheetRef.current.close()}}>
         {
           (stations) ?  
-          stations.map(place => (
+          stations.map((place, index) => (
             <Marker
+              ref={(ref) => markerRefs.current[index] = ref}
               key={place.id}
               coordinate={{ latitude: parseFloat(place.lat), longitude: parseFloat(place.lng) }}
-              title={showPinTitle ? place.name : undefined}
+              title={place.name}
               description={place.region}
-              onPress={() => handleSelectedPlace(place)}
-              pinColor={'#5dac30'}
+              onPress={() => handleSelectedPlace(place, index)}
             >
               <View>
                 <Image source={require('@/assets/images/pin-gigacharger.png')} style={{ width: 42, height: 42 }} />
@@ -145,7 +161,7 @@ const Home = () => {
       )}
       { user ? (<>
         <LoggedIn />
-        <PlaceBottomSheetComponent placeSheetRef={placeSheetRef} selectedStation={selectedStation} callback={setMap} />
+        <PlaceBottomSheetComponent placeSheetRef={placeSheetRef} selectedStation={selectedStation} handleSheetChanges={handleSheetChanges} />
       </>) : <Login /> }
     </View>
 	);

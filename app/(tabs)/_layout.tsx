@@ -5,7 +5,7 @@ import { Tabs } from 'expo-router';
 
 import { Text, View, Image, Platform } from 'react-native';
 
-import { GestureHandlerRootView, ScrollView, } from 'react-native-gesture-handler';
+import { GestureHandlerRootView, } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';

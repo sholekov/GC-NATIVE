@@ -9,29 +9,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useSnapshot } from 'valtio';
 import { setupUser, setAppUILanguage } from '@/store'
-import { helpers } from '@/helpers'
+import { helpers, setLocalUser } from '@/helpers'
 
 
 const StartPage = () => {
   const { i18n } = useTranslation();
 
+  setLocalUser()
+
   AsyncStorage.getItem('user_preffered_UI_language')
     .then((value) => {
       setAppUILanguage(value || i18n.language, i18n)
-    })
-
-  const { axiosInstance } = useSnapshot(helpers)
-  // getUserData()
-  Promise.all([
-      axiosInstance.get('me'),
-      axiosInstance.get('favorites')
-    ])
-    .then( ([result_of_user, result_of_favourite]) => {
-      setupUser(result_of_user.data, result_of_favourite.data);
-    })
-    .catch((e: Error) => {
-      console.log('e', e);
-      setupUser(null, null)
     })
 
   // useEffect(() => {

@@ -7,11 +7,6 @@ import { View, Text, Image, TouchableOpacity, FlatList, SafeAreaView, StyleSheet
 import { Link, Redirect } from 'expo-router';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
-import { useSnapshot } from 'valtio'
-import { store, setupUser } from '@/store'
-import { toggleStationToFavourites, getFavouriteStations } from '@/helpers'
 
 // Components
 import Divider from '@/app/partials/divider'

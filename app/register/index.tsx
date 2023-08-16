@@ -12,7 +12,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import { useSnapshot } from 'valtio'
 import { store, setupUser } from '@/store'
-import { helpers, userRegister, userLogin, fetchCaptcha } from '@/helpers'
+import { helpers, userRegister, userLogin, fetchCaptcha, setLocalUser } from '@/helpers'
 
 const Register = () => {
   const { axiosInstance } = useSnapshot(helpers)
@@ -97,12 +97,8 @@ const Register = () => {
           userLogin(data)
             .then( ({status, user}: {status: boolean, user: any}) => {
               if (status && user) {
-                Promise.all([
-                    axiosInstance.get('me'),
-                    axiosInstance.get('favorites')
-                  ])
-                  .then( ([result_of_user, result_of_favourite]) => {
-                    setupUser(result_of_user.data, result_of_favourite.data);
+                setLocalUser()
+                  .then(() => {
                     router.push('/home');
                     setLoading(false);
                   })

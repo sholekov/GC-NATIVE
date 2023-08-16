@@ -90,6 +90,11 @@ const UserFavourites = () => {
 
   const markerRefs = useRef([]);
   const showSpecificMarkerCallout = (index) => {
+    if (index === -1) {
+      markerRefs.current.forEach(marker => {
+        marker.hideCallout();
+      });
+    }
     if (markerRefs.current[index]) {
       markerRefs.current[index].showCallout();
     }
@@ -111,8 +116,6 @@ const UserFavourites = () => {
           250)
         const selected_station = { data: station, stations: response.data };
 
-        console.log('selected_station', selected_station.stations);
-        
         setupStationLocation(station)
         setSelectedStation(selected_station);
 
@@ -132,6 +135,7 @@ const UserFavourites = () => {
         const _user_stations = stations.filter(station => user.favourite_places.some(place => place.l_id === station.id))
         setShownStations(_user_stations);
 
+        showSpecificMarkerCallout(-1);
         const region = calculateRegion(user_stations);
         mapRef.current.animateToRegion(region, 250)
       }
@@ -224,7 +228,7 @@ const UserFavourites = () => {
                 }
               </SafeAreaView>
           }
-          <PlaceBottomSheetComponent placeSheetRef={placeSheetRef} selectedStation={selectedStation} callback={() => { }} handleSheetChanges={handleSheetChanges} />
+          <PlaceBottomSheetComponent placeSheetRef={placeSheetRef} selectedStation={selectedStation} handleSheetChanges={handleSheetChanges} />
         </> : <Redirect href="/home" />}
     </>
   );

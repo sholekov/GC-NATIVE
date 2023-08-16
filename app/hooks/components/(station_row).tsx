@@ -13,7 +13,7 @@ const StationRow = ({place, station}) => {
 
   const handleSetupStation = () => {
     setupStation(station)
-    router.push(`/station`);
+    router.push(`pages/station`);
   }
 
   return (
