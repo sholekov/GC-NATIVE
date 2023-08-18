@@ -15,7 +15,6 @@ import { store, setupUser } from '@/store'
 import { helpers, userRegister, userLogin, fetchCaptcha, setLocalUser } from '@/helpers'
 
 const Register = () => {
-  const { axiosInstance } = useSnapshot(helpers)
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
 
@@ -25,7 +24,7 @@ const Register = () => {
   const [captchaInput, setCaptchaInput] = useState('');
   const [isLoading, setLoading] = useState(false);
 
-  const [captchaUrl, setCaptchaUrl] = useState('https://fooda.cloud/planet-food-ruse/wp-content/uploads/sites/24/woocommerce-placeholder.png'); // Initial captcha URL
+  const [captchaUrl, setCaptchaUrl] = useState('');
   const _fetchCaptcha = async () => {
     fetchCaptcha()
       .then((url) => {
@@ -38,11 +37,11 @@ const Register = () => {
   
   const handleRegister = async () => {
     // Request permission to access the location
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission to access location was denied');
-      return;
-    }
+    // let { status } = await Location.requestForegroundPermissionsAsync();
+    // if (status !== 'granted') {
+    //   Alert.alert('Permission to access location was denied');
+    //   return;
+    // }
 
     setLoading(true);
 

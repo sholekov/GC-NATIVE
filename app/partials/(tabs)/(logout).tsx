@@ -41,7 +41,7 @@ const Logout = ({styles}) => {
               size={18}
               color={'#333'}
           />
-          <Text style={styles.btn_container.textWrapper.text}>Logout</Text>
+          <Text style={styles.btn_container.textWrapperText}>Logout</Text>
       </View>
     </TouchableOpacity>
     </>

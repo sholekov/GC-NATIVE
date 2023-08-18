@@ -5,17 +5,16 @@ import { View, Text, Image, TouchableOpacity, FlatList, SafeAreaView, Pressable,
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-import { launchImageLibraryAsync, MediaTypeOptions, launchCameraAsync, useCameraPermissions, PermissionStatus } from 'expo-image-picker'
+import { launchImageLibraryAsync, MediaTypeOptions, launchCameraAsync, useCameraPermissions, PermissionStatus, } from 'expo-image-picker'
 import Constants from 'expo-constants';
 
+// Components
 import ChooseMediaSourceModal from '@/app/pages/account/details/chooseMediaSourceModal'
-
 const ImagePlaceholder = ({ image }) => {
   return (<View style={{ alignSelf: 'center', marginBottom: 32, width: 190, height: 190, }}>
     <Image source={{ uri: image }} style={{ width: '100%', height: '100%', borderRadius: 999, }} />
   </View>)
 }
-
 const ConfirmModal = ({ modalVisible, setModalVisible, image, onConfirm, onCancel }) => {
   const styles = StyleSheet.create({
     actionBtn: {
@@ -26,10 +25,10 @@ const ConfirmModal = ({ modalVisible, setModalVisible, image, onConfirm, onCance
       backgroundColor: 'silver',
       borderRadius: 12,
     },
-    actionBtnText: {  
+    actionBtnText: {
       color: 'white', fontWeight: '600',
     },
-    actionBtnTextConfirm: {  
+    actionBtnTextConfirm: {
       backgroundColor: '#3c8f09',
     },
   });
@@ -70,63 +69,72 @@ const ConfirmModal = ({ modalVisible, setModalVisible, image, onConfirm, onCance
   </>)
 }
 
-
 import { store } from '@/store'
 import { uploadImageToServer, setLocalUser } from '@/helpers'
 import { useSnapshot } from 'valtio';
-const UserPhoto = () => {
+
+const UserPhotoComponent = () => {
   const { user } = useSnapshot(store)
   const [modalVisible, setModalVisible] = useState(false);
 
-  const getPermissionAsync = async () => {
-    if (Constants.platform.ios) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status !== 'granted') {
-        alert('Sorry, we need camera roll permissions to make this work!');
-      }
-    }
-  };
-
-  const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
-
+  const [pickedImage, setImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [cameraPermissionInformation, requestPermission,] = useCameraPermissions();
   async function verifyPermission() {
-    console.log('cameraPermissionInformation', cameraPermissionInformation);
-    
+    // Ask the user for the permission to access the camera
     const permissionResponse = await requestPermission();
-
-    if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
-
-      if ( ! permissionResponse.granted ) {
-        getPermissionAsync();
-      }
-
-      return permissionResponse.granted;
+    if (permissionResponse.status === PermissionStatus.GRANTED) {
+      return true
     }
-    if (cameraPermissionInformation.status === PermissionStatus.DENIED) {
+
+    if (permissionResponse.canAskAgain === false) {
       Alert.alert(
-        'Insufficient permission!',
-        'You need to grant camera access to use this app'
+        'Camera access denied',
+        'You need to grant camera access on the settings to use this app'
       );
       return false
     }
-    return true;
-  }
-  async function captureImage() {
-    setModalVisible(false)
-    const hasPermission = await verifyPermission()
-    if (!hasPermission) {
-      return;
+
+    if (permissionResponse.status === PermissionStatus.UNDETERMINED) {
+      Alert.alert(
+        'Camera access denied',
+        'Permission Status for Camera access is UNDETERMINED'
+      );
+      return false
+    } else if (permissionResponse.status === PermissionStatus.DENIED) {
+      Alert.alert(
+        'Camera access denied',
+        'You need to grant camera access on the settings to use this app'
+      );
+      return false
     }
-    const image = await launchCameraAsync({
+    return false
+  }
+  const openCamera = async () => {
+    const status = await verifyPermission()
+
+    if (!status) {
+      return
+    }
+    
+    const result = await launchCameraAsync({
       mediaTypes: MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
+
+    if (!result.canceled) {
+      const uri = result.assets[0].uri
+      setSelectedImage(result.assets[0]);
+      setImage(uri);
+    }
+  }
+  async function captureImage() {
+    await openCamera()
+    setModalVisible(false)
   }
 
-  const [pickedImage, setImage] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null);
   const pickFromGallery = async () => {
     setModalVisible(false)
     // No permissions request is necessary for launching the image library
@@ -143,12 +151,13 @@ const UserPhoto = () => {
       setImage(uri);
     }
   };
+  
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
   useEffect(() => {
     if (pickedImage) {
       setShowConfirmModal(true)
     }
   }, [pickedImage])
-  const [showConfirmModal, setShowConfirmModal] = useState(false)
 
   return (
     <>
@@ -177,7 +186,7 @@ const UserPhoto = () => {
 
       </View>
       <ChooseMediaSourceModal modalVisible={modalVisible} setModalVisible={setModalVisible} choices={{ pickFromGallery, captureImage }} />
-      {showConfirmModal && <ConfirmModal modalVisible={showConfirmModal} setModalVisible={setShowConfirmModal} image={pickedImage} onConfirm={() => uploadImageToServer(selectedImage, user.csrf).then(() => setLocalUser())} onCancel={() => setImage(null)} />}
+      {showConfirmModal && <ConfirmModal modalVisible={showConfirmModal} setModalVisible={setShowConfirmModal} image={pickedImage} onConfirm={() => uploadImageToServer(selectedImage, user.csrf)} onCancel={() => setImage(null)} />}
     </>
   )
 }
@@ -206,4 +215,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default UserPhoto;
+export default UserPhotoComponent;

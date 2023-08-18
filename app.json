@@ -16,12 +16,25 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sholeka.gcclientnew",
+      "config": {
+        "googleMapsApiKey": "AIzaSyBkZBxH9wphpgAKxyoEbEUTbhWN862r46c"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.sholeka.gcclientnew",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBWMlk6E5B8zSZui90Ev0MCHjsghCFq55k"
+        }
       }
     },
     "web": {
@@ -40,6 +53,14 @@
           "cameraPermission": "The app accesses your camera to let you take photos to share with Gigacharger."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "b6b4896c-7aac-4f06-bd28-d5b2b360d3d2"
+      }
+    }
   }
 }

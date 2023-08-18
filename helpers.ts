@@ -137,36 +137,31 @@ export const userLogout: Function = (csrf: string) => {
 
 export const uploadImageToServer = async (selectedImage: any, csrf: string) => {
   const uri = selectedImage.uri;
-
-  return new Promise(async (resolve, reject) => {
-    const formData = new FormData();
-    formData.append('manix-csrf', csrf);
-    formData.append('image', {
-      uri: uri,
-      name: 'some_photo.jpg',
-    });
-    helpers.axiosInstance({
-      method: 'POST',
-      url: 'avatar',
-      data: formData,
-      headers: {
-        'Content-Type': 'multipart/form-data',
+  const formData = new FormData();
+  formData.append('manix-csrf', csrf);
+  formData.append('image', {
+    uri: uri,
+    name: 'some_photo.jpg',
+  });
+  helpers.axiosInstance({
+    method: 'POST',
+    url: 'avatar',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    }
+  })
+    .then((response: any) => {
+      if (response.data === null) {
+        Alert.alert('Image uploaded successfully!', 'To see the changes, wait some time');
+        setLocalUser()
+      } else {
+        Alert.alert("Failed to upload image.");
       }
     })
-      .then((response: any) => {
-        if (response.data === null) {
-          alert("Image uploaded successfully!");
-          resolve(uri)
-        } else {
-          alert("Failed to upload image.");
-          resolve(false)
-        }
-      })
-      .catch((error: Error) => {
-        console.log('error', error.message);
-        reject(error);
-      })
-  })
+    .catch((error: Error) => {
+      console.log('error', error.message);
+    })
 }
 
 
@@ -196,25 +191,27 @@ export const fetchCaptcha: Function = () => {
 }
 
 
-export const getStations = () => {
-  return helpers.axiosInstance('locations')
-}
-
 export const setLocalUser = (): Promise<any> => {
   return Promise.all([
     helpers.axiosInstance.get('me'),
     helpers.axiosInstance.get('favorites')
   ])
     .then(([result_of_user, result_of_favourite]) => {
-
       const imageUrl = BASE_URI + "images/clients/" + result_of_user.data.id + ".png"
       const imageRequest = helpers.axiosInstance.get(imageUrl)
       setupUser(result_of_user.data, result_of_favourite.data, imageRequest);
+      return true
     })
     .catch((e: Error) => {
       console.log('e', e);
       setupUser(null, null, null)
+      return false
     })
+}
+
+
+export const getStations = () => {
+  return helpers.axiosInstance('locations')
 }
 
 export const getStation = (loc_id: string) => {

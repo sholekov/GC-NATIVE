@@ -35,7 +35,6 @@ const PlaceComponent = ({ station }) => {
         borderColor: '#00000025',
         borderWidth: 0.5,
         borderRadius: 120,
-        backgroundColor: 'white',
         backgroundColor: '#00000005',
 
       }}>

@@ -3,10 +3,9 @@ import home from '@/assets/styles/home';
 const styles = { ...global, ...home };
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Image, Text, StyleSheet, TouchableOpacity, Alert, } from 'react-native';
+import { View, Image, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, Pressable, } from 'react-native';
 import * as Location from 'expo-location';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
-import BottomSheet from '@gorhom/bottom-sheet';
 
 // Components
 import LoggedIn from '@/app/(tabs)/(loggedin)'
@@ -20,107 +19,86 @@ import { store, setupStationLocation, setStations } from '@/store'
 import { usePlace } from '@/app/hooks/usePlace'
 
 const Home = () => {
-  const { PlaceBottomSheetComponent, placeSheetRef, selectedStation, setSelectedStation } = usePlace();
-  const { stations } = useSnapshot(store);
-  const handleUserPermissionLocation = async () => {
-    // Request permission to access the location
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission to access location was denied');
-      return;
-    }
-  }
+  // const handleUserPermissionLocation = async () => {
+  //   // Request permission to access the location
+  //   let { status } = await Location.requestForegroundPermissionsAsync();
+  //   if (status !== 'granted') {
+  //     Alert.alert('Permission to access location was denied');
+  //     return;
+  //   }
+  // }
   // useEffect(() => {
   //   handleUserPermissionLocation();
   // }, []);
-
+  const { stations } = useSnapshot(store)
   const { user } = useSnapshot(store)
-  const mapRef = useRef(null);
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPinTitle, setShowPinTitle] = useState(true);
 
   const loadStations = async () => {
-    setIsLoading(true);
     try {
-      // const response = await fetch('https://api.openchargemap.io/v3/poi/?output=json&countrycode=BG&maxresults=10&key=2282e7f4-8f08-4cce-b41a-41293a92fcc4');
-      // const data = await response.json();
       if (user) {
         getStations()
           .then(response => {
-            // console.log(response.data);
-            // {
-                // "id": 117,
-                // "name": "10202 - ElBo",
-                // "stations": 1,
-                // "is_public": 0,
-                // "region": "Sofia",
-                // "lat": 42.656907,
-                // "lng": 23.2645
-            // }
             setStations(response.data);
-          })        
+            setTimeout(() => {
+              setIsLoading(false);
+            }, 1000);
+          })
       }
     } catch (error) {
       console.error('Error fetching data:', error);
-    } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
     }
   };
   useEffect(() => {
     loadStations()
   }, [user?.id]);
 
-  const handleSelectedPlace = (station) => {
+  const { PlaceBottomSheetComponent, placeSheetRef, selectedStation, setSelectedStation } = usePlace();
+
+  const mapRef = useRef(null);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [blockView, setBlockView] = useState(false);
+  const handleSelectedPlace = (station, index) => {
+    setSelectedStation(null)
+    setupStationLocation(null)
+    mapRef.current.animateToRegion(
+      {
+        latitude: station.lat - 0.025, longitude: station.lng,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      },
+      250
+    )
+    placeSheetRef.current.snapToIndex(0)
+    setBlockView(true)
     getStation(station.id)
       .then(response => {
-        placeSheetRef.current.snapToIndex(0);
-        mapRef.current.animateToRegion(
-          {
-            latitude: station.lat - 0.03, longitude: station.lng,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          },
-          250
-        )
-        const selected_station = {data: station, stations: response.data};
+        const selected_station = { data: station, stations: response.data };
+        setSelectedStation(selected_station)
         setupStationLocation(station)
-        setSelectedStation(selected_station);
       })
   }
 
 
   const markerRefs = useRef([]);
-  const showSpecificMarkerCallout = (index) => {
-    if (index === -1) {
+  const handleSheetChanges: Function = (index, coords) => {
+    if (index === -1 && coords.lat && coords.lng) {
+      mapRef.current.animateToRegion(
+        {
+          latitude: coords.lat - 0.015, longitude: coords.lng,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        },
+        150
+      )
       markerRefs.current.forEach(marker => {
         marker.hideCallout();
       });
-    }
-    if (markerRefs.current[index]) {
-      markerRefs.current[index].showCallout();
-    }
-  };
-  const handleSheetChanges = (index) => {
-    if (index === -1) {
-      // 2) set Region
-      if (selectedStation) {
-        showSpecificMarkerCallout(-1);
-        mapRef.current.animateToRegion(
-          {
-            latitude: selectedStation.data.lat - 0.015, longitude: selectedStation.data.lng,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          },
-          150
-        )
-      }
+      setBlockView(false)
     }
   }
 
-	return (
+  return (
     <View style={{ flex: 1 }}>
       <MapView
         showsUserLocation={true}
@@ -133,10 +111,9 @@ const Home = () => {
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
-        onPress={() => {placeSheetRef.current.close()}}>
+        onPress={() => { placeSheetRef.current.close() }}>
         {
-          (stations) ?  
-          stations.map((place, index) => (
+          stations?.map((place, index) => (
             <Marker
               ref={(ref) => markerRefs.current[index] = ref}
               key={place.id}
@@ -144,27 +121,28 @@ const Home = () => {
               title={place.name}
               description={place.region}
               onPress={() => handleSelectedPlace(place, index)}
+              image={ require('@/assets/images/pin-gigacharger.png') }
             >
-              <View>
-                <Image source={require('@/assets/images/pin-gigacharger.png')} style={{ width: 42, height: 42 }} />
-              </View>
-              <CustomCalloutComponent name={place.name} region={place.region}/>
+              <CustomCalloutComponent name={place.name} region={place.region} />
             </Marker>
-          )): null
+          ))
         }
       </MapView>
-      { user ? null: (
-        /* Blurry Overlay */
-        <View style={{...StyleSheet.absoluteFillObject, backgroundColor: 'white', opacity: 0.85, }}>
-          {/* <Image source={require('@/assets/blurredImage.png')} style={styles.image} /> */}
-        </View>
-      )}
-      { user ? (<>
+      {user ? (<>
         <LoggedIn />
+        {blockView && <Pressable onTouchMove={() => { setBlockView(false); placeSheetRef.current.close() }} onPress={() => { setBlockView(false); placeSheetRef.current.close() }} style={{ ...StyleSheet.absoluteFillObject, }}></Pressable>}
         <PlaceBottomSheetComponent placeSheetRef={placeSheetRef} selectedStation={selectedStation} handleSheetChanges={handleSheetChanges} />
-      </>) : <Login /> }
+      </>) : (
+        /* Blurry Overlay */
+        <>
+          <View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'white', opacity: 0.85, }}>
+            {/* <Image source={require('@/assets/blurredImage.png')} style={styles.image} /> */}
+          </View>
+          <Login />
+        </>)}
+      {isLoading && <ActivityIndicator size="large" style={{ ...StyleSheet.absoluteFillObject, flex: 1, zIndex: 1, backgroundColor: 'white', opacity: .8, }} />}
     </View>
-	);
+  );
 };
 
 export default Home;

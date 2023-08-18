@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Modal, Pressable, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Modal, Pressable, TouchableOpacity, SafeAreaView } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
@@ -12,31 +12,33 @@ const ChooseMediaSourceModal = ({ modalVisible, setModalVisible, choices: { pick
       onRequestClose={() => {
         setModalVisible(false);
       }}>
-      <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'white', }}>
+        <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', }}>
 
-        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 32, }}>
-
-          <TouchableOpacity onPress={pickFromGallery} style={styles.chooseBtn}>
-            <Icon name="image" solid style={styles.cameraIcon} />
-            <View style={styles.chooseBtnTextWrapper}>
-              <Text style={styles.chooseBtnText}>Pick from Gallery</Text>
-            </View>
+          <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.cancelBtn}>
+            <Icon name="chevron-left" size={23} color={'#333'} />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={captureImage} style={styles.chooseBtn}>
-            <Icon name="camera" solid style={styles.cameraIcon} />
-            <View style={styles.chooseBtnTextWrapper}>
-              <Text style={styles.chooseBtnText}>Capture with Camera</Text>
-            </View>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center',}}>
+
+            <TouchableOpacity onPress={pickFromGallery} style={styles.chooseBtn}>
+              <Icon name="image" solid style={styles.cameraIcon} />
+              <View style={styles.chooseBtnTextWrapper}>
+                <Text style={styles.chooseBtnText}>Pick from Gallery</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={captureImage} style={styles.chooseBtn}>
+              <Icon name="camera" solid style={styles.cameraIcon} />
+              <View style={styles.chooseBtnTextWrapper}>
+                <Text style={styles.chooseBtnText}>Capture with Camera</Text>
+              </View>
+            </TouchableOpacity>
+
+          </View>
+
         </View>
-
-        <Pressable
-          onPress={() => setModalVisible(false)}
-          style={styles.cancelBtn}>
-          <Text style={styles.cancelBtnText}>Cancel</Text>
-        </Pressable>
-      </View>
+      </SafeAreaView>
     </Modal>
   );
 };
@@ -67,17 +69,16 @@ const styles = StyleSheet.create({
     fontSize: 48,
   },
   cancelBtn: {
-    // backgroundColor: 'brown',
-    borderColor: 'brown',
-    borderWidth: 1,
-    borderRadius: 12,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+
+    // borderColor: 'brown',
+    // borderWidth: 1,
   },
-  cancelBtnText: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    color: 'brown',
-    fontWeight: '600',
-  }
 });
 
 export default ChooseMediaSourceModal;

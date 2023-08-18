@@ -7,15 +7,14 @@ import { View, Text, Image, TouchableOpacity, FlatList, SafeAreaView, StyleSheet
 import { Link, Redirect } from 'expo-router';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { useSnapshot } from 'valtio'
 import { store } from '@/store'
 
 // Components
-import Logout from '@/app/partials/(tabs)/(logout)'
 import AccountHeader from '@/app/partials/(tabs)/account/accountHeader'
 import Divider from '@/app/partials/divider'
+import Logout from '@/app/partials/(tabs)/(logout)'
 
 const AccountComponent = () => {
   const { user } = useSnapshot(store)
@@ -28,6 +27,31 @@ const AccountComponent = () => {
             <AccountHeader user={user} />
           </View>
 
+
+          <View style={styles.btns_container}>
+            <Link href='pages/account/details' asChild>
+              <Pressable>
+                <View style={{ ...styles.btn_container, ...styles.roundedTop, ...styles.roundedBottom, }}>
+                  <View style={styles.btn_container.textWrapper}>
+                    <Icon
+                      name='user-circle'
+                      size={18}
+                      color={'#333'}
+                      solid
+                    />
+                    <Text style={styles.btn_container.textWrapperText}>Account details</Text>
+                  </View>
+                  <Icon
+                    name='chevron-right'
+                    size={18}
+                    color={'grey'}
+                  />
+                </View>
+              </Pressable>
+            </Link>
+          </View>
+
+
           <View style={styles.btns_container}>
             <Link href='pages/account/favourites' asChild>
               <Pressable>
@@ -39,7 +63,7 @@ const AccountComponent = () => {
                       color={'#333'}
                       solid
                     />
-                    <Text style={styles.btn_container.textWrapper.text}>Favourites</Text>
+                    <Text style={styles.btn_container.textWrapperText}>Favourites</Text>
                   </View>
                   <Icon
                     name='chevron-right'
@@ -60,7 +84,7 @@ const AccountComponent = () => {
                       color={'#333'}
                       solid
                     />
-                    <Text style={styles.btn_container.textWrapper.text}>Your money</Text>
+                    <Text style={styles.btn_container.textWrapperText}>Your money</Text>
                   </View>
                   <Icon
                     name='chevron-right'
@@ -84,7 +108,7 @@ const AccountComponent = () => {
                       size={18}
                       color={'#333'}
                     />
-                    <Text style={styles.btn_container.textWrapper.text}>Payment methods</Text>
+                    <Text style={styles.btn_container.textWrapperText}>Payment methods</Text>
                   </View>
                   <Icon
                     name='chevron-right'
@@ -105,7 +129,7 @@ const AccountComponent = () => {
                       color={'#333'}
                       solid
                     />
-                    <Text style={styles.btn_container.textWrapper.text}>Promotional balance</Text>
+                    <Text style={styles.btn_container.textWrapperText}>Promotional balance</Text>
                   </View>
                   <Icon
                     name='chevron-right'
@@ -125,7 +149,7 @@ const AccountComponent = () => {
                       size={18}
                       color={'#333'}
                     />
-                    <Text style={styles.btn_container.textWrapper.text}>Billing</Text>
+                    <Text style={styles.btn_container.textWrapperText}>Billing</Text>
                   </View>
                   <Icon
                     name='chevron-right'
@@ -136,33 +160,6 @@ const AccountComponent = () => {
               </Pressable>
             </Link>
           </View>
-
-
-
-          <View style={styles.btns_container}>
-            <Link href='pages/account/details' asChild>
-              <Pressable>
-                <View style={{ ...styles.btn_container, ...styles.roundedTop, ...styles.roundedBottom, }}>
-                  <View style={styles.btn_container.textWrapper}>
-                    <Icon
-                      name='user-circle'
-                      size={18}
-                      color={'#333'}
-                      solid
-                    />
-                    <Text style={styles.btn_container.textWrapper.text}>Account details</Text>
-                  </View>
-                  <Icon
-                    name='chevron-right'
-                    size={18}
-                    color={'grey'}
-                  />
-                </View>
-              </Pressable>
-            </Link>
-          </View>
-
-
 
           <View style={styles.btns_container}>
             <Logout styles={styles} />

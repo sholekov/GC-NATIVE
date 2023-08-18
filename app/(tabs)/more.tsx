@@ -40,7 +40,7 @@ const MoreComponent = () => {
                                 size={18}
                                 color={'#333'}
                             />
-                            <Text style={styles.btn_container.textWrapper.text}>Заявка за инсталация</Text>
+                            <Text style={styles.btn_container.textWrapperText}>Заявка за инсталация</Text>
                         </View>
                         <Icon
                             name='chevron-right'
@@ -61,7 +61,7 @@ const MoreComponent = () => {
                                 size={18}
                                 color={'#333'}
                             />
-                            <Text style={styles.btn_container.textWrapper.text}>Новини и обновления</Text>
+                            <Text style={styles.btn_container.textWrapperText}>Новини и обновления</Text>
                         </View>
                         <Icon
                             name='chevron-right'
@@ -83,7 +83,7 @@ const MoreComponent = () => {
                                 size={18}
                                 color={'#333'}
                             />
-                            <Text style={styles.btn_container.textWrapper.text}>За нас</Text>
+                            <Text style={styles.btn_container.textWrapperText}>За нас</Text>
                         </View>
                         <Icon
                             name='chevron-right'
@@ -103,7 +103,7 @@ const MoreComponent = () => {
                                 color={'#333'}
                                 solid
                             />
-                            <Text style={styles.btn_container.textWrapper.text}>Често задавани въпроси</Text>
+                            <Text style={styles.btn_container.textWrapperText}>Често задавани въпроси</Text>
                         </View>
                         <Icon
                             name='chevron-right'
@@ -122,7 +122,7 @@ const MoreComponent = () => {
                                 size={18}
                                 color={'#333'}
                             />
-                            <Text style={styles.btn_container.textWrapper.text}>Обратна връзка</Text>
+                            <Text style={styles.btn_container.textWrapperText}>Обратна връзка</Text>
                         </View>
                         <Icon
                             name='chevron-right'
@@ -143,7 +143,7 @@ const MoreComponent = () => {
                                 size={18}
                                 color={'#333'}
                             />
-                            <Text style={styles.btn_container.textWrapper.text}>Упътване за работа</Text>
+                            <Text style={styles.btn_container.textWrapperText}>Упътване за работа</Text>
                         </View>
                         <Icon
                             name='chevron-right'
@@ -166,7 +166,7 @@ const MoreComponent = () => {
                                 size={18}
                                 color={'#333'}
                             />
-                            <Text style={styles.btn_container.textWrapper.text}>Условия за ползване</Text>
+                            <Text style={styles.btn_container.textWrapperText}>Условия за ползване</Text>
                         </View>
                         <Icon
                             name='chevron-right'
@@ -198,7 +198,7 @@ const MoreComponent = () => {
                                 size={18}
                                 color={'#333'}
                             />
-                            <Text style={styles.btn_container.textWrapper.text}>Език</Text>
+                            <Text style={styles.btn_container.textWrapperText}>Език</Text>
                         </View>
                         <Icon
                             name='chevron-right'

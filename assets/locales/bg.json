@@ -1,8 +1,14 @@
 {
   "loginNamespace": {
-    "title": "Вход в Gigacharger",
+    "title": "Вход",
     "login_with_networx_label": "Вход с Networx",
-    "cta_label": "Напред"
+    "cta_label": "Напред",
+    "cta_register_label": "Регистрация",
+    "cta_lost_pin_label": "Забравен ПИН",
+    "placeholder": {
+      "username": "Потребителско име",
+      "password": "ПИН"
+    }
   },
   "accountNamespace": {
     "medium": "BG medium is great!",

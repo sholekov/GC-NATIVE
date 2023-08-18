@@ -60,14 +60,15 @@ function calculateRegion(markers) {
 }
 
 const UserFavourites = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const { user } = useSnapshot(store)
   const { stations } = useSnapshot(store);
 
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [user_stations, setUserStations] = useState(null);
   const [shown_stations, setShownStations] = useState(null);
 
   useEffect(() => {
+    console.log('in useEffect on favourites');
     // 1) set user_stations
     const _user_stations = stations.filter(station => user.favourite_places.some(place => place.l_id === station.id))
     setUserStations(_user_stations);
@@ -128,7 +129,7 @@ const UserFavourites = () => {
 
   const mapRef = useRef(null);
 
-  const handleSheetChanges = (index) => {
+  const handleSheetChanges = (index, coords) => {
     if (index === -1) {
       // 2) set Region
       if (user_stations?.length) {
@@ -139,13 +140,18 @@ const UserFavourites = () => {
         const region = calculateRegion(user_stations);
         mapRef.current.animateToRegion(region, 250)
       }
-      setIsCollapsed(prev => false);
+      setIsCollapsed(() => false);
     }
   }
 
   const resetScreenView = () => {
     placeSheetRef.current.close()
     setIsCollapsed(prev => false);
+  }
+
+  const showMap = () => {
+    console.log('showMap');
+    setIsCollapsed(prev => true);
   }
 
   return (
@@ -173,10 +179,8 @@ const UserFavourites = () => {
                   title={place.name}
                   description={place.region}
                   onPress={() => handleSelectedPlace(place, index)}
+                  image={require('@/assets/images/pin-gigacharger.png')}
                 >
-                  <View>
-                    <Image source={require('@/assets/images/pin-gigacharger.png')} style={{ width: 42, height: 42 }} />
-                  </View>
                   <CustomCalloutComponent name={place.name} region={place.region} />
                 </Marker>
               )) : null}
@@ -199,9 +203,9 @@ const UserFavourites = () => {
                   <Text style={{ ...styles.link, fontSize: 16, }}>You can add favourite places from the map</Text>
                 </Pressable>
               </Link> :
-              <SafeAreaView style={{ height: '100%', backgroundColor: 'transparent', }}>
+              <SafeAreaView style={{ height: '100%', backgroundColor: 'transparent', }} onTouchMove={resetScreenView}>
                 {
-                  (!isCollapsed) ? (
+                  (!isCollapsed) && (
                     <View style={{
                       margin: 16,
                       backgroundColor: '#ffffff50',
@@ -209,6 +213,25 @@ const UserFavourites = () => {
                       paddingVertical: 4,
                       paddingHorizontal: 8,
                     }}>
+
+                      {/* <View style={{
+                        backgroundColor: '#ffffff00',
+                        borderRadius: 16,
+                        paddingVertical: 12,
+                        paddingHorizontal: 8,
+                      }}
+                        onTouchMove={showMap}>
+                        <View style={{
+                          alignSelf: 'center',
+                          width: 38,
+                          height: 5,
+                          backgroundColor: '#00000090',
+                          borderRadius: 3,
+                        }}
+                        >
+                        </View>
+                      </View> */}
+
                       <FlatList
                         data={user_stations}
                         renderItem={({ item: station, index }) => (
@@ -224,12 +247,13 @@ const UserFavourites = () => {
                         )}
                         keyExtractor={item => Math.random().toString(36).substr(2, 9)}
                       />
-                    </View>) : null
+                    </View>)
                 }
               </SafeAreaView>
           }
           <PlaceBottomSheetComponent placeSheetRef={placeSheetRef} selectedStation={selectedStation} handleSheetChanges={handleSheetChanges} />
-        </> : <Redirect href="/home" />}
+        </> : <Redirect href="/home" />
+      }
     </>
   );
 };

@@ -63,7 +63,7 @@ export default StyleSheet.create({
   },
   calloutContainer: {
       padding: 4,
-      borderRadius: 12,
+      borderRadius: 16,
       backgroundColor: '#ffffff90',
   },
   calloutInnerContainer: {

@@ -14,11 +14,11 @@ export default StyleSheet.create({
     textWrapper: {
       flexDirection: 'row',
       alignItems: 'center',
-      text: {
-          marginLeft: 8,
-          fontSize: 16,
-      },
     },
+    textWrapperText: {
+      marginLeft: 8,
+      fontSize: 16,
+    }
   },
   roundedTop:{
       borderTopStartRadius:10,

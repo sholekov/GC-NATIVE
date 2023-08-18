@@ -32,13 +32,11 @@ import React, { Component, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, FlatList, SafeAreaView, Pressable, Alert } from 'react-native';
 import { Redirect, Link, } from 'expo-router';
 
-import Icon from 'react-native-vector-icons/FontAwesome5';
-
 import { useSnapshot } from 'valtio'
 import { store } from '@/store'
 
 // Components
-import UserPhoto from './userPhoto';
+import UserPhotoComponent from './userPhoto';
 
 const AccountDetailsComponent = () => {
 
@@ -56,7 +54,7 @@ const AccountDetailsComponent = () => {
                     {/* <Text>id: {user.id}</Text> */}
                     <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginHorizontal: 32, marginBottom: 0, paddingVertical: 42, paddingHorizontal: 24,  }}>
 
-                        <UserPhoto />
+                        <UserPhotoComponent />
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginHorizontal: 32, marginBottom: 32, paddingHorizontal: 12, }}>
                             <Text style={{ fontSize: 28, fontWeight: '600', }}>John Doe</Text>
@@ -79,13 +77,7 @@ const AccountDetailsComponent = () => {
                     <View style={styles.btns_container}>
                         <TouchableOpacity onPress={handleAlert} style={{ ...styles.btn_container, marginHorizontal: 32, paddingHorizontal: 12, paddingVertical: 12, borderColor: 'brown', borderWidth: 1, borderRadius: 180, }}>
                             <View style={{ ...styles.btn_container.textWrapper, width: '100%', justifyContent: 'center', }}>
-                                {/* <Icon 
-                                name='ban'
-                                size={18}
-                                color={'brown'}
-                                solid
-                            /> */}
-                                <Text style={{ ...styles.btn_container.textWrapper.text, color: 'brown', fontWeight: '500', }}>{t('accountNamespace.profile.delete_label')}</Text>
+                                <Text style={{ ...styles.btn_container.textWrapperText, color: 'brown', fontWeight: '500', }}>{t('accountNamespace.profile.delete_label')}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>

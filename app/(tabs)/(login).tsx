@@ -6,13 +6,11 @@ import { useTranslation } from 'react-i18next';
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform, Pressable, } from 'react-native';
-import { router, Link } from 'expo-router';
+import { Link } from 'expo-router';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import { helpers, userLogin, setLocalUser } from '@/helpers'
-import { setupUser } from '@/store'
-import { useSnapshot } from 'valtio';
+import { userLogin, setLocalUser } from '@/helpers'
 
 function Login() {
   const { t } = useTranslation();
@@ -60,10 +58,10 @@ function Login() {
         <Text onPress={() => { setSetCredentials(!setCredentials) }} style={styles.title}>
           {t('loginNamespace.title')}
         </Text>
-        <TextInput placeholder="Email" keyboardType="email-address" autoCapitalize="none" onChangeText={setUsername} style={{...styles.input}} />
+        <TextInput placeholder={t('loginNamespace.placeholder.username')} keyboardType="email-address" autoCapitalize="none" onChangeText={setUsername} style={{...styles.input}} />
         <View style={styles.passwordContainer}>
           <TextInput
-            placeholder="PIN"
+            placeholder={t('loginNamespace.placeholder.password')}
             onChangeText={setPIN}
             secureTextEntry={!showPIN} // Control whether the password is shown
             style={{...styles.input, ...styles.inputPIN}}
@@ -106,12 +104,12 @@ function Login() {
 
         <Link href="/register" style={{ width: '100%' }} asChild>
           <Pressable>
-            <Text style={styles.link}>Don't have an account? Register</Text>
+            <Text style={styles.link}>{t('loginNamespace.cta_register_label')}</Text>
           </Pressable>
         </Link>
         
         <TouchableOpacity onPress={handleLostPIN} style={styles.lostPasswordButton}>
-          <Text style={styles.lostPasswordText}>Lost Your PIN?</Text>
+          <Text style={styles.lostPasswordText}>{t('loginNamespace.cta_lost_pin_label')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

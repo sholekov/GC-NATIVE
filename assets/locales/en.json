@@ -2,7 +2,13 @@
   "loginNamespace": {
     "title": "Login",
     "login_with_networx_label": "Login with Networx",
-    "cta_label": "Login"
+    "cta_label": "Login",
+    "cta_register_label": "Don't have an account? Register",
+    "cta_lost_pin_label": "Lost your PIN?",
+    "placeholder": {
+      "username": "Username",
+      "password": "PIN"
+    }
   },
   "accountNamespace": {
     "medium": "EN medium is great!",
