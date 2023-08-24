@@ -3,19 +3,21 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome5';
 
+import { useTranslation } from 'react-i18next';
 const PaymentInfo = () => {
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const [cvc, setCvc] = useState('');
   const [country, setCountry] = useState('');
 
+  const { t } = useTranslation();
   const handleScanCard = () => {
     // Implement card scanning functionality here
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add your payment information</Text>
+      <Text style={styles.page_title}>Add your payment information</Text>
 
       <Text style={styles.subTitle}>Card Information</Text>
       <View style={styles.inputGroup}>
@@ -72,11 +74,6 @@ const PaymentInfo = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
   },
   subTitle: {
     fontSize: 18,

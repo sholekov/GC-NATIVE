@@ -33,7 +33,7 @@ const PaymentMethods = () => {
         _bottomSheetShowAddCardRef.current.snapToIndex(0);
     };
     // const handleAlert = () => {
-    //     Alert.alert(t('accountNamespace.paymentMethods.some_label'), t('accountNamespace.paymentMethods.some_alert'));
+    //     Alert.alert(t('account.paymentMethods.some_label'), t('account.paymentMethods.some_alert'));
     // };
 
     return (
@@ -42,7 +42,7 @@ const PaymentMethods = () => {
                     
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginHorizontal: 32, marginBottom: 32, paddingHorizontal: 12, }}>
                         <Text style={{ fontSize: 28, fontWeight: '600', textAlign: 'center', }}>
-                            {t('accountNamespace.paymentMethods.info')}
+                            {t('account.paymentMethods.info')}
                         </Text>
                     </View>
 
@@ -52,7 +52,7 @@ const PaymentMethods = () => {
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginHorizontal: 32, marginBottom: 32, paddingHorizontal: 12, }}>
                         <Text style={{ fontSize: 18, fontWeight: '400', textAlign: 'center', }}>
-                            {t('accountNamespace.paymentMethods.description')}
+                            {t('account.paymentMethods.description')}
                         </Text>
                     </View>
 
@@ -62,7 +62,7 @@ const PaymentMethods = () => {
                 <View style={styles.btns_container}>
                     <TouchableOpacity onPress={handleAddCard} style={{...styles.btn_container, marginHorizontal: 32, paddingHorizontal: 12, paddingVertical: 12, backgroundColor: '#5dac30', borderRadius:180, }}>
                         <View style={{...styles.btn_container.textWrapper, width: '100%', justifyContent: 'center', }}>
-                            <Text style={{ ...styles.btn_container.textWrapper.text, color: '#fff', fontSize: 16, fontWeight: '500', }}>{t('accountNamespace.paymentMethods.cta.add-card')}</Text>
+                            <Text style={{ ...styles.btn_container.textWrapper.text, color: '#fff', fontSize: 16, fontWeight: '500', }}>{t('account.paymentMethods.cta.add-card')}</Text>
                         </View>
                     </TouchableOpacity>
                 </View>

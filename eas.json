@@ -5,7 +5,10 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://staging.gigacharger.net/v1/"
+      }
     },
     "preview": {
       "distribution": "internal",
@@ -13,7 +16,10 @@
         "simulator": true
       }
     },
-    "production": {}
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://gigacharger.net/v1/"
+      }}
   },
   "submit": {
     "production": {}

@@ -29,7 +29,7 @@ const PlaceBottomSheetComponent = ({ placeSheetRef, selectedStation, handleSheet
       >
       { selectedStation ? (
         <PlaceComponent station={selectedStation} />
-      ) : <ActivityIndicator size="large" style={{ ...StyleSheet.absoluteFillObject, zIndex: 1, backgroundColor: 'white', opacity: .8,  }} /> }
+      ) : <ActivityIndicator size="large" style={styles.activityIndicatorStyle} /> }
     </BottomSheet>
   );
 };

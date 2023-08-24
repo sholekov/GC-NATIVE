@@ -190,6 +190,23 @@ export const fetchCaptcha: Function = () => {
   })
 }
 
+export const fetchRates: Function = ()  => {
+  return helpers.axiosInstance('rates')
+}
+
+
+// export const user = {}
+export const getOwnMoney: Function = ()  => {}
+export const credit: Function = ()  => {}
+export const frozen: Function = ()  => {}
+
+export const getAvailableFunds = () => {
+  return this.balance() + this.credit() - this.frozen();
+}
+export const getOwnFunds = () => {
+  return this.balance() - this.frozen();
+}
+
 
 export const setLocalUser = (): Promise<any> => {
   return Promise.all([
@@ -251,6 +268,30 @@ export const toggleStationToFavourites: Function = (id: any, csrf: any): void =>
 }
 export const getFavouriteStations = () => {
   return helpers.axiosInstance('favorites')
+}
+export const getReports = () => {
+  return helpers.axiosInstance('reports')
+}
+
+export const paymentMethods = (locale) => {
+  return helpers.axiosInstance('paymentMethods', {
+    data: {
+      locale: locale
+    }
+  })
+}
+
+
+export const withdraw = () => {
+  return helpers.axiosInstance({
+    method: 'POST',
+    url: 'withdraw',
+    data: {
+      // amount: amount.getInternalValue(),
+      // paymentMethod: (<any>document).getElementsByName("paymentMethod")[0].value,
+      // sendTo: (<any>document).getElementsByName("sendTo")[0].value,
+    },
+  })
 }
 
 

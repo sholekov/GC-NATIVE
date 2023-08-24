@@ -1,6 +1,6 @@
-import global from '@/assets/styles/styles';
-import place from '@/assets/styles/place';
-const styles = { ...global, ...place };
+import globalStyles from '@/assets/styles/styles';
+import placeStyles from '@/assets/styles/place';
+const styles = { ...globalStyles, ...placeStyles };
 
 import React, { Component } from 'react';
 
@@ -14,42 +14,22 @@ import StationRow from '@/app/hooks/components/(station_row)'
 const PlaceComponent = ({ station }) => {
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'white', }}>
+    <View style={styles.placeWrapper}>
 
-      <View style={{ position: 'relative', paddingVertical: 12, width: '100%', }}>
+      <View style={styles.placeHeadingOuterWrapper}>
         <PlaceHeading station={station.data} />
         <PlaceFavourite station={station.data} />
       </View>
 
-      <View style={{
-        alignSelf: 'center',
-
-        marginHorizontal: 12,
-        marginBottom: 18,
-
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-
-        width: '90%',
-        
-        borderColor: '#00000025',
-        borderWidth: 0.5,
-        borderRadius: 120,
-        backgroundColor: '#00000005',
-
-      }}>
+      <View style={styles.placeAccessAndDirectionsOuterWrapper}>
         <PlaceAccessAndDirections station={station.data} />
       </View>
 
-
-      <View style={{ flex: 1, borderTopWidth: 1, borderColor: '#00000010', }}>
+      <View style={styles.placeListWrapper}>
         <FlatList
-          contentContainerStyle={{
-            marginVertical: 0,
-            paddingBottom: 170,
-          }}
+          contentContainerStyle={styles.placeContentContainerStyle}
           data={station.stations}
-          renderItem={({ item }) => <StationRow place={station.data} station={item} />}
+          renderItem={({ item }) => <StationRow station={item} />}
           keyExtractor={item => Math.random().toString(36).substr(2, 9)}
         />
       </View>

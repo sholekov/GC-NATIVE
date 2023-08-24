@@ -5,6 +5,7 @@ import { View, Text, Image } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
+import { useTranslation } from 'react-i18next';
 const AccountHeaderComponent = ({ user }) => {
   // const BASE_URI = process.env.EXPO_PUBLIC_API_URL;
   // const imageUrl = BASE_URI + "images/clients/" + user.id + ".png"
@@ -28,6 +29,7 @@ const AccountHeaderComponent = ({ user }) => {
   //     });
   // }, []);
 
+  const { t } = useTranslation();
   return (
     <View style={{ flexDirection: 'row', padding: 18, alignItems: 'center', }}>
       {user.image ?

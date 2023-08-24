@@ -59,10 +59,12 @@ function calculateRegion(markers) {
   };
 }
 
+import { useTranslation } from 'react-i18next';
 const UserFavourites = () => {
   const { user } = useSnapshot(store)
   const { stations } = useSnapshot(store);
 
+  const { t } = useTranslation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [user_stations, setUserStations] = useState(null);
   const [shown_stations, setShownStations] = useState(null);

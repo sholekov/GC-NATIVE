@@ -44,7 +44,7 @@ const AccountDetailsComponent = () => {
     const { user } = useSnapshot(store)
 
     const handleAlert = () => {
-        Alert.alert(t('accountNamespace.profile.delete_label'), t('accountNamespace.profile.delete_alert'));
+        Alert.alert(t('account.profile.delete_label'), t('account.profile.delete_alert'));
     };
 
     return (
@@ -77,7 +77,7 @@ const AccountDetailsComponent = () => {
                     <View style={styles.btns_container}>
                         <TouchableOpacity onPress={handleAlert} style={{ ...styles.btn_container, marginHorizontal: 32, paddingHorizontal: 12, paddingVertical: 12, borderColor: 'brown', borderWidth: 1, borderRadius: 180, }}>
                             <View style={{ ...styles.btn_container.textWrapper, width: '100%', justifyContent: 'center', }}>
-                                <Text style={{ ...styles.btn_container.textWrapperText, color: 'brown', fontWeight: '500', }}>{t('accountNamespace.profile.delete_label')}</Text>
+                                <Text style={{ ...styles.btn_container.textWrapperText, color: 'brown', fontWeight: '500', }}>{t('account.profile.delete_label')}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>

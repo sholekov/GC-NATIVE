@@ -1,9 +1,9 @@
-import global from '@/assets/styles/styles';
-import page from '@/assets/styles/page';
-const styles = { ...global, ...page };
+import globalStyles from '@/assets/styles/styles';
+import pageStyles from '@/assets/styles/page';
+const styles = { ...globalStyles, ...pageStyles };
 
-import React, { Component } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, SafeAreaView, StyleSheet, Pressable } from 'react-native';
+import React from 'react';
+import { View, Text, SafeAreaView, Pressable, ScrollView } from 'react-native';
 import { Link, Redirect } from 'expo-router';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -16,110 +16,112 @@ import AccountHeader from '@/app/partials/(tabs)/account/accountHeader'
 import Divider from '@/app/partials/divider'
 import Logout from '@/app/partials/(tabs)/(logout)'
 
+import { useTranslation } from 'react-i18next';
 const AccountComponent = () => {
+  const { t } = useTranslation();
   const { user } = useSnapshot(store)
 
   return (
     <>
       {user ? (
-        <SafeAreaView style={{ flex: 1, paddingHorizontal: 16, paddingVertical: 32, }}>
-          <View style={{ ...styles.btns_container, paddingTop: 14, }}>
-            <AccountHeader user={user} />
-          </View>
+        <SafeAreaView style={{ flex: 1, }}>
+          <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 16, paddingVertical: 32 }}>
+            <View style={{ ...styles.btns_container, paddingTop: 14, }}>
+              <AccountHeader user={user} />
+            </View>
 
-
-          <View style={styles.btns_container}>
-            <Link href='pages/account/details' asChild>
-              <Pressable>
-                <View style={{ ...styles.btn_container, ...styles.roundedTop, ...styles.roundedBottom, }}>
-                  <View style={styles.btn_container.textWrapper}>
+            <View style={styles.btns_container}>
+              <Link href='account/details' asChild>
+                <Pressable>
+                  <View style={{ ...styles.btn_container, ...styles.roundedTop, ...styles.roundedBottom, }}>
+                    <View style={styles.btn_container.textWrapper}>
+                      <Icon
+                        name='user-circle'
+                        size={18}
+                        color={'#333'}
+                        solid
+                      />
+                      <Text style={styles.btn_container.textWrapperText}>{t('account.navLabels.details')}</Text>
+                    </View>
                     <Icon
-                      name='user-circle'
+                      name='chevron-right'
                       size={18}
-                      color={'#333'}
-                      solid
+                      color={'grey'}
                     />
-                    <Text style={styles.btn_container.textWrapperText}>Account details</Text>
                   </View>
-                  <Icon
-                    name='chevron-right'
-                    size={18}
-                    color={'grey'}
-                  />
-                </View>
-              </Pressable>
-            </Link>
-          </View>
+                </Pressable>
+              </Link>
+            </View>
 
 
-          <View style={styles.btns_container}>
-            <Link href='pages/account/favourites' asChild>
-              <Pressable>
-                <View style={{ ...styles.btn_container, ...styles.roundedTop, ...styles.roundedTop }}>
-                  <View style={styles.btn_container.textWrapper}>
+            <View style={styles.btns_container}>
+              <Link href='account/favourites' asChild>
+                <Pressable>
+                  <View style={{ ...styles.btn_container, ...styles.roundedTop, ...styles.roundedTop }}>
+                    <View style={styles.btn_container.textWrapper}>
+                      <Icon
+                        name='star'
+                        size={18}
+                        color={'#333'}
+                        solid
+                      />
+                      <Text style={styles.btn_container.textWrapperText}>{t('account.navLabels.favourites')}</Text>
+                    </View>
                     <Icon
-                      name='star'
+                      name='chevron-right'
                       size={18}
-                      color={'#333'}
-                      solid
+                      color={'grey'}
                     />
-                    <Text style={styles.btn_container.textWrapperText}>Favourites</Text>
                   </View>
-                  <Icon
-                    name='chevron-right'
-                    size={18}
-                    color={'grey'}
-                  />
-                </View>
-              </Pressable>
-            </Link>
-            <Divider />
-            <Link href='pages/account/details' asChild>
-              <Pressable>
-                <View style={{ ...styles.btn_container, ...styles.roundedBottom }}>
-                  <View style={styles.btn_container.textWrapper}>
+                </Pressable>
+              </Link>
+              <Divider />
+              <Link href='account/wallet' asChild>
+                <Pressable>
+                  <View style={{ ...styles.btn_container, ...styles.roundedBottom }}>
+                    <View style={styles.btn_container.textWrapper}>
+                      <Icon
+                        name='wallet'
+                        size={18}
+                        color={'#333'}
+                        solid
+                      />
+                      <Text style={styles.btn_container.textWrapperText}>{t('account.navLabels.wallet')}</Text>
+                    </View>
                     <Icon
-                      name='wallet'
+                      name='chevron-right'
                       size={18}
-                      color={'#333'}
-                      solid
+                      color={'grey'}
                     />
-                    <Text style={styles.btn_container.textWrapperText}>Your money</Text>
                   </View>
-                  <Icon
-                    name='chevron-right'
-                    size={18}
-                    color={'grey'}
-                  />
-                </View>
-              </Pressable>
-            </Link>
-          </View>
+                </Pressable>
+              </Link>
+            </View>
 
 
 
-          <View style={styles.btns_container}>
-            <Link href='pages/account/payment-methods' asChild>
-              <Pressable>
-                <View style={{ ...styles.btn_container, ...styles.roundedTop, }}>
-                  <View style={styles.btn_container.textWrapper}>
+            <View style={styles.btns_container}>
+              <Link href='account/payment-methods' asChild>
+                <Pressable>
+                  <View style={{ ...styles.btn_container, ...styles.roundedTop, }}>
+                    <View style={styles.btn_container.textWrapper}>
+                      <Icon
+                        name='credit-card'
+                        size={18}
+                        color={'#333'}
+                      />
+                      <Text style={styles.btn_container.textWrapperText}>{t('account.navLabels.payment-methods')}</Text>
+                    </View>
                     <Icon
-                      name='credit-card'
+                      name='chevron-right'
                       size={18}
-                      color={'#333'}
+                      color={'grey'}
                     />
-                    <Text style={styles.btn_container.textWrapperText}>Payment methods</Text>
                   </View>
-                  <Icon
-                    name='chevron-right'
-                    size={18}
-                    color={'grey'}
-                  />
-                </View>
-              </Pressable>
-            </Link>
-            <Divider />
-            <Link href='/home' asChild>
+                </Pressable>
+              </Link>
+              <Divider />
+              {/* <Link href='/home' asChild>
               <Pressable>
                 <View style={{ ...styles.btn_container, }}>
                   <View style={styles.btn_container.textWrapper}>
@@ -129,7 +131,7 @@ const AccountComponent = () => {
                       color={'#333'}
                       solid
                     />
-                    <Text style={styles.btn_container.textWrapperText}>Promotional balance</Text>
+                    <Text style={styles.btn_container.textWrapperText}>{t('account.navLabels.promotional-ballance')}</Text>
                   </View>
                   <Icon
                     name='chevron-right'
@@ -139,31 +141,32 @@ const AccountComponent = () => {
                 </View>
               </Pressable>
             </Link>
-            <Divider />
-            <Link href='/home' asChild>
-              <Pressable>
-                <View style={{ ...styles.btn_container, ...styles.roundedBottom }}>
-                  <View style={styles.btn_container.textWrapper}>
+            <Divider /> */}
+              <Link href='account/transactions' asChild>
+                <Pressable>
+                  <View style={{ ...styles.btn_container, ...styles.roundedBottom }}>
+                    <View style={styles.btn_container.textWrapper}>
+                      <Icon
+                        name='receipt'
+                        size={18}
+                        color={'#333'}
+                      />
+                      <Text style={styles.btn_container.textWrapperText}>{t('account.navLabels.transactions')}</Text>
+                    </View>
                     <Icon
-                      name='receipt'
+                      name='chevron-right'
                       size={18}
-                      color={'#333'}
+                      color={'grey'}
                     />
-                    <Text style={styles.btn_container.textWrapperText}>Billing</Text>
                   </View>
-                  <Icon
-                    name='chevron-right'
-                    size={18}
-                    color={'grey'}
-                  />
-                </View>
-              </Pressable>
-            </Link>
-          </View>
+                </Pressable>
+              </Link>
+            </View>
 
-          <View style={styles.btns_container}>
-            <Logout styles={styles} />
-          </View>
+            <View style={styles.btns_container}>
+              <Logout styles={styles} />
+            </View>
+          </ScrollView>
         </SafeAreaView>
       ) : (
         <Redirect href={'/home'} />

@@ -1,5 +1,5 @@
-import global from '@/assets/styles/styles';
-const styles = { ...global, };
+import globalStyles from '@/assets/styles/styles';
+const styles = { ...globalStyles, };
 
 import React from 'react';
 import { View, Text } from 'react-native';

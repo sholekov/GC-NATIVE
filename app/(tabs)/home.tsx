@@ -1,10 +1,25 @@
-import global from '@/assets/styles/styles';
-import home from '@/assets/styles/home';
-const styles = { ...global, ...home };
+const isSimulator = () => {
+  let isSim = false;
+  if (Constants.isDevice) {
+    if (Platform.OS === 'ios') {
+      isSim = !Constants.isDevice && Constants.deviceName !== 'iPhone Simulator';
+    } else {
+      isSim = !Constants.isDevice;
+    }
+  } else {
+    isSim = true;
+  }
+  return isSim;
+};
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Image, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, Pressable, } from 'react-native';
+import globalStyles from '@/assets/styles/styles';
+import homeStyles from '@/assets/styles/home';
+const styles = { ...globalStyles, ...homeStyles };
+
+import React, { useEffect, useRef, useState } from 'react';
+import { View, ActivityIndicator, Pressable, Alert, Platform, } from 'react-native';
 import * as Location from 'expo-location';
+import Constants from 'expo-constants';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 
 // Components
@@ -18,30 +33,41 @@ import { store, setupStationLocation, setStations } from '@/store'
 
 import { usePlace } from '@/app/hooks/usePlace'
 
-const Home = () => {
-  // const handleUserPermissionLocation = async () => {
-  //   // Request permission to access the location
-  //   let { status } = await Location.requestForegroundPermissionsAsync();
-  //   if (status !== 'granted') {
-  //     Alert.alert('Permission to access location was denied');
-  //     return;
-  //   }
-  // }
-  // useEffect(() => {
-  //   handleUserPermissionLocation();
-  // }, []);
-  const { stations } = useSnapshot(store)
+import { useTranslation } from 'react-i18next';
+const HomeComponent = () => {
+  const { t } = useTranslation();
   const { user } = useSnapshot(store)
+  const { stations } = useSnapshot(store)
+
+  const [userLocation, setUserLocation] = useState({ latitude: 43.828805, longitude: 25.9582707 });
+  const handleUserLocation = async () => {
+    if (!isSimulator()) {
+      // Request permission to access the location
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission to access location was denied');
+        return;
+      }
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    const coords = location.coords; 
+    setUserLocation(coords)
+  }
+  useEffect(() => {
+    handleUserLocation();
+  }, []);
 
   const loadStations = async () => {
     try {
       if (user) {
+        setIsLoading(true)
         getStations()
           .then(response => {
             setStations(response.data);
             setTimeout(() => {
-              setIsLoading(false);
-            }, 1000);
+              setIsLoading(false)
+            }, 750);
           })
       }
     } catch (error) {
@@ -53,22 +79,17 @@ const Home = () => {
   }, [user?.id]);
 
   const { PlaceBottomSheetComponent, placeSheetRef, selectedStation, setSelectedStation } = usePlace();
-
   const mapRef = useRef(null);
-
   const [isLoading, setIsLoading] = useState(false);
   const [blockView, setBlockView] = useState(false);
   const handleSelectedPlace = (station, index) => {
     setSelectedStation(null)
     setupStationLocation(null)
-    mapRef.current.animateToRegion(
-      {
-        latitude: station.lat - 0.025, longitude: station.lng,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      },
-      250
-    )
+    mapRef.current.animateToRegion({
+      latitude: station.lat - 0.025, longitude: station.lng,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+    }, 250)
     placeSheetRef.current.snapToIndex(0)
     setBlockView(true)
     getStation(station.id)
@@ -79,18 +100,14 @@ const Home = () => {
       })
   }
 
-
   const markerRefs = useRef([]);
   const handleSheetChanges: Function = (index, coords) => {
     if (index === -1 && coords.lat && coords.lng) {
-      mapRef.current.animateToRegion(
-        {
-          latitude: coords.lat - 0.015, longitude: coords.lng,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        },
-        150
-      )
+      mapRef.current.animateToRegion({
+        latitude: coords.lat - 0.015, longitude: coords.lng,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      }, 150)
       markerRefs.current.forEach(marker => {
         marker.hideCallout();
       });
@@ -99,15 +116,15 @@ const Home = () => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <MapView
         showsUserLocation={true}
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
-        style={{ ...StyleSheet.absoluteFillObject, flex: 1, zIndex: 0 }}
+        style={styles.mapView}
         initialRegion={{
-          latitude: 43.828805 + 0.02,
-          longitude: 25.9582707,
+          latitude: userLocation.latitude + 0.02,
+          longitude: userLocation.longitude,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
@@ -121,7 +138,7 @@ const Home = () => {
               title={place.name}
               description={place.region}
               onPress={() => handleSelectedPlace(place, index)}
-              image={ require('@/assets/images/pin-gigacharger.png') }
+              image={require('@/assets/images/pin-gigacharger.png')}
             >
               <CustomCalloutComponent name={place.name} region={place.region} />
             </Marker>
@@ -130,19 +147,19 @@ const Home = () => {
       </MapView>
       {user ? (<>
         <LoggedIn />
-        {blockView && <Pressable onTouchMove={() => { setBlockView(false); placeSheetRef.current.close() }} onPress={() => { setBlockView(false); placeSheetRef.current.close() }} style={{ ...StyleSheet.absoluteFillObject, }}></Pressable>}
+        {blockView && <Pressable onTouchMove={() => { setBlockView(false); placeSheetRef.current.close() }} onPress={() => { setBlockView(false); placeSheetRef.current.close() }} style={styles.pressableComponent}></Pressable>}
         <PlaceBottomSheetComponent placeSheetRef={placeSheetRef} selectedStation={selectedStation} handleSheetChanges={handleSheetChanges} />
       </>) : (
-        /* Blurry Overlay */
+        /* TODO: Add Blurry Overlay Eventually */
         <>
-          <View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: 'white', opacity: 0.85, }}>
-            {/* <Image source={require('@/assets/blurredImage.png')} style={styles.image} /> */}
+          <View style={styles.decoTransparentView}>
+            {/* <Image source={require('@/assets/blurredImage.png')} /> */}
           </View>
           <Login />
         </>)}
-      {isLoading && <ActivityIndicator size="large" style={{ ...StyleSheet.absoluteFillObject, flex: 1, zIndex: 1, backgroundColor: 'white', opacity: .8, }} />}
+      {isLoading && <ActivityIndicator size="large" style={styles.activityIndicatorStyle} />}
     </View>
   );
 };
 
-export default Home;
+export default HomeComponent;

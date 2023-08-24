@@ -7,8 +7,10 @@ import { View, Text, TouchableOpacity, Linking } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-const placeAccessAndDirections = ({station}) => {
+import { useTranslation } from 'react-i18next';
+const placeAccessAndDirectionsComponent = ({ station }) => {
 
+  const { t } = useTranslation();
   const openURL = (lat: any, lng: any) => {
     const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
     Linking.canOpenURL(url).then(supported => {
@@ -19,30 +21,30 @@ const placeAccessAndDirections = ({station}) => {
       }
     });
   };
-    
+
   return (
     <View style={styles.placeAccessAndDirectionsWrapper}>
       {/* Public || Private */}
-      <View style={{ flexDirection: 'row', }}>
+      <View style={styles.placeAccessAndDirectionsLabel}>
         {
           station.is_public ? (<>
             <Icon style={{ marginRight: 4, fontSize: 20, color: '#3c8f09', }} name="route"></Icon>
-            <Text style={{ marginVertical: 4, fontWeight: '600', color: 'grey', opacity: 1, }}>Publicly accessible</Text>
+            <Text style={{ marginVertical: 4, fontWeight: '600', color: 'grey', opacity: 1, }}>{t('place.accessibilityLabel.public')}</Text>
           </>) : (<>
             <Icon style={{ marginRight: 4, marginTop: 2, fontSize: 18, color: 'brown', }} name="map-marker-alt"></Icon>
-            <Text style={{ marginVertical: 4, fontWeight: '600', opacity: .45, }}>Private place</Text>
+            <Text style={{ marginVertical: 4, fontWeight: '600', opacity: .45, }}>{t('place.accessibilityLabel.private')}</Text>
           </>)
         }
       </View>
 
       {/* Directions */}
-      <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'center', }} onPress={() => openURL(station.lat, station.lng)} >
-        <Text style={{ marginRight: 4, fontWeight: '600', }}>Directions</Text>
-        <Icon name="directions" solid style={{ fontSize: 18, }}></Icon>
+      <TouchableOpacity onPress={() => openURL(station.lat, station.lng)} style={styles.placeAccessAndDirectionsCTA}>
+        <Text style={styles.placeAccessAndDirectionsCTALabel}>{t('place.directionsLabel')}</Text>
+        <Icon name="directions" solid style={styles.placeAccessAndDirectionsCTAIcon}></Icon>
       </TouchableOpacity>
-      
+
     </View>
   );
 };
 
-export default placeAccessAndDirections;
+export default placeAccessAndDirectionsComponent;

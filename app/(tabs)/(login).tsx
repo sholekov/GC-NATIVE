@@ -1,6 +1,6 @@
-import global from '@/assets/styles/styles';
-import login from '@/assets/styles/login';
-const styles = { ...global, ...login };
+import globalStyles from '@/assets/styles/styles';
+import loginStyles from '@/assets/styles/login';
+const styles = { ...globalStyles, ...loginStyles };
 
 import { useTranslation } from 'react-i18next';
 
@@ -38,13 +38,13 @@ function Login() {
         if (status && user) {
           setLocalUser()
         } else {
-          Alert.alert('Error', 'Invalid credentials');
+          Alert.alert(t('login.alert-error.title'), t('login.alert-error.text'), [{text: t('login.alert-error.btn_text'), style: 'default'}]);
         }
       })
   };
 
   const handleLostPIN = () => {
-    Alert.alert('Lost PIN', 'Please contact our support team at support@example.com to reset your PIN.');
+    Alert.alert(t('login.alert-lost-pin.title'), t('login.alert-lost-pin.text'));
   };
 
   return (
@@ -55,61 +55,57 @@ function Login() {
     <ScrollView keyboardShouldPersistTaps="never" contentContainerStyle={{ flexGrow: 1, paddingBottom: 70 }}>
     
       <View style={styles.container}>
-        <Text onPress={() => { setSetCredentials(!setCredentials) }} style={styles.title}>
-          {t('loginNamespace.title')}
+        <Text onPress={() => { __DEV__ && setSetCredentials(!setCredentials) }} style={styles.page_title}>
+          {t('login.page-title')}
         </Text>
-        <TextInput placeholder={t('loginNamespace.placeholder.username')} keyboardType="email-address" autoCapitalize="none" onChangeText={setUsername} style={{...styles.input}} />
+        <TextInput placeholder={t('login.placeholder.username')} keyboardType="email-address" autoCapitalize="none" onChangeText={setUsername} style={{...styles.input}} />
         <View style={styles.passwordContainer}>
           <TextInput
-            placeholder={t('loginNamespace.placeholder.password')}
+            placeholder={t('login.placeholder.password')}
             onChangeText={setPIN}
-            secureTextEntry={!showPIN} // Control whether the password is shown
-            style={{...styles.input, ...styles.inputPIN}}
+            secureTextEntry={!showPIN}
+            style={[styles.input, styles.inputPIN]}
           />
           <TouchableOpacity
-            onPress={() => setShowPIN(!showPIN)} // Toggle the showPassword state
+            onPress={() => setShowPIN(!showPIN)}
             style={styles.showPasswordButton}
           >
             <Icon
               name={showPIN ? 'eye-slash' : 'eye'}
-              size={20}
-              color="black"
               style={styles.showPasswordButton.icon}
             />
           </TouchableOpacity>
         </View>
-        
+
         <View>
           <TouchableOpacity
-              style={styles.checkboxContainer} 
               onPress={() => setLoginWithNetworx(!loginWithNetworx)}
+              style={styles.checkboxContainer} 
             >
             <Icon
               name={loginWithNetworx ? 'check-square-o' : 'square-o'}
-              size={20}
-              color="black"
               style={styles.checkbox}
             />
-            <Text style={styles.label}>
-              {t('loginNamespace.login_with_networx_label')}
+            <Text style={styles.checkboxLabel}>
+              {t('login.login_with_networx_label')}
             </Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={handleLogin} style={styles.button}>
+        <TouchableOpacity onPress={handleLogin} style={styles.buttonContainerPressable}>
           <Text style={styles.buttonText}>
-            {t('loginNamespace.cta_label')}
+            {t('login.cta_label')}
           </Text>
         </TouchableOpacity>
 
-        <Link href="/register" style={{ width: '100%' }} asChild>
+        <Link href="register" style={styles.ctaSecondaryContainer} asChild>
           <Pressable>
-            <Text style={styles.link}>{t('loginNamespace.cta_register_label')}</Text>
+            <Text style={styles.link}>{t('login.cta_register_label')}</Text>
           </Pressable>
         </Link>
-        
+
         <TouchableOpacity onPress={handleLostPIN} style={styles.lostPasswordButton}>
-          <Text style={styles.lostPasswordText}>{t('loginNamespace.cta_lost_pin_label')}</Text>
+          <Text style={[styles.lostPasswordText, styles.link]}>{t('login.cta_lost_pin_label')}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

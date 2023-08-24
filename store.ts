@@ -17,6 +17,10 @@ type User = {
 
 import { proxy } from 'valtio'
 
+export const getArticles: Function = (axiosInstance): Array<object> => {
+  return axiosInstance.get('https://gigacharger.net/wp-json/wp/v2/posts')
+}
+
 export const setupUser: Function = (user_data: User, favourites: any[], imageRequest: AxiosPromise): void => {
   store.user = user_data
 

@@ -1,3 +1,6 @@
+import globalStyles from '@/assets/styles/styles';
+import placeStyles from '@/assets/styles/place';
+const styles = { ...globalStyles, ...placeStyles };
 
 import { formatPower, toHumanReadable, getPrice } from '@/utils/helpers';
 
@@ -9,50 +12,47 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import { setupStation } from '@/store'
 
-const StationRow = ({place, station}) => {
+import { useTranslation } from 'react-i18next';
+const StationRow = ({ station }) => {
+  const { t } = useTranslation();
 
   const handleSetupStation = () => {
     setupStation(station)
-    router.push(`pages/station`);
+    router.push(`station`);
   }
 
   return (
-    <TouchableOpacity onPress={handleSetupStation} style={{ marginBottom: 8, borderBottomWidth: 0, borderColor: '#00000010', backgroundColor: '#00000005', }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, }}>
-        <View style={{ marginRight: 8, flexDirection: 'column', justifyContent: 'center', }}>
-          <View style={{ marginBottom: 4, }}>
-            <Text style={{ fontSize: 18, fontWeight: '600', }}>Station#: {station.user_id}</Text>
-          </View>
-          <Text>{ toHumanReadable(getPrice(station.billing, station.ppkw), 'BGN') } / kWh.</Text>
+    <TouchableOpacity onPress={handleSetupStation} style={styles.placeItemContainer}>
+      <View style={styles.placeItemWrapper}>
+        <View style={styles.placeItemLeft}>
+          <Text style={styles.placeItemLeftLabel}>{t('place.stationNumberLabel')}: #{station.user_id}</Text>
+          <Text style={styles.placeItemLeftPrice}>{toHumanReadable(getPrice(station.billing, station.ppkw), 'BGN')} / kWh.</Text>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={{ marginRight: 8, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', }}>
-            <Text style={{ fontSize: 24, fontWeight: '500', }}>{formatPower(station.model.maxPow)}</Text>
-            <Text style={{ fontSize: 12, fontWeight: '800', }}>kW</Text>
+        <View style={styles.placeItemRight}>
+          <View style={styles.placeItemRightPower}>
+            <Text style={styles.placeItemRightPowerValue}>{formatPower(station.model.maxPow)}</Text>
+            <Text style={styles.placeItemRightPowerLabel}>kW</Text>
           </View>
-          <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: station.operating ? '#7acb4d' : 'pink', 
-              borderColor: '#00000010',
-              borderWidth: 1,
-              borderRadius: 150,}}>
+          <View style={{...styles.placeItemRightImageSocketWrapper, backgroundColor: station.operating ? '#7acb4d' : 'pink',}}>
             {
               station.model.outlets === 'type2' ? (
-                <Image source={require('@/assets/images/connectors/type2.png')} style={{ width: 50, height: 50 }} />
+                <Image source={require('@/assets/images/connectors/type2.png')} style={{ ...styles.placeItemRightImageSocketImage, }} />
               ) : null
             }
             {
               station.model.outlets === 'shuko' ? (
-                <Image source={require('@/assets/images/connectors/shuko.png')} style={{ width: 50, height: 50 }} />
+                <Image source={require('@/assets/images/connectors/shuko.png')} style={{ ...styles.placeItemRightImageSocketImage, }} />
               ) : null
             }
             {
               (station.model.outlets !== 'shuko' && station.model.outlets !== 'type2') ? (
-                <Image source={require('@/assets/images/connectors/ccs2.png')} style={{ width: 50, height: 50, opacity: 0, }} />
+                <Image source={require('@/assets/images/connectors/ccs2.png')} style={{ ...styles.placeItemRightImageSocketImage, opacity: 0, }} />
               ) : null
             }
             {/* <Image source={require('@/assets/images/pin-charging.png')} style={{ width: 50, height: 50 }} /> */}
           </View>
-          <View style={{ paddingLeft: 18, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', }}>
-            <Icon name="chevron-right" style={{ fontSize: 20, }}></Icon>
+          <View style={styles.placeItemRightIconWrapper}>
+            <Icon name="chevron-right" style={styles.placeItemRightIconIcon}></Icon>
           </View>
         </View>
       </View>

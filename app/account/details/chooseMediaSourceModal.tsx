@@ -1,9 +1,12 @@
+import { useTranslation } from 'react-i18next';
+
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Modal, Pressable, TouchableOpacity, SafeAreaView } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 const ChooseMediaSourceModal = ({ modalVisible, setModalVisible, choices: { pickFromGallery, captureImage } }) => {
+  const { t } = useTranslation();
 
   return (
     <Modal
@@ -19,7 +22,7 @@ const ChooseMediaSourceModal = ({ modalVisible, setModalVisible, choices: { pick
             <Icon name="chevron-left" size={23} color={'#333'} />
           </TouchableOpacity>
 
-          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center',}}>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', }}>
 
             <TouchableOpacity onPress={pickFromGallery} style={styles.chooseBtn}>
               <Icon name="image" solid style={styles.cameraIcon} />

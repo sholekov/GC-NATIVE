@@ -9,7 +9,7 @@ import { launchImageLibraryAsync, MediaTypeOptions, launchCameraAsync, useCamera
 import Constants from 'expo-constants';
 
 // Components
-import ChooseMediaSourceModal from '@/app/pages/account/details/chooseMediaSourceModal'
+import ChooseMediaSourceModal from '@/app/account/details/chooseMediaSourceModal'
 const ImagePlaceholder = ({ image }) => {
   return (<View style={{ alignSelf: 'center', marginBottom: 32, width: 190, height: 190, }}>
     <Image source={{ uri: image }} style={{ width: '100%', height: '100%', borderRadius: 999, }} />

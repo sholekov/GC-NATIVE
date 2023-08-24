@@ -11,19 +11,31 @@ export default StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
-  title: {
+  page_title: {
     marginBottom: 20,
     fontSize: 24,
     fontWeight: 'bold',
   },
 
   link: {
+    fontSize: 16,
     textAlign: 'center',
     // color: '#5dac30',
     color: 'blue',
   },
 
-  // Forms
+  activityIndicatorStyle: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1,
+    flex: 1,
+    backgroundColor: 'white',
+    opacity: .8,
+  },
+
+  /**
+   * Forms
+   */
+
   input: {
     marginBottom: 16,
     padding: 12,
@@ -32,18 +44,24 @@ export default StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#fff',
   },
-
-  button: {
-    borderRadius: 5,
-    marginBottom: 20,
-    backgroundColor: '#5dac30',
-    padding: 15,
+  buttonContainerPressable: {
     alignItems: 'center',
+    marginBottom: 20,
+    padding: 12,
+    backgroundColor: '#5dac30',
+    borderRadius: 5,
   },
   buttonText: {
+    fontSize: 16,
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
+
+
+
+  /**
+   * Other
+   **/
 
   bottomSheetShadow: {
     backgroundColor: 'white',
@@ -56,6 +74,12 @@ export default StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5
   },
+
+
+
+  /**
+   * Map
+   **/
 
   customCallout: {
     width: 175,

@@ -1,24 +1,45 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5', },
-  innerContainer: { flex: 1, justifyContent: 'center', padding: 20 },
-  header: { fontSize: 36, marginBottom: 30, fontWeight: 'bold', textAlign: 'center' },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
+  scrollView: {
+    flexGrow: 1,
+    paddingTop: 32,
+    paddingBottom: 70
   },
-  captcha: {
+  activityIndicator: {
+    flex: 1,
+  },
+  innerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20
+  },
+  page_header: {
+    fontSize: 36,
+    marginBottom: 30,
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+
+  // input styles from styles.ts loaded here / Done
+
+  captchaContainer: {
+    marginBottom: 16,
+  },
+  captchaCta: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  captchaImg: {
+    marginRight: 16,
+    padding: 8,
     width: 204,
     height: 100,
   },
-  captcha_icon: {
-    // padding: 8,
+  captchaIcon: {
     fontSize: 20,
-    // backgroundColor: 'white',
-    // borderColor: 'silver',
-    // borderRadius: 12,
-    // borderWidth: 1,
-    // alignSelf: 'center',
-  }
+  },
+
 });

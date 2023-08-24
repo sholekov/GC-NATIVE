@@ -1,11 +1,4 @@
 {
-  "common": {
-    "navLabels": {
-      "Account": "Account",
-      "More": "More"
-    },
-    "logout": "Изход"
-  },
   "login": {
     "page-title": "Login",
     "login_with_networx_label": "Login with Networx",
@@ -48,21 +41,6 @@
   },
 
   "account": {
-    "tabLabels": {
-      "details": "Account details",
-      "favourites": "Favourites",
-      "wallet": "Your money",
-      "payment-methods": "Payment methods",
-      "promotional-ballance": "Promotional balance",
-      "transactions": "Billingи"
-    },
-    "paymentMethodsLabel": {
-      "Networx": "Networx",
-      "Paypal": "Paypal",
-      "Revolute": "Revolute",
-      "BankCard": "BankCard",
-      "Transaction": "Transaction",
-    },
     "profile": {
       "delete_label": "Delete account",
       "delete_alert": "Please contact our support team at support@gigacharger.net to request deletion of your account"
@@ -116,11 +94,6 @@
       "private": "Private place"
     },
     "directionsLabel": "Directions",
-    "stationNumberLabel": "Station",
-  },
-  "station": {
-    "numberLabel": "Station",
-    "cta": "Start charging",
   },
 
   "commonNamespace": {

@@ -1,19 +1,20 @@
-import global from '@/assets/styles/styles';
-import register from '@/assets/styles/register';
-const styles = { ...global, ...register };
+import globalStyles from '@/assets/styles/styles';
+import registerStyles from '@/assets/styles/register';
+const styles = { ...globalStyles, ...registerStyles };
+
+import locales from '@/assets/locales.json';
 
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, ScrollView, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
+import { ActivityIndicator, View, Text, TextInput, TouchableOpacity, Image, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as Location from 'expo-location';
-import { router, Link, Redirect } from 'expo-router';
+import { router, Link } from 'expo-router';
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
-import { useSnapshot } from 'valtio'
-import { store, setupUser } from '@/store'
-import { helpers, userRegister, userLogin, fetchCaptcha, setLocalUser } from '@/helpers'
+import { userRegister, userLogin, fetchCaptcha, setLocalUser } from '@/helpers'
 
+import { useTranslation } from 'react-i18next';
 const Register = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -25,29 +26,29 @@ const Register = () => {
   const [isLoading, setLoading] = useState(false);
 
   const [captchaUrl, setCaptchaUrl] = useState('');
-  const _fetchCaptcha = async () => {
+  const handleCaptcha = async () => {
     fetchCaptcha()
       .then((url) => {
         setCaptchaUrl(url);
       })
   };
   useEffect(() => {
-    _fetchCaptcha();
+    handleCaptcha();
   }, []);
-  
+
+  const { t } = useTranslation();
   const handleRegister = async () => {
     // Request permission to access the location
-    // let { status } = await Location.requestForegroundPermissionsAsync();
-    // if (status !== 'granted') {
-    //   Alert.alert('Permission to access location was denied');
-    //   return;
-    // }
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(t('register.alert-permissions.text'));
+      return;
+    }
 
     setLoading(true);
 
     // Get the user's location
     let location = await Location.getCurrentPositionAsync({});
-    let coords = location.coords;
     // {
     //   "coords": {
     //       "accuracy": 5,
@@ -59,11 +60,11 @@ const Register = () => {
     //       "speed": -1
     //   },
     //   "timestamp": 1690893479740.977
-    // }   
+    // }  
+    let coords = location.coords; 
 
     // Reverse geocode to get address information
     let [address] = await Location.reverseGeocodeAsync(coords);
-    let isoCountryCode = address.isoCountryCode;
     // {
     //   "city": "San Francisco",
     //   "country": "United States",
@@ -77,9 +78,10 @@ const Register = () => {
     //   "subregion": "San Francisco County",
     //   "timezone": "America/Los_Angeles"
     // }
+    let isoCountryCode = address.isoCountryCode || 'bg_BG';
 
     const data = {
-      locale: isoCountryCode,
+      locale: locales[isoCountryCode],
       email: useremail,
       name: firstName + ' ' + lastName,
       password: password,
@@ -94,7 +96,7 @@ const Register = () => {
             password: password,
           };
           userLogin(data)
-            .then( ({status, user}: {status: boolean, user: any}) => {
+            .then(({ status, user }: { status: boolean, user: any }) => {
               if (status && user) {
                 setLocalUser()
                   .then(() => {
@@ -106,15 +108,15 @@ const Register = () => {
                     setLoading(false);
                   })
               } else {
-                Alert.alert('Error', 'Invalid credentials');
+                Alert.alert(t('login.alert-error.title'), t('login.alert-error.text'), [{text: t('login.alert-error.btn_text'), style: 'default'}]);
                 setLoading(false);
               }
             })
         } else {
-          Alert.alert('Registration failed', 'Please try again.', [
+          Alert.alert(t('register.alert-error.title'), t('register.alert-error.text'), [
             {
-              text: 'OK',
-              onPress: () => setTimeout(() => setLoading(false) , 250),
+              text: t('register.alert-error.btn_text'),
+              onPress: () => setTimeout(() => setLoading(false), 250),
               style: 'cancel',
             },
           ],)
@@ -123,35 +125,35 @@ const Register = () => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
-    >
-      <ScrollView keyboardShouldPersistTaps="never" contentContainerStyle={{ flexGrow: 1, paddingBottom: 70 }}>
-        {isLoading ? <ActivityIndicator size="large" style={{ flex: 1 }} /> : (
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} >
+      <ScrollView keyboardShouldPersistTaps="never" contentContainerStyle={styles.scrollView}>
+        {isLoading ? <ActivityIndicator size="large" style={styles.activityIndicator} /> : (
           <View style={styles.innerContainer}>
-            <Text style={styles.header}>Register</Text>
 
-            <TextInput placeholder="First Name" onChangeText={setFirstName} style={styles.input} />
-            <TextInput placeholder="Last Name" onChangeText={setLastName} style={styles.input} />
+            <Text style={styles.page_header}>{t('register.page-title')}</Text>
 
-            <TextInput placeholder="Username" keyboardType="email-address" autoCapitalize="none" onChangeText={setUseremail} style={styles.input} />
-            <TextInput placeholder="Password" onChangeText={setPassword} autoCapitalize="none" secureTextEntry style={styles.input} />
+            <TextInput placeholder={t('register.placeholder.first_name')} onChangeText={setFirstName} style={styles.input} />
+            <TextInput placeholder={t('register.placeholder.last_name')} onChangeText={setLastName} style={styles.input} />
 
-            <View style={{  marginBottom: 16 }}>
-              <TouchableOpacity onPress={_fetchCaptcha} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16, justifyContent: 'space-around' }}>
-                <Image source={{ uri: captchaUrl }} style={{...styles.captcha, marginRight: 16, padding: 8, }} />
-                <FontAwesome5 style={{ ...styles.captcha_icon }} name="sync" />
+            <TextInput placeholder={t('register.placeholder.username')}keyboardType="email-address" autoCapitalize="none" onChangeText={setUseremail} style={styles.input} />
+            <TextInput placeholder={t('register.placeholder.password')} onChangeText={setPassword} autoCapitalize="none" secureTextEntry style={styles.input} />
+
+            <View style={styles.captchaContainer}>
+              <TouchableOpacity onPress={handleCaptcha} style={styles.captchaCta}>
+                <Image source={{ uri: captchaUrl }} style={styles.captchaImg} />
+                <FontAwesome5 style={styles.captchaIcon} name="sync" />
               </TouchableOpacity>
-              <TextInput placeholder="Enter CAPTCHA" onChangeText={setCaptchaInput} style={styles.input} />
+              <TextInput placeholder={t('register.placeholder.enter_captcha')} onChangeText={setCaptchaInput} style={styles.input} />
             </View>
 
-            <TouchableOpacity onPress={handleRegister} style={styles.button}>
-              <Text style={styles.buttonText}>Register</Text>
+            <TouchableOpacity onPress={handleRegister} style={styles.buttonContainerPressable}>
+              <Text style={styles.buttonText}>{t('register.cta_label')}</Text>
             </TouchableOpacity>
+
             <Link href="/home" style={styles.link}>
-              <Text style={styles.link}>Already have an account? Login</Text>
+              <Text style={styles.link}>{t('register.cta_login_label')}</Text>
             </Link>
+
           </View>
         )}
         <StatusBar style="dark" />

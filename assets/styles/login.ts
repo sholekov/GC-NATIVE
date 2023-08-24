@@ -18,12 +18,11 @@ export default StyleSheet.create({
     right: 0,
     bottom: 0,
     paddingHorizontal: 12,
-    // borderWidth: 1,
-    // borderColor: 'silver',
     justifyContent: 'center',
     alignItems: 'center',
     icon: {
       fontSize: 20,
+      color: '#333',
     },
   },
 
@@ -35,19 +34,24 @@ export default StyleSheet.create({
   },
   checkbox: {
     marginRight: 10,
+    fontSize: 20,
+    color: '#333',
   },
-  label: {
+  checkboxLabel: {
     fontSize: 16,
+  },
+
+  ctaSecondaryContainer: { 
+    width: '100%',
+    padding: 4,
   },
 
   // Lost password styles
   lostPasswordButton: {
     alignItems: 'center',
-    marginTop: 10,
+    padding: 4,
   },
   lostPasswordText: {
-    color: 'blue',
-    fontSize: 16,
     textDecorationLine: 'underline',
   },
 

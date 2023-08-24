@@ -35,7 +35,7 @@ const StartPage = () => {
   //   console.log('keyboardDidHide');
   // };
   
-  return <Redirect href="/home" />;
+  return <Redirect href="home" />;
 }
 
 export default StartPage;
