@@ -25,7 +25,7 @@ const Register = () => {
   const [captchaInput, setCaptchaInput] = useState('');
   const [isLoading, setLoading] = useState(false);
 
-  const [captchaUrl, setCaptchaUrl] = useState('');
+  const [captchaUrl, setCaptchaUrl] = useState(null);
   const handleCaptcha = async () => {
     fetchCaptcha()
       .then((url) => {
@@ -140,7 +140,7 @@ const Register = () => {
 
             <View style={styles.captchaContainer}>
               <TouchableOpacity onPress={handleCaptcha} style={styles.captchaCta}>
-                <Image source={{ uri: captchaUrl }} style={styles.captchaImg} />
+                {captchaUrl && <Image source={{ uri: captchaUrl }} style={styles.captchaImg} />}
                 <FontAwesome5 style={styles.captchaIcon} name="sync" />
               </TouchableOpacity>
               <TextInput placeholder={t('register.placeholder.enter_captcha')} onChangeText={setCaptchaInput} style={styles.input} />

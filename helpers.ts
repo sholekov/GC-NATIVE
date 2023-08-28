@@ -169,14 +169,15 @@ export const fetchCaptcha: Function = () => {
   return new Promise((resolve, reject) => {
     helpers.axiosInstance({
       url: `captcha?timestamp=${new Date().getTime()}`,
-      responseType: 'blob',
+      // responseType: 'blob',
       headers: {
         "content-type": "image/png",
         'Accept': '*/*',
       },
     })
       .then((response: any) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        // const url = window.URL.createObjectURL(new Blob([response.data]));
+        const url = response.config.baseURL+response.config.url
         if (url) {
           resolve(url)
         } else {

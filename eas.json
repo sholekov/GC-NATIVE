@@ -19,7 +19,8 @@
     "production": {
       "env": {
         "EXPO_PUBLIC_API_URL": "https://gigacharger.net/v1/"
-      }}
+      }
+    }
   },
   "submit": {
     "production": {}
