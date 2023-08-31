@@ -21,7 +21,6 @@ const BASE_URI = process.env.EXPO_PUBLIC_API_URL;
 import { useTranslation } from 'react-i18next';
 const AccountMoneyComponent = () => {
   const { t } = useTranslation();
-  const { user, station, station_location } = useSnapshot(store)
 
   return (
     <SafeAreaView style={{ ...styles.container, }}>

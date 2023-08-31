@@ -5,14 +5,14 @@ const styles = { ...globalStyles, ...loginStyles };
 import { useTranslation } from 'react-i18next';
 
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform, Pressable, } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform, Pressable, ActivityIndicator, } from 'react-native';
 import { Link } from 'expo-router';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { userLogin, setLocalUser } from '@/helpers'
 
-function Login() {
+function Login({triggerLoading}) {
   const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const [password, setPIN] = useState('');
@@ -32,12 +32,13 @@ function Login() {
         provider: 'networx',
       })
     }
-
+    triggerLoading(true)
     userLogin(data)
       .then( ({status, user}: {status: boolean, user: any}) => {
         if (status && user) {
           setLocalUser()
         } else {
+          triggerLoading(false)
           Alert.alert(t('login.alert-error.title'), t('login.alert-error.text'), [{text: t('login.alert-error.btn_text'), style: 'default'}]);
         }
       })

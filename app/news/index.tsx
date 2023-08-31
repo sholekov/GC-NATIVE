@@ -4,7 +4,7 @@ const styles = { ...global, ...news };
 
 // NewsOrUpdatesScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Linking, TouchableOpacity } from 'react-native';
+import { Button, View, Text, FlatList, Linking, TouchableOpacity, Pressable, Alert } from 'react-native';
 import HTMLRender from 'react-native-render-html';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -14,6 +14,11 @@ import { helpers } from '@/helpers'
 import { getArticles } from '@/store'
 
 import { useTranslation } from 'react-i18next';
+import { Stack } from 'expo-router';
+
+// Components
+import BackButton from '@/app/(components)/stackBackButton';
+
 const NewsOrUpdatesScreen = () => {
   const { t } = useTranslation();
   const { axiosInstance } = useSnapshot(helpers)
@@ -40,7 +45,10 @@ const NewsOrUpdatesScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.header}>{t('more.news')}</Text> */}
+      <Stack.Screen options={{
+        title: t('more.news'),
+        headerLeft: () => <BackButton />,
+      }} />
       <FlatList
         data={news}
         renderItem={({ item }) => (

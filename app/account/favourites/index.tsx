@@ -1,16 +1,16 @@
-import global from '@/assets/styles/styles';
-import page from '@/assets/styles/page';
-import profile from '@/assets/styles/profile';
-const styles = { ...global, ...page, ...profile };
+import globalStyle from '@/assets/styles/styles';
+import pageStyle from '@/assets/styles/page';
+import profileStyle from '@/assets/styles/profile';
+const styles = { ...globalStyle, ...pageStyle, ...profileStyle };
 
-import { Redirect, Link, } from 'expo-router';
+import { Redirect, Link, Stack, router, } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, FlatList, SafeAreaView, Pressable, StyleSheet } from 'react-native';
 import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import { useSnapshot } from 'valtio'
-import { setupStationLocation, store } from '@/store'
+import { setupSelectedStation, store } from '@/store'
 
 import { getStation } from '@/helpers'
 
@@ -18,6 +18,7 @@ import { getStation } from '@/helpers'
 import { usePlace } from '@/app/hooks/usePlace'
 
 // Components
+import BackButton from '@/app/(components)/stackBackButton';
 import CustomCalloutComponent from '@/app/partials/CustomCallout'
 
 function calculateRegion(markers) {
@@ -66,39 +67,39 @@ const UserFavourites = () => {
 
   const { t } = useTranslation();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [user_stations, setUserStations] = useState(null);
-  const [shown_stations, setShownStations] = useState(null);
+  const [user_stations, setUserStations] = useState(stations.filter(station => user.favourite_places.some(place => place.l_id === station.id)))
+  const [shown_stations, setShownStations] = useState(stations.filter(station => user.favourite_places.some(place => place.l_id === station.id)));
+
+  const mapRef = useRef(null);
+
+  useEffect(() => console.log('user_stations', user_stations.length, shown_stations?.length) )
 
   useEffect(() => {
-    console.log('in useEffect on favourites');
-    // 1) set user_stations
-    const _user_stations = stations.filter(station => user.favourite_places.some(place => place.l_id === station.id))
-    setUserStations(_user_stations);
-    setShownStations(_user_stations);
-
-    // 2) set Region
-    if (_user_stations?.length && !isCollapsed) {
-      let region = {
-        latitude: 43.828805,
-        longitude: 25.9582707,
-        latitudeDelta: .0922,
-        longitudeDelta: .0421,
+    const timer = setTimeout(() => {
+      if (mapRef.current) {
+        const region = calculateRegion(user_stations);
+        mapRef.current.animateToRegion(region, 1500);
       }
-      region = calculateRegion(_user_stations);
-      setTimeout(() => {
-        mapRef.current.animateToRegion(region, 250)
-      }, 150);
+    }, 10);
+    return () => clearTimeout(timer)
+  }, []);
+  
+  useEffect(() => {
+    console.log('user.favourite_places: ', user?.favourite_places?.length);
+    if (user && user.favourite_places) {
+      if(user_stations.length != user.favourite_places.length) {
+        router.replace('account/favourites')
+      }
     }
-  }, [user.favourite_places]);
+  }, [user.favourite_places])
 
   const markerRefs = useRef([]);
   const showSpecificMarkerCallout = (index) => {
     if (index === -1) {
       markerRefs.current.forEach(marker => {
-        marker.hideCallout();
+        marker?.hideCallout();
       });
-    }
-    if (markerRefs.current[index]) {
+    } else if (markerRefs.current[index]) {
       markerRefs.current[index].showCallout();
     }
   };
@@ -107,6 +108,7 @@ const UserFavourites = () => {
 
   const handleSelectedPlace = (station, index) => {
     showSpecificMarkerCallout(index);
+    setIsCollapsed(true);
     getStation(station.id)
       .then(response => {
         mapRef.current.animateToRegion(
@@ -119,29 +121,20 @@ const UserFavourites = () => {
           250)
         const selected_station = { data: station, stations: response.data };
 
-        setupStationLocation(station)
+        setupSelectedStation(station)
         setSelectedStation(selected_station);
-
         setShownStations([selected_station.data]);
-
-        setIsCollapsed(prev => true);
+        setIsCollapsed(true);
         placeSheetRef.current.snapToIndex(0);
       })
   }
 
-  const mapRef = useRef(null);
-
   const handleSheetChanges = (index, coords) => {
     if (index === -1) {
-      // 2) set Region
-      if (user_stations?.length) {
-        const _user_stations = stations.filter(station => user.favourite_places.some(place => place.l_id === station.id))
-        setShownStations(_user_stations);
-
-        showSpecificMarkerCallout(-1);
-        const region = calculateRegion(user_stations);
-        mapRef.current.animateToRegion(region, 250)
-      }
+      setShownStations(() => user_stations)
+      showSpecificMarkerCallout(-1);
+      const region = calculateRegion(user_stations);
+      mapRef.current.animateToRegion(region, 250)
       setIsCollapsed(() => false);
     }
   }
@@ -158,6 +151,10 @@ const UserFavourites = () => {
 
   return (
     <>
+      <Stack.Screen options={{
+        title: t('account.tabLabels.favourites'),
+        headerLeft: () => <BackButton />,
+      }} />
       {user ?
         <>
           <MapView
@@ -170,8 +167,7 @@ const UserFavourites = () => {
               longitude: 25.9582707,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
-            }}
-            onPress={resetScreenView} >
+            }}>
             {(shown_stations?.length) ?
               shown_stations.map((place, index) => (
                 <Marker
@@ -180,9 +176,11 @@ const UserFavourites = () => {
                   coordinate={{ latitude: parseFloat(place.lat), longitude: parseFloat(place.lng) }}
                   title={place.name}
                   description={place.region}
-                  onPress={() => handleSelectedPlace(place, index)}
-                  image={require('@/assets/images/pin-gigacharger.png')}
                 >
+                  <Image
+                    source={require('@/assets/images/pin-gigacharger.png')}
+                    style={styles.markerImage}
+                  />
                   <CustomCalloutComponent name={place.name} region={place.region} />
                 </Marker>
               )) : null}
@@ -190,10 +188,10 @@ const UserFavourites = () => {
 
           {
             (user_stations?.length === 0) ?
-              <Link href='/home' asChild>
+              <Link href='/account' asChild>
                 <Pressable style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100%', backgroundColor: '#ffffffd0', }}>
                   <View style={{ position: 'relative', marginTop: -128, marginBottom: 18, padding: 16, backgroundColor: '#ffffff00', borderRadius: 999, borderColor: '#00000000', borderWidth: 2, }}>
-                    <Image source={require('@/assets/images/pin-gigacharger.png')} style={{ width: 128, height: 128 }} />
+                    <Image source={require('@/assets/images/pin-gigacharger-original.png')} style={{ width: 128, height: 128 }} />
                     <Icon size={38} name="star" solid style={{ position: 'absolute', top: 16, right: 16, color: 'rgb(255, 212, 59)', }}></Icon>
                   </View>
 
@@ -215,9 +213,8 @@ const UserFavourites = () => {
                       paddingVertical: 4,
                       paddingHorizontal: 8,
                     }}>
-
                       {/* <View style={{
-                        backgroundColor: '#ffffff00',
+                        backgroundColor: 'red',
                         borderRadius: 16,
                         paddingVertical: 12,
                         paddingHorizontal: 8,
@@ -226,8 +223,8 @@ const UserFavourites = () => {
                         <View style={{
                           alignSelf: 'center',
                           width: 38,
-                          height: 5,
-                          backgroundColor: '#00000090',
+                          // height: 5,
+                          backgroundColor: '#00000000',
                           borderRadius: 3,
                         }}
                         >
@@ -254,7 +251,7 @@ const UserFavourites = () => {
               </SafeAreaView>
           }
           <PlaceBottomSheetComponent placeSheetRef={placeSheetRef} selectedStation={selectedStation} handleSheetChanges={handleSheetChanges} />
-        </> : <Redirect href="/home" />
+        </> : <Redirect href="home" />
       }
     </>
   );

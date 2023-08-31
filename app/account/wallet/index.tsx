@@ -4,7 +4,7 @@ import globalStyles from '@/assets/styles/styles';
 import pageStyles from '@/assets/styles/page';
 const styles = { ...globalStyles, ...pageStyles };
 
-import { Link } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, Pressable } from 'react-native';
 
@@ -14,18 +14,22 @@ import { store } from '@/store'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 // Components
+import BackButton from '@/app/(components)/stackBackButton';
 import Divider from '@/app/partials/divider';
 
 import { useTranslation } from 'react-i18next';
 const AccountMoneyComponent = () => {
   const { t } = useTranslation();
-  const { user, station, station_location } = useSnapshot(store)
 
   // TODO: get from server
   const payment_methods = ["office", "paypal-checkout", "revolut-pay", "bank-card"];
 
   return (
     <SafeAreaView style={{ ...styles.container, }}>
+      <Stack.Screen options={{
+        title: t('account.tabLabels.wallet'),
+        headerLeft: () => <BackButton />,
+      }} />
 
       <View style={{ flex: 1, justifyContent: 'space-between', }}>
         {/* add money */}
@@ -61,7 +65,7 @@ const AccountMoneyComponent = () => {
           </View>
           <View style={{ paddingHorizontal: 12, paddingBottom: 32, }}>
             {/* (1 / i18n.currencies.getRate(i18n.getCurrencyCode())).toFixed(6) */}
-            <Text style={{ fontSize: 14, color: '#999' }}>{t('deposit.conversionClarification', {0: 'Currency'})}</Text>
+            <Text style={{ fontSize: 14, color: '#999' }}>{t('deposit.conversionClarification', { 0: 'Currency' })}</Text>
           </View>
         </View>
 

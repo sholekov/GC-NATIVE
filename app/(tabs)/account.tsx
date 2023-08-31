@@ -2,8 +2,8 @@ import globalStyles from '@/assets/styles/styles';
 import pageStyles from '@/assets/styles/page';
 const styles = { ...globalStyles, ...pageStyles };
 
-import React from 'react';
-import { View, Text, SafeAreaView, Pressable, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, SafeAreaView, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { Link, Redirect } from 'expo-router';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 const AccountComponent = () => {
   const { t } = useTranslation();
   const { user } = useSnapshot(store)
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <>
@@ -41,7 +42,7 @@ const AccountComponent = () => {
                         color={'#333'}
                         solid
                       />
-                      <Text style={styles.btn_container.textWrapperText}>{t('account.navLabels.details')}</Text>
+                      <Text style={styles.btn_container.textWrapperText}>{t('account.tabLabels.details')}</Text>
                     </View>
                     <Icon
                       name='chevron-right'
@@ -65,7 +66,7 @@ const AccountComponent = () => {
                         color={'#333'}
                         solid
                       />
-                      <Text style={styles.btn_container.textWrapperText}>{t('account.navLabels.favourites')}</Text>
+                      <Text style={styles.btn_container.textWrapperText}>{t('account.tabLabels.favourites')}</Text>
                     </View>
                     <Icon
                       name='chevron-right'
@@ -86,7 +87,7 @@ const AccountComponent = () => {
                         color={'#333'}
                         solid
                       />
-                      <Text style={styles.btn_container.textWrapperText}>{t('account.navLabels.wallet')}</Text>
+                      <Text style={styles.btn_container.textWrapperText}>{t('account.tabLabels.wallet')}</Text>
                     </View>
                     <Icon
                       name='chevron-right'
@@ -110,7 +111,7 @@ const AccountComponent = () => {
                         size={18}
                         color={'#333'}
                       />
-                      <Text style={styles.btn_container.textWrapperText}>{t('account.navLabels.payment-methods')}</Text>
+                      <Text style={styles.btn_container.textWrapperText}>{t('account.tabLabels.payment-methods')}</Text>
                     </View>
                     <Icon
                       name='chevron-right'
@@ -121,27 +122,6 @@ const AccountComponent = () => {
                 </Pressable>
               </Link>
               <Divider />
-              {/* <Link href='/home' asChild>
-              <Pressable>
-                <View style={{ ...styles.btn_container, }}>
-                  <View style={styles.btn_container.textWrapper}>
-                    <Icon
-                      name='coins'
-                      size={18}
-                      color={'#333'}
-                      solid
-                    />
-                    <Text style={styles.btn_container.textWrapperText}>{t('account.navLabels.promotional-ballance')}</Text>
-                  </View>
-                  <Icon
-                    name='chevron-right'
-                    size={18}
-                    color={'grey'}
-                  />
-                </View>
-              </Pressable>
-            </Link>
-            <Divider /> */}
               <Link href='account/transactions' asChild>
                 <Pressable>
                   <View style={{ ...styles.btn_container, ...styles.roundedBottom }}>
@@ -151,7 +131,7 @@ const AccountComponent = () => {
                         size={18}
                         color={'#333'}
                       />
-                      <Text style={styles.btn_container.textWrapperText}>{t('account.navLabels.transactions')}</Text>
+                      <Text style={styles.btn_container.textWrapperText}>{t('account.tabLabels.transactions')}</Text>
                     </View>
                     <Icon
                       name='chevron-right'
@@ -164,13 +144,14 @@ const AccountComponent = () => {
             </View>
 
             <View style={styles.btns_container}>
-              <Logout styles={styles} />
+              <Logout triggerLoading={(state: boolean) => setIsLoading(state)} styles={styles} />
             </View>
           </ScrollView>
         </SafeAreaView>
       ) : (
-        <Redirect href={'/home'} />
+        <Redirect href={'home'} />
       )}
+      {isLoading && <ActivityIndicator size="large" style={styles.activityIndicatorStyle} />}
     </>
   )
 };

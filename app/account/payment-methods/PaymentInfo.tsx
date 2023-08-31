@@ -4,6 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome5';
 
 import { useTranslation } from 'react-i18next';
+
 const PaymentInfo = () => {
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, setExpiryDate] = useState('');

@@ -13,6 +13,10 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import { useSnapshot } from 'valtio'
 import { store, setAppUILanguage } from '@/store'
+import { Stack } from 'expo-router';
+
+// Components
+import BackButton from '@/app/(components)/stackBackButton';
 
 const LanguagesScreenComponent = () => {
   const { t, i18n } = useTranslation();
@@ -51,6 +55,10 @@ const LanguagesScreenComponent = () => {
 
   return (
     <View style={styles.container}>
+      <Stack.Screen options={{
+        title: t('more.language.cta-label'),
+        headerLeft: () => <BackButton />,
+      }} />
 
       <View style={styles.containerHeader}>
         <Icon name='globe' style={styles.containerHeaderIcon} />

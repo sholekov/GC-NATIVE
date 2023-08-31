@@ -17,24 +17,50 @@ import homeStyles from '@/assets/styles/home';
 const styles = { ...globalStyles, ...homeStyles };
 
 import React, { useEffect, useRef, useState } from 'react';
-import { View, ActivityIndicator, Pressable, Alert, Platform, } from 'react-native';
+import { View, Image, ActivityIndicator, Pressable, Alert, Platform, } from 'react-native';
 import * as Location from 'expo-location';
+import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 
 // Components
-import LoggedIn from '@/app/(tabs)/(loggedin)'
-import Login from '@/app/(tabs)/(login)'
+import LoggedIn from '@/app/(tabs)/home/loggedin'
+import Login from '@/app/(tabs)/home/login'
 import CustomCalloutComponent from '@/app/partials/CustomCallout'
 
 import { useSnapshot } from 'valtio'
 import { getStations, getStation } from '@/helpers'
-import { store, setupStationLocation, setStations } from '@/store'
+import { store, setupSelectedStation, setStations } from '@/store'
 
 import { usePlace } from '@/app/hooks/usePlace'
 
 import { useTranslation } from 'react-i18next';
+
+import { registerForPushNotificationsAsync } from '@/services/notifications'
 const HomeComponent = () => {
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+
   const { t } = useTranslation();
   const { user } = useSnapshot(store)
   const { stations } = useSnapshot(store)
@@ -51,7 +77,7 @@ const HomeComponent = () => {
     }
 
     let location = await Location.getCurrentPositionAsync({});
-    const coords = location.coords; 
+    const coords = location.coords;
     setUserLocation(coords)
   }
   useEffect(() => {
@@ -84,7 +110,7 @@ const HomeComponent = () => {
   const [blockView, setBlockView] = useState(false);
   const handleSelectedPlace = (station, index) => {
     setSelectedStation(null)
-    setupStationLocation(null)
+    setupSelectedStation(null)
     mapRef.current.animateToRegion({
       latitude: station.lat - 0.025, longitude: station.lng,
       latitudeDelta: 0.0922,
@@ -96,7 +122,7 @@ const HomeComponent = () => {
       .then(response => {
         const selected_station = { data: station, stations: response.data };
         setSelectedStation(selected_station)
-        setupStationLocation(station)
+        setupSelectedStation(station)
       })
   }
 
@@ -118,6 +144,7 @@ const HomeComponent = () => {
   return (
     <View style={styles.container}>
       <MapView
+        testID="mapView"
         showsUserLocation={true}
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
@@ -138,8 +165,13 @@ const HomeComponent = () => {
               title={place.name}
               description={place.region}
               onPress={() => handleSelectedPlace(place, index)}
-              image={require('@/assets/images/pin-gigacharger.png')}
             >
+              <Image
+                source={require('@/assets/images/pin-gigacharger.png')}
+                style={styles.markerImage}
+                width={32}
+                height={32}
+              />
               <CustomCalloutComponent name={place.name} region={place.region} />
             </Marker>
           ))

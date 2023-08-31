@@ -24,9 +24,7 @@ const BASE_URI = process.env.EXPO_PUBLIC_API_URL;
 import { useTranslation } from 'react-i18next';
 const StationInfo = () => {
   const { t } = useTranslation();
-  const { user, station, station_location } = useSnapshot(store)
-
-  const { id, name, region } = useLocalSearchParams();
+  const { station, station_location } = useSnapshot(store)
 
   const bgImage = BASE_URI + "images/stations/" + station.user.id + ".png"
 

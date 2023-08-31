@@ -1,32 +1,23 @@
 import { toHumanReadable, getPrice } from '@/utils/helpers';
 
-import global from '@/assets/styles/styles';
-import page from '@/assets/styles/page';
-const styles = { ...global, ...page };
+import globalStyles from '@/assets/styles/styles';
+import pageStyles from '@/assets/styles/page';
+const styles = { ...globalStyles, ...pageStyles };
 
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, SafeAreaView, StyleSheet, ImageBackground, Pressable, Linking, TextInput } from 'react-native';
+import { Stack } from 'expo-router';
 
 import { useSnapshot } from 'valtio'
 import { store } from '@/store'
 
-import Icon from 'react-native-vector-icons/FontAwesome5';
+// Components
+import BackButton from '@/app/(components)/stackBackButton';
 import BackToMoneyComponent from '@/app/account/wallet/back-to-money';
-
-const openURL = (url: string) => {
-  Linking.canOpenURL(url).then(supported => {
-    if (supported) {
-      Linking.openURL(url);
-    } else {
-      console.log(`Don't know how to open this URL: ${url}`);
-    }
-  });
-};
 
 import { useTranslation } from 'react-i18next';
 const AccountMoneySubComponent = () => {
   const { t } = useTranslation();
-  const { user, station, station_location } = useSnapshot(store)
 
   const [User, setUser] = useState()
   const [Quantity, setQuantity] = useState()
@@ -34,14 +25,16 @@ const AccountMoneySubComponent = () => {
 
   return (
     <SafeAreaView style={{ ...styles.container, }}>
+      <Stack.Screen options={{
+        title: t('account.tabLabels.payment-methods'),
+        headerLeft: () => <BackButton />,
+      }} />
 
       <View style={{ flex: 1, justifyContent: 'space-between', }}>
-      
-        <View style={{ paddingVertical: 64, }}>
-  
-          <Text style={{ paddingVertical: 64, textAlign: 'center', fontSize: 32, }}>{t('commonNamespace.transactionMake')}</Text>
 
-          
+        <View style={{ paddingVertical: 64, }}>
+
+          <Text style={{ paddingVertical: 64, textAlign: 'center', fontSize: 32, }}>{t('commonNamespace.transactionMake')}</Text>
 
           <TouchableOpacity onPress={() => { }} style={{}}>
             <View style={{ flexDirection: 'row', justifyContent: 'center', }}>

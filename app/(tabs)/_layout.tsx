@@ -68,8 +68,6 @@ export default () => {
           <Tabs.Screen name="account" />
           <Tabs.Screen name="home" />
           <Tabs.Screen name="more" />
-          <Tabs.Screen name="(login)" options={{ href: null }} />
-          <Tabs.Screen name="(loggedin)" options={{ href: null }} />
         </Tabs>
       </SafeAreaProvider>
     </GestureHandlerRootView>

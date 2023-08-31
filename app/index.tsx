@@ -1,18 +1,23 @@
 import '@/assets/locales/index';
 import { useTranslation } from 'react-i18next';
 
-import { Redirect } from 'expo-router';
+import { Redirect, Stack, useRouter } from 'expo-router';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { setAppUILanguage } from '@/store'
 import { setLocalUser } from '@/helpers'
 
+// import * as Sentry from 'sentry-expo';
+// Sentry.init({
+//   dsn: 'https://c2a38ca15cb08082fa557ad2cf76016a@o4505788528263168.ingest.sentry.io/4505788538355712',
+//   enableInExpoDevelopment: false,
+//   debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+// });
+
 const StartPage = () => {
   console.log('StartPage triggered');
-  
   const { i18n } = useTranslation();
-
   setLocalUser()
   
   AsyncStorage.getItem('user_preffered_UI_language')

@@ -47,7 +47,7 @@
     }
   },
   "account": {
-    "navLabels": {
+    "tabLabels": {
       "details": "Детайли",
       "favourites": "Любими",
       "wallet": "Портфейл",
@@ -122,11 +122,11 @@
       "private": "В частна собственост"
     },
     "directionsLabel": "Упътване",
-    "stationNumberLabel": "Станция",
+    "stationNumberLabel": "Станция"
   },
   "station": {
     "numberLabel": "Станция",
-    "cta": "Започни зареждане",
+    "cta": "Започни зареждане"
   },
   "commonNamespace": {
     "close": "Затвори",

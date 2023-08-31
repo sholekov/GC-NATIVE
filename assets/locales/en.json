@@ -38,7 +38,7 @@
       "enter_captcha": "Enter CAPTCHA"
     },
     "alert-permissions": {
-      "text": "Permission to access location was denied",
+      "text": "Permission to access location was denied"
     },
     "alert-error": {
       "title": "Registration failed",
@@ -61,7 +61,7 @@
       "Paypal": "Paypal",
       "Revolute": "Revolute",
       "BankCard": "BankCard",
-      "Transaction": "Transaction",
+      "Transaction": "Transaction"
     },
     "profile": {
       "delete_label": "Delete account",
@@ -116,11 +116,11 @@
       "private": "Private place"
     },
     "directionsLabel": "Directions",
-    "stationNumberLabel": "Station",
+    "stationNumberLabel": "Station"
   },
   "station": {
     "numberLabel": "Station",
-    "cta": "Start charging",
+    "cta": "Start charging"
   },
 
   "commonNamespace": {

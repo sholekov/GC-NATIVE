@@ -81,6 +81,10 @@ export default StyleSheet.create({
    * Map
    **/
 
+  markerImage: {
+    width: 38,
+    height: 38,
+  },
   customCallout: {
     width: 175,
     paddingBottom: 4,

@@ -27,7 +27,6 @@ const openURL = (url: string) => {
 import { useTranslation } from 'react-i18next';
 const AccountMoneySubComponent = () => {
   const { t } = useTranslation();
-  const { user, station, station_location } = useSnapshot(store)
 
   return (
     <SafeAreaView style={{ ...styles.container, }}>

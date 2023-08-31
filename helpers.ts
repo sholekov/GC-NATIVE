@@ -122,6 +122,7 @@ export const userLogout: Function = (csrf: string) => {
       data: `manix-csrf=${encodeURIComponent(csrf)}&manix-method=DELETE`
     })
       .then((response: any) => {
+        console.log('logout response', response.data.success);
         if (response.data.success) {
           resolve(true)
         } else {
@@ -177,7 +178,7 @@ export const fetchCaptcha: Function = () => {
     })
       .then((response: any) => {
         // const url = window.URL.createObjectURL(new Blob([response.data]));
-        const url = response.config.baseURL+response.config.url
+        const url = response.config.baseURL + response.config.url
         if (url) {
           resolve(url)
         } else {
@@ -191,15 +192,15 @@ export const fetchCaptcha: Function = () => {
   })
 }
 
-export const fetchRates: Function = ()  => {
+export const fetchRates: Function = () => {
   return helpers.axiosInstance('rates')
 }
 
 
 // export const user = {}
-export const getOwnMoney: Function = ()  => {}
-export const credit: Function = ()  => {}
-export const frozen: Function = ()  => {}
+export const getOwnMoney: Function = () => { }
+export const credit: Function = () => { }
+export const frozen: Function = () => { }
 
 export const getAvailableFunds = () => {
   return this.balance() + this.credit() - this.frozen();
@@ -209,22 +210,27 @@ export const getOwnFunds = () => {
 }
 
 
-export const setLocalUser = (): Promise<any> => {
-  return Promise.all([
-    helpers.axiosInstance.get('me'),
-    helpers.axiosInstance.get('favorites')
-  ])
-    .then(([result_of_user, result_of_favourite]) => {
-      const imageUrl = BASE_URI + "images/clients/" + result_of_user.data.id + ".png"
-      const imageRequest = helpers.axiosInstance.get(imageUrl)
-      setupUser(result_of_user.data, result_of_favourite.data, imageRequest);
-      return true
-    })
-    .catch((e: Error) => {
-      console.log('e', e);
-      setupUser(null, null, null)
-      return false
-    })
+export const setLocalUser = (force?: boolean): Promise<any> | void => {
+  console.log('setLocalUser');
+  if (!force) {
+    return Promise.all([
+      helpers.axiosInstance.get('me'),
+      helpers.axiosInstance.get('favorites')
+    ])
+      .then(([result_of_user, result_of_favourite]) => {
+        const imageUrl = BASE_URI + "images/clients/" + result_of_user.data.id + ".png"
+        const imageRequest = helpers.axiosInstance.get(imageUrl)
+        setupUser(result_of_user.data, result_of_favourite.data, imageRequest);
+        return true
+      })
+      .catch((e: Error) => {
+        console.log('e', e);
+        setupUser(null, null, null)
+        return false
+      })
+  } else {
+    setupUser(null, null, null)
+  }
 }
 
 

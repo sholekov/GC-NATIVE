@@ -4,9 +4,13 @@ const styles = { ...global, ...faqs };
 
 import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import { Stack } from 'expo-router';
+
+// Components
+import BackButton from '@/app/(components)/stackBackButton';
 
 const FAQsScreen = () => {
   const { t, i18n } = useTranslation();
@@ -64,21 +68,12 @@ const FAQsScreen = () => {
     },
   ];
 
-
   return (
     <View style={styles.container}>
-
-      {/* <View style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', }}>
-        <Icon
-          name='question-circle'
-          size={24}
-          color={'#333'}
-          style={{ marginRight: 8, }}
-        />
-        <Text style={{ fontSize: 24, fontWeight: '600', }}>
-          {t('more.faqs.page-title')}
-        </Text>
-      </View> */}
+      <Stack.Screen options={{
+        title: t('more.faqs.page-title'),
+        headerLeft: () => <BackButton />,
+      }} />
 
       <View style={styles.container}>
         {faqData.map((faq, index) => (

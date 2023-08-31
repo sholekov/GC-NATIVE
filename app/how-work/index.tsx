@@ -4,27 +4,21 @@ const styles = { ...global, ...guide };
 
 import { useTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import { Stack } from 'expo-router';
+
+// Components
+import BackButton from '@/app/(components)/stackBackButton';
 
 const FAQsScreen = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
-
-      {/* <View style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', }}>
-        <Icon
-          name='globe'
-          size={24}
-          color={'#333'}
-          style={{ marginRight: 8, }}
-        />
-        <Text>
-          {t('more.guide.page-title')}
-        </Text>
-      </View> */}
-
+      <Stack.Screen options={{
+        title: t('more.guide.page-title'),
+        headerLeft: () => <BackButton />,
+      }} />
 
       <View style={styles.section}>
         <Text style={styles.sectionHeader}>Finding Charging Stations</Text>
