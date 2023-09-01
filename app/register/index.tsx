@@ -8,14 +8,15 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, View, Text, TextInput, TouchableOpacity, Image, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as Location from 'expo-location';
-import { router, Link } from 'expo-router';
+import { router, Link, Stack } from 'expo-router';
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import { userRegister, userLogin, fetchCaptcha, setLocalUser } from '@/helpers'
 
 import { useTranslation } from 'react-i18next';
-const Register = () => {
+const RegisterComponent = () => {
+  const { t } = useTranslation();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
 
@@ -25,10 +26,10 @@ const Register = () => {
   const [captchaInput, setCaptchaInput] = useState('');
   const [isLoading, setLoading] = useState(false);
 
-  const [captchaUrl, setCaptchaUrl] = useState(null);
+  const [captchaUrl, setCaptchaUrl]: [string | null, Function] = useState(null);
   const handleCaptcha = async () => {
     fetchCaptcha()
-      .then((url) => {
+      .then((url: string) => {
         setCaptchaUrl(url);
       })
   };
@@ -36,7 +37,6 @@ const Register = () => {
     handleCaptcha();
   }, []);
 
-  const { t } = useTranslation();
   const handleRegister = async () => {
     // Request permission to access the location
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -61,7 +61,7 @@ const Register = () => {
     //   },
     //   "timestamp": 1690893479740.977
     // }  
-    let coords = location.coords; 
+    let coords = location.coords;
 
     // Reverse geocode to get address information
     let [address] = await Location.reverseGeocodeAsync(coords);
@@ -100,7 +100,7 @@ const Register = () => {
               if (status && user) {
                 setLocalUser()
                   .then(() => {
-                    router.push('/home');
+                    router.replace('home');
                     setLoading(false);
                   })
                   .catch((e: Error) => {
@@ -108,7 +108,7 @@ const Register = () => {
                     setLoading(false);
                   })
               } else {
-                Alert.alert(t('login.alert-error.title'), t('login.alert-error.text'), [{text: t('login.alert-error.btn_text'), style: 'default'}]);
+                Alert.alert(t('login.alert-error.title'), t('login.alert-error.text'), [{ text: t('login.alert-error.btn_text'), style: 'default' }]);
                 setLoading(false);
               }
             })
@@ -135,7 +135,7 @@ const Register = () => {
             <TextInput placeholder={t('register.placeholder.first_name')} onChangeText={setFirstName} style={styles.input} />
             <TextInput placeholder={t('register.placeholder.last_name')} onChangeText={setLastName} style={styles.input} />
 
-            <TextInput placeholder={t('register.placeholder.username')}keyboardType="email-address" autoCapitalize="none" onChangeText={setUseremail} style={styles.input} />
+            <TextInput placeholder={t('register.placeholder.username')} keyboardType="email-address" autoCapitalize="none" onChangeText={setUseremail} style={styles.input} />
             <TextInput placeholder={t('register.placeholder.password')} onChangeText={setPassword} autoCapitalize="none" secureTextEntry style={styles.input} />
 
             <View style={styles.captchaContainer}>
@@ -150,7 +150,7 @@ const Register = () => {
               <Text style={styles.buttonText}>{t('register.cta_label')}</Text>
             </TouchableOpacity>
 
-            <Link href="/home" style={styles.link}>
+            <Link href="../" style={styles.link}>
               <Text style={styles.link}>{t('register.cta_login_label')}</Text>
             </Link>
 
@@ -163,4 +163,4 @@ const Register = () => {
 };
 
 
-export default Register;
+export default RegisterComponent;

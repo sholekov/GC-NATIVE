@@ -1,8 +1,6 @@
 import { Stack } from "expo-router";
 
-import { useTranslation } from 'react-i18next';
-const StackLayout = () => {
-  const { t } = useTranslation();
+const MainStackLayout = () => {
 
   return (
     <Stack
@@ -10,11 +8,13 @@ const StackLayout = () => {
         headerShown: false,
         headerTintColor: 'white',
         headerStyle: { backgroundColor: 'tomato' },
-      }} />
+      }}>
+        <Stack.Screen name="register" options={{ presentation: 'modal' }} />
+      </Stack>
   );
 }
 
-export default StackLayout;
+export default MainStackLayout;
 
 
 {/* <Stack.Screen name="SplashScreen" options={{ headerShown: false }} /> */ }
