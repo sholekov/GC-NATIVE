@@ -56,9 +56,9 @@ const AccountDetailsComponent = () => {
       }} />
 
       {user ? (
-        <>
+        <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', }}>
           {/* <Text>id: {user.id}</Text> */}
-          <View style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginHorizontal: 32, marginBottom: 0, paddingVertical: 42, paddingHorizontal: 24, }}>
+          <View style={{ flex: 9, flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginHorizontal: 32, marginBottom: 0, paddingVertical: 0, paddingHorizontal: 24, }}>
 
             <UserPhotoComponent />
 
@@ -80,7 +80,7 @@ const AccountDetailsComponent = () => {
           </View>
 
 
-          <View style={styles.btns_container}>
+          <View style={{ flex: 1, ...styles.btns_container, }}>
             <TouchableOpacity onPress={handleAlert} style={{ ...styles.btn_container, marginHorizontal: 32, paddingHorizontal: 12, paddingVertical: 12, borderColor: 'brown', borderWidth: 1, borderRadius: 180, }}>
               <View style={{ ...styles.btn_container.textWrapper, width: '100%', justifyContent: 'center', }}>
                 <Text style={{ ...styles.btn_container.textWrapperText, color: 'brown', fontWeight: '500', }}>{t('account.profile.delete_label')}</Text>
@@ -88,7 +88,7 @@ const AccountDetailsComponent = () => {
             </TouchableOpacity>
           </View>
 
-        </>
+        </View>
       ) : <Redirect href="/home" />}
     </SafeAreaView>
   );

@@ -320,11 +320,17 @@ export const helpers = proxy<{ axiosInstance: axiosInstance, }>({
  */
 
 function initAxios() {
+
+  const customUserAgent = 'ReactNative';
+  axios.defaults.baseURL = `${BASE_URI}`
+  axios.defaults.headers.common['User-Agent'] = customUserAgent;
+  // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+  // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
   return axios.create({
-    baseURL: `${BASE_URI}`,
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept': 'application/json',
+      // ContentType: 'application/json',
+      // UserAgent: customUserAgent,
+      // Accept: 'application/json',
       timeout: 1000,
     },
     // maxRedirects: 0,

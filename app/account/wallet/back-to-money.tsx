@@ -13,7 +13,7 @@ const BackToMoneyComponent = () => {
   const { t } = useTranslation();
 
   return (
-    <View style={{ paddingVertical: 32, }}>
+    <View style={{ paddingVertical: 32, width: '90%', maxWidth: 248, }}>
       <View style={styles.btns_container}>
         <TouchableOpacity onPress={() => router.back()} style={{ backgroundColor: '#00000010', borderRadius: 8, }}>
           <Text style={{ padding: 16, textAlign: 'center', }}>{t('commonNamespace.close')}</Text>

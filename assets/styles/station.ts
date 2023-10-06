@@ -100,7 +100,9 @@ export default StyleSheet.create({
     elevation: 8,
   },
   stationContentCTAWrapperInner: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 12, paddingHorizontal: 32, backgroundColor: '#5dac30',
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    padding: 12, paddingHorizontal: 32,
+    backgroundColor: '#5dac30',
     borderRadius: 32,
   },
   stationContentCTAWrapperInnerIcon: {
@@ -109,6 +111,7 @@ export default StyleSheet.create({
     color: 'white',
   },
   stationContentCTAWrapperInnerText: {
+    marginRight: 4,
     fontSize: 16, fontWeight: '600', color: 'white',
   },
 

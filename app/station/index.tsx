@@ -8,7 +8,7 @@ import stationStyles from '@/assets/styles/station';
 const styles = { ...globalStyles, ...stationStyles };
 
 import { router, useLocalSearchParams } from 'expo-router';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, SafeAreaView, StyleSheet, ImageBackground } from 'react-native';
 
 import { useSnapshot } from 'valtio'
@@ -18,13 +18,14 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 
 // Components
 import PlaceHeading from '@/app/partials/(tabs)/(placeHeading)'
+import Battery from './Battery';
 
 const BASE_URI = process.env.EXPO_PUBLIC_API_URL;
 
 import { useTranslation } from 'react-i18next';
 const StationInfo = () => {
   const { t } = useTranslation();
-  const { station, station_location } = useSnapshot(store)
+  const { station, station_location, chargingMessage } = useSnapshot(store)
 
   const bgImage = BASE_URI + "images/stations/" + station.user.id + ".png"
 
@@ -50,6 +51,111 @@ const StationInfo = () => {
   //     },
   //     "user_id": 10085
   //   }
+
+  const BASE_WS = process.env.EXPO_PUBLIC_API_WS;
+  let reconnectInterval = 1000;
+
+  const [socket, setSocket] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [started, setStarted] = useState(false);
+  const [chargeLevel, setChargeLevel] = useState(0);
+
+  useEffect(() => {
+    // console.log('StationInfo', BASE_WS);
+    const ws = new WebSocket(BASE_WS, '', { headers: { 'User-Agent': 'ReactNative' } }); // +'/drain/start?id='+station.user_id
+
+    ws.onopen = () => {
+      // connection opened
+      console.log('connection opened');
+      ws.send('something')
+    };
+
+    ws.onmessage = e => {
+      // a message was received
+      console.log('Ooo...', e.data);
+    };
+
+    ws.onerror = e => {
+      // an error occurred
+      console.log(e.message);
+    };
+
+    ws.onclose = e => {
+      // connection closed
+      console.log(e.code, e.reason);
+    };
+
+    setSocket(ws);
+
+    // Clean up the connection when the component is unmounted
+    return () => {
+      if(!store.CHARGING) {
+        resetHelpers();
+        if (ws) ws.close();
+      }
+    };
+  }, []);
+
+  const resetHelpers = () => {
+    setStarted(false)
+    setChargeLevel(0)
+    store.chargingMessage = null
+    console.log('resetHelpers');
+  }
+
+  // const sendPing = useCallback(() => {
+  //   if (socket && socket.readyState === WebSocket.OPEN) {
+  //     socket.send('ping');
+  //   }
+  // }, [socket]);
+
+  const startCharging = () => {
+    // fetch('https://httpbin.org/get')
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     console.log('User-Agent:', data.headers['User-Agent']);
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error:', error);
+    //   });
+    function getFirstTwoDigits(num) {
+      const str = Math.abs(num).toString();
+      return parseInt(str.slice(-2), 10);
+    }
+    if (socket) {
+      socket.readyState === WebSocket.OPEN && socket.send(JSON.stringify(['drain/start', station.user_id]));
+      console.log(socket.readyState, 'drain/start', socket);
+      setStarted(true);
+      socket.onmessage = e => {
+        const message = JSON.parse(e.data);
+        store.chargingMessage = message[1];
+        if (message[1][1]) { 
+          store.CHARGING = true;
+        }
+        if ((message[1][1] - 1) === 100 && (message[1][1] - 1) % 100 === 0) {
+          setChargeLevel(0);
+        } else {
+          const _result = parseInt(getFirstTwoDigits(message[1][1]))
+          console.log('getFirstTwoDigits', _result);
+          setChargeLevel(_result);
+        }
+
+        console.log('onmessage', e.data);
+      };
+    }
+  }
+
+  const stopCharging = () => {
+    if (socket) {
+      socket.readyState === WebSocket.OPEN && socket.send(JSON.stringify(['drain/end', station.user_id]));
+      console.log(socket.readyState, 'drain/end', socket);
+      resetHelpers();
+      socket.onmessage = e => {
+        // a message was received
+        console.log('stopCharging message', e.data);
+      };
+    }
+  }
 
   return (
     <>
@@ -122,6 +228,14 @@ const StationInfo = () => {
                         </View> */}
 
               <View style={styles.stationContentWrapper}>
+                {/* {chargingMessage && (
+                  <View style={styles.stationContentLabel}>
+                    <Text style={{ width: '100%' }}>station: {chargingMessage[0]}</Text>
+                    <Text style={{ width: '100%' }}>consumed: {(chargingMessage[1] / 1000).toFixed(2)} kW</Text>
+                    <Text style={{ width: '100%' }}>ppw: {station.ppkw} | {chargingMessage[2] * 1000} / {toHumanReadable(getPrice(station.billing, station.ppkw), 'BGN')}</Text>
+                    <Text style={{ width: '100%' }}>power: {formatPower(chargingMessage[3])}kW</Text>
+                    <Text style={{ width: '100%' }}>smartPower: {chargingMessage[4]}</Text>
+                  </View>)} */}
                 <View style={styles.stationContentOutletsWrapper}>
                   {
                     station.model.outlets === 'type2' && (
@@ -148,26 +262,71 @@ const StationInfo = () => {
 
                 {/* <View style={{ position: 'relative', width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, padding: 18, backgroundColor: '#ffffff90', borderTopColor: 'silver', borderTopWidth: 1, borderBottomColor: 'silver', borderBottomWidth: 1,  }}> */}
                 <View style={styles.stationContentPriceWrapper}>
-                    {/* <Icon name="tag" style={{ marginRight: 8, opacity: .65, }} size={18} /> */}
-                    <Text style={styles.stationContentPriceLabel}>BGN</Text>
-                    <Text style={styles.stationContentPriceValue}>{toHumanReadable(getPrice(station.billing, station.ppkw), 'BGN')}</Text>
-                    <Text style={styles.stationContentPriceLabel}>/ kWh</Text>
+                  {/* <Icon name="tag" style={{ marginRight: 8, opacity: .65, }} size={18} /> */}
+                  <Text style={styles.stationContentPriceLabel}>BGN</Text>
+                  <Text style={styles.stationContentPriceValue}>{toHumanReadable(getPrice(station.billing, station.ppkw), 'BGN')}</Text>
+                  <Text style={styles.stationContentPriceLabel}>/ kWh</Text>
                 </View>
 
-                <TouchableOpacity onPress={() => router.back()} style={styles.stationContentCTAWrapper}>
-                  <View style={styles.stationContentCTAWrapperInner}>
-                    <Icon name="charging-station" style={styles.stationContentCTAWrapperInnerIcon} />
-                    <Text style={styles.stationContentCTAWrapperInnerText}>{t('station.cta')}</Text>
-                  </View>
-                </TouchableOpacity>
+                {
+                  started && chargingMessage && (
+                    <TouchableOpacity onPress={() => stopCharging()}>
+                      <View style={{ position: 'relative', justifyContent: 'center', alignItems: 'center', marginBottom: 32, }}>
+                        <Battery chargeLevel={chargeLevel} />
+                        <View style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 18,
+                          bottom: 0,
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          paddingHorizontal: 12,
+                          width: 168,
+                          // borderColor: 'red',
+                          // borderWidth: 2,
+                          // borderRadius: 4,
+                        }}>
+                          <Text style={{ width: 'auto' }}>{(chargingMessage[1] / 1000).toFixed(2)} kW</Text>
+                          <Text style={{ width: 'auto' }}>{( (chargingMessage[1] / 1000).toFixed(2) * getPrice(station.billing, station.ppkw) ).toFixed(2)} BGN</Text>
+                        </View>
+                      </View>
+                      <View style={styles.stationContentCTAWrapper}>
+                        <View style={styles.stationContentCTAWrapperInner}>
+                          <Icon name="charging-station" style={styles.stationContentCTAWrapperInnerIcon} />
+                          <Text style={styles.stationContentCTAWrapperInnerText}>{t('station.cta_stop')}</Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  )
+                }
+                {
+                  !started && 
+                  (!station.operating ? (
+                    <View style={styles.stationContentCTAWrapper}>
+                      <View style={{ ...styles.stationContentCTAWrapperInner, backgroundColor: 'pink', }}>
+                        <Icon name="charging-station" style={{ ...styles.stationContentCTAWrapperInnerText, color: '#00000095', }} />
+                        <Text style={{ ...styles.stationContentCTAWrapperInnerText, color: '#00000095', }}>Заета или не работи</Text>
+                      </View>
+                    </View>
+                  ) : (
+                    <TouchableOpacity onPress={() => startCharging()} style={styles.stationContentCTAWrapper}>
+                      <View style={styles.stationContentCTAWrapperInner}>
+                        <Icon name="charging-station" style={styles.stationContentCTAWrapperInnerIcon} />
+                        <Text style={styles.stationContentCTAWrapperInnerText}>{t('station.cta')}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  ))
+                }
+
               </View>
 
             </ImageBackground>
           </View>
 
-        </View>
+        </View >
 
-      </SafeAreaView>
+      </SafeAreaView >
     </>
   );
 };

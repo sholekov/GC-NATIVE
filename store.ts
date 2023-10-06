@@ -22,7 +22,6 @@ export const getArticles: Function = (axiosInstance): Array<object> => {
 }
 
 export const setupUser: Function = (user_data: User, favourites: any[], imageRequest: AxiosPromise): void => {
-  console.log('setupUser', user_data, favourites);
   store.user = user_data
   if (favourites) {
     Object.assign(store.user, { favourite_places: favourites })
@@ -60,15 +59,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AxiosPromise } from 'axios';
 type Lang = 'bg' | 'en' | 'ro' | 'de' | 'ru' | 'fr' | 'it' | 'es' | 'pt' | 'pl' | 'hu' | 'cs' | 'sk' | 'sl' | 'hr' | 'sr' | 'mk' | 'sq' | 'el' | 'tr' | 'ar' | 'fa' | 'ur' | 'hi' | 'bn' | 'th' | 'zh' | 'ja' | 'ko' | 'he' | 'id' | 'ms' | 'vi' | 'tl' | 'ta' | 'ml' | 'kn' | 'te' | 'mr' | 'ne' | 'si' | 'my' | 'km' | 'lo' | 'am' | 'ti' | 'so' | 'sw' | 'rw' | 'ny' | 'ha' | 'ig' | 'yo' | 'zu' | 'xh' | 'st' | 'tn' | 'ts' | 'ss' | 've' | 'nr' | 'wo' | 'ff' | 'ak' | 'tw' | 'ee' | 'fo' | 'is' | 'et' | 'lv' | 'lt' | 'pl' | 'uk' | 'be' | 'kk' | 'ky' | 'uz' | 'tt' | 'tr' | 'tk' | 'az' | 'hy' | 'eu' | 'ca' | 'gl' | 'eu' | 'mt' | 'gd' | 'cy' | 'ga' | 'sq' | 'mk' | 'bs' | 'hr' | 'sr' | 'sl' | 'sk' | 'cs' | 'hu' | 'pl' | 'ru' | 'uk' | 'be' | 'kk' | 'ky' | 'uz' | 'tt' | 'tr' | 'tk' | 'az' | 'hy' | 'eu' | 'ca' | 'gl' | 'eu' | 'mt' | 'gd' | 'cy' | 'ga' | 'sq' | 'mk' | 'bs' | 'hr' | 'sr' | 'sl' | 'sk' | 'cs' | 'hu' | 'pl' | 'ru' | 'uk' | 'be' | 'kk' | 'ky' | 'uz' | 'tt' | 'tr' | 'tk' | 'az' | 'hy' | 'eu' | 'ca' | 'gl' | 'eu' | 'mt' | 'gd' | 'cy' | 'ga' | 'sq' | 'mk' | 'bs' | 'hr' | 'sr' | 'sl' | 'sk' | 'cs' | 'hu' | 'pl' | 'ru' | 'uk' | 'be' | 'kk' | 'ky' | 'uz';
 export const setAppUILanguage: Function = (selectedLang: Lang, i18n: any): void => {
-  AsyncStorage.setItem('user_preffered_UI_language', selectedLang)
+  AsyncStorage.setItem('user_preffered_UI_language', selectedLang ? selectedLang : 'en')
   i18n.changeLanguage(selectedLang);
   store.language =  selectedLang
 }
 
-export const store = proxy<{ user: User, station_location: any, station: any, language: string | null, stations: any, }>({
+export const store = proxy<{ user: User, station_location: any, station: any, language: string | null, stations: any, CHARGING: boolean, chargingMessage: JSON | null}>({
   language: null,
   user: null,
   station_location: null,
   station: null,
   stations: null,
+  CHARGING: null,
+  chargingMessage: null,
 })

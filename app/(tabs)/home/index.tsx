@@ -25,6 +25,7 @@ import Constants from 'expo-constants';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 
 // Components
+import MapActions from './mapActions'
 import LoggedIn from '@/app/(tabs)/home/loggedin'
 import Login from '@/app/(tabs)/home/login'
 import CustomCalloutComponent from '@/app/partials/CustomCallout'
@@ -38,7 +39,7 @@ import { usePlace } from '@/app/hooks/usePlace'
 import { useTranslation } from 'react-i18next';
 
 import { registerForPushNotificationsAsync } from '@/services/notifications'
-import { Stack } from 'expo-router';
+
 const HomeComponent = () => {
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
@@ -63,8 +64,7 @@ const HomeComponent = () => {
   }, []);
 
   const { t } = useTranslation();
-  const { user } = useSnapshot(store)
-  const { stations } = useSnapshot(store)
+  const { user, stations } = useSnapshot(store)
 
   const [userLocation, setUserLocation] = useState({ latitude: 43.828805, longitude: 25.9582707 });
   const handleUserLocation = async () => {
@@ -82,7 +82,7 @@ const HomeComponent = () => {
     setUserLocation(coords)
   }
   // useEffect(() => {
-    // handleUserLocation();
+  // handleUserLocation();
   // }, []);
 
   const loadStations = async () => {
@@ -106,6 +106,18 @@ const HomeComponent = () => {
     loadStations()
   }, [user?.id]);
 
+  useEffect(() => {
+    const _mapRef = mapRef.current
+    setTimeout(() => {
+      _mapRef.animateToRegion({
+        latitude: userLocation.latitude + 0.02,
+        longitude: userLocation.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      }, 2500)
+    }, 250);
+  }, [userLocation])
+
   const { PlaceBottomSheetComponent, placeSheetRef, selectedStation, setSelectedStation } = usePlace();
   const mapRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -113,6 +125,7 @@ const HomeComponent = () => {
   const handleSelectedPlace = (station, index) => {
     setSelectedStation(null)
     setupSelectedStation(null)
+    markerRefs.current[index].showCallout()
     mapRef.current.animateToRegion({
       latitude: station.lat - 0.025, longitude: station.lng,
       latitudeDelta: 0.0922,
@@ -145,7 +158,6 @@ const HomeComponent = () => {
 
   return (
     <View style={styles.container}>
-      {/* <Stack.Screen options={{ title: "Map" }} /> */}
       <MapView
         testID="mapView"
         showsUserLocation={true}
@@ -168,7 +180,7 @@ const HomeComponent = () => {
               title={place.name}
               description={place.region}
               onPress={() => handleSelectedPlace(place, index)}
-              // image={require('@/assets/images/pin-gigacharger.png')}
+            // image={require('@/assets/images/pin-gigacharger.png')}
             >
               <Image
                 source={require('@/assets/images/pin-gigacharger.png')}
@@ -180,6 +192,7 @@ const HomeComponent = () => {
         }
       </MapView>
       {user ? (<>
+        {(!blockView && stations) && <MapActions stations={stations} handleSelectedPlace={handleSelectedPlace} userLocation={userLocation} handleUserLocation={handleUserLocation} />}
         <LoggedIn />
         {blockView && <Pressable onTouchMove={() => { setBlockView(false); placeSheetRef.current.close() }} onPress={() => { setBlockView(false); placeSheetRef.current.close() }} style={styles.pressableComponent}></Pressable>}
         <PlaceBottomSheetComponent placeSheetRef={placeSheetRef} selectedStation={selectedStation} handleSheetChanges={handleSheetChanges} />

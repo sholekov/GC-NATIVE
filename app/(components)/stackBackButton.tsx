@@ -6,11 +6,9 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 const StackBackButtonComponent = () => {
   const navigation = useRouter();
   return (
-    <View style={{ backgroundColor: 'transparent', paddingHorizontal: 8, marginLeft: -8, }}>
-      <Pressable onPress={() => navigation.back()}>
-        <Icon name="chevron-left" size={23} color={'#333'} />
-      </Pressable>
-    </View>
+    <Pressable onPress={() => navigation.back()} style={{ backgroundColor: 'transparent', padding: 8, margin: -8, }}>
+      <Icon name="chevron-left" size={23} color={'#333'} />
+    </Pressable>
   );
 };
 

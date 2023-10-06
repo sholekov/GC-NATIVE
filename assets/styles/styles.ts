@@ -6,6 +6,12 @@ export default StyleSheet.create({
     flex: 1,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 6 : 0,
   },
+  containerLanguages: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignContent: 'center',
+    width: '100%',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',

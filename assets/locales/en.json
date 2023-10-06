@@ -120,7 +120,8 @@
   },
   "station": {
     "numberLabel": "Station",
-    "cta": "Start charging"
+    "cta": "Start charging",
+    "cta_stop": "Stop charging",
   },
 
   "commonNamespace": {
