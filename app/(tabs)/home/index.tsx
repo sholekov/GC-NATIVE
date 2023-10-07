@@ -25,6 +25,7 @@ import Constants from 'expo-constants';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 
 // Components
+import Charging from '@/app/(components)/charging'
 import MapActions from './mapActions'
 import LoggedIn from '@/app/(tabs)/home/loggedin'
 import Login from '@/app/(tabs)/home/login'
@@ -64,7 +65,7 @@ const HomeComponent = () => {
   }, []);
 
   const { t } = useTranslation();
-  const { user, stations } = useSnapshot(store)
+  const { user, stations, CHARGING } = useSnapshot(store)
 
   const [userLocation, setUserLocation] = useState({ latitude: 43.828805, longitude: 25.9582707 });
   const handleUserLocation = async () => {
@@ -192,6 +193,7 @@ const HomeComponent = () => {
         }
       </MapView>
       {user ? (<>
+        <Charging />
         {(!blockView && stations) && <MapActions stations={stations} handleSelectedPlace={handleSelectedPlace} userLocation={userLocation} handleUserLocation={handleUserLocation} />}
         <LoggedIn />
         {blockView && <Pressable onTouchMove={() => { setBlockView(false); placeSheetRef.current.close() }} onPress={() => { setBlockView(false); placeSheetRef.current.close() }} style={styles.pressableComponent}></Pressable>}

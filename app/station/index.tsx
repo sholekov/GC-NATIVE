@@ -1,4 +1,12 @@
+
+function getFirstTwoDigits(num: number) {
+  const str = Math.abs(num).toString();
+  return parseInt(str.slice(-2), 10);
+}
+
 import { toHumanReadable, getPrice } from '@/utils/helpers';
+import { getStation } from '@/helpers'
+
 const formatPower: Function = (watts: number) => {
   return (watts / 1000).toFixed(0);
 }
@@ -53,15 +61,51 @@ const StationInfo = () => {
   //   }
 
   const BASE_WS = process.env.EXPO_PUBLIC_API_WS;
-  let reconnectInterval = 1000;
 
   const [socket, setSocket] = useState(null);
-  const [message, setMessage] = useState(null);
+  // const [message, setMessage] = useState(null);
   const [started, setStarted] = useState(false);
   const [chargeLevel, setChargeLevel] = useState(0);
 
+  const setHelpers = (data) => {
+    console.log('setHelpers triggered');
+    if (station.operating) {
+      const message = JSON.parse(data);
+      store.chargingMessage = message[1];
+      if (message[1][1]) {
+        store.CHARGING = true;
+        const station_id = message[1][0];
+        // getStation(station_id)
+        // .then(response => {
+          // const selected_station = { data: station, stations: response.data };
+          // setupSelectedStation(statio
+          // setSelectedStation(selected_station)
+        // })
+        // setStationData()
+      }
+      if ((message[1][1] - 1) === 100 && (message[1][1] - 1) % 100 === 0) {
+        setChargeLevel(() => 0);
+      } else {
+        const _result = getFirstTwoDigits(message[1][1])
+        setChargeLevel(_result);
+      }
+    }
+  }
+
+  const resetHelpers = () => {
+    store.chargingMessage = null
+    console.log('resetHelpers triggered');
+  }
+
   useEffect(() => {
-    // console.log('StationInfo', BASE_WS);
+
+    if (store.CHARGING) {
+      // set CHARGING_STATION
+      // get station info
+
+      setStarted(true)
+    }
+
     const ws = new WebSocket(BASE_WS, '', { headers: { 'User-Agent': 'ReactNative' } }); // +'/drain/start?id='+station.user_id
 
     ws.onopen = () => {
@@ -71,8 +115,8 @@ const StationInfo = () => {
     };
 
     ws.onmessage = e => {
-      // a message was received
       console.log('Ooo...', e.data);
+      setHelpers(e.data)
     };
 
     ws.onerror = e => {
@@ -83,25 +127,21 @@ const StationInfo = () => {
     ws.onclose = e => {
       // connection closed
       console.log(e.code, e.reason);
+      resetHelpers();
     };
 
     setSocket(ws);
 
     // Clean up the connection when the component is unmounted
     return () => {
-      if(!store.CHARGING) {
+      setStarted(false)
+      setChargeLevel(0)
+      if (!store.CHARGING) {
         resetHelpers();
         if (ws) ws.close();
       }
     };
   }, []);
-
-  const resetHelpers = () => {
-    setStarted(false)
-    setChargeLevel(0)
-    store.chargingMessage = null
-    console.log('resetHelpers');
-  }
 
   // const sendPing = useCallback(() => {
   //   if (socket && socket.readyState === WebSocket.OPEN) {
@@ -118,10 +158,6 @@ const StationInfo = () => {
     //   .catch((error) => {
     //     console.error('Error:', error);
     //   });
-    function getFirstTwoDigits(num) {
-      const str = Math.abs(num).toString();
-      return parseInt(str.slice(-2), 10);
-    }
     if (socket) {
       socket.readyState === WebSocket.OPEN && socket.send(JSON.stringify(['drain/start', station.user_id]));
       console.log(socket.readyState, 'drain/start', socket);
@@ -129,13 +165,13 @@ const StationInfo = () => {
       socket.onmessage = e => {
         const message = JSON.parse(e.data);
         store.chargingMessage = message[1];
-        if (message[1][1]) { 
+        if (message[1][1]) {
           store.CHARGING = true;
         }
         if ((message[1][1] - 1) === 100 && (message[1][1] - 1) % 100 === 0) {
           setChargeLevel(0);
         } else {
-          const _result = parseInt(getFirstTwoDigits(message[1][1]))
+          const _result = getFirstTwoDigits(message[1][1])
           console.log('getFirstTwoDigits', _result);
           setChargeLevel(_result);
         }
@@ -148,8 +184,11 @@ const StationInfo = () => {
   const stopCharging = () => {
     if (socket) {
       socket.readyState === WebSocket.OPEN && socket.send(JSON.stringify(['drain/end', station.user_id]));
-      console.log(socket.readyState, 'drain/end', socket);
+      
+      store.CHARGING = false;
       resetHelpers();
+      
+      console.log(socket.readyState, 'drain/end', socket);
       socket.onmessage = e => {
         // a message was received
         console.log('stopCharging message', e.data);
@@ -269,7 +308,7 @@ const StationInfo = () => {
                 </View>
 
                 {
-                  started && chargingMessage && (
+                  started && chargingMessage?.length && (
                     <TouchableOpacity onPress={() => stopCharging()}>
                       <View style={{ position: 'relative', justifyContent: 'center', alignItems: 'center', marginBottom: 32, }}>
                         <Battery chargeLevel={chargeLevel} />
@@ -283,12 +322,9 @@ const StationInfo = () => {
                           alignItems: 'center',
                           paddingHorizontal: 12,
                           width: 168,
-                          // borderColor: 'red',
-                          // borderWidth: 2,
-                          // borderRadius: 4,
                         }}>
                           <Text style={{ width: 'auto' }}>{(chargingMessage[1] / 1000).toFixed(2)} kW</Text>
-                          <Text style={{ width: 'auto' }}>{( (chargingMessage[1] / 1000).toFixed(2) * getPrice(station.billing, station.ppkw) ).toFixed(2)} BGN</Text>
+                          <Text style={{ width: 'auto' }}>{((chargingMessage[1] / 1000).toFixed(2) * getPrice(station.billing, station.ppkw)).toFixed(2)} BGN</Text>
                         </View>
                       </View>
                       <View style={styles.stationContentCTAWrapper}>
@@ -301,7 +337,7 @@ const StationInfo = () => {
                   )
                 }
                 {
-                  !started && 
+                  !started &&
                   (!station.operating ? (
                     <View style={styles.stationContentCTAWrapper}>
                       <View style={{ ...styles.stationContentCTAWrapperInner, backgroundColor: 'pink', }}>

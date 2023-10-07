@@ -64,12 +64,13 @@ export const setAppUILanguage: Function = (selectedLang: Lang, i18n: any): void 
   store.language =  selectedLang
 }
 
-export const store = proxy<{ user: User, station_location: any, station: any, language: string | null, stations: any, CHARGING: boolean, chargingMessage: JSON | null}>({
+export const store = proxy<{ user: User, station_location: any, station: any, language: string | null, stations: any, CHARGING: boolean, CHARGING_STATION: null | any, chargingMessage: JSON | null}>({
   language: null,
   user: null,
   station_location: null,
   station: null,
   stations: null,
-  CHARGING: null,
+  CHARGING: false,
+  CHARGING_STATION: null,
   chargingMessage: null,
 })

@@ -5,17 +5,22 @@ import { View, Text, StyleSheet, Animated } from 'react-native';
 // Define the Battery component
 const Battery = ({ chargeLevel }) => {
   const [animatedValue, setAnimatedValue] = useState(new Animated.Value(0));
-
+  const [_chargeLevel, setChargeLevel] = useState(0);
+  
+  // useEffect(() => {
+  // }, []);
+  
   useEffect(() => {
+    console.log('chargeLevel', chargeLevel);
     Animated.timing(animatedValue, {
       toValue: chargeLevel,
-      duration: 500,
+      duration: 250,
       useNativeDriver: false,
     }).start();
   }, [chargeLevel]);
 
   const batteryWidth = animatedValue.interpolate({
-    inputRange: [0, 100],
+    inputRange: [0, 90],
     outputRange: ['0%', '100%'],
   });
 
@@ -23,9 +28,9 @@ const Battery = ({ chargeLevel }) => {
     <View style={styles.batteryContainer}>
       <View style={[styles.battery]}>
         <Animated.View style={[styles.batteryFill, { width: batteryWidth }]} />
-        {chargeLevel === 100 && (
+        {/* {_chargeLevel === 100 && (
           <Text style={styles.chargeText}>Charged</Text>
-        )}
+        )} */}
       </View>
       <View style={styles.batteryTip} />
     </View>

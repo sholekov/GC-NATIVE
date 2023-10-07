@@ -62,19 +62,25 @@ function calculateRegion(markers) {
 
 import { useTranslation } from 'react-i18next';
 const UserFavourites = () => {
-  const { user } = useSnapshot(store)
-  const { stations } = useSnapshot(store);
-
   const { t } = useTranslation();
+
+  const { user } = useSnapshot(store)
+  const { stations, chargingMessage } = useSnapshot(store);
+  const [chargeLevel, setChargeLevel] = useState(0);
+
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [user_stations, setUserStations] = useState(stations.filter(station => user.favourite_places.some(place => place.l_id === station.id)))
   const [shown_stations, setShownStations] = useState(stations.filter(station => user.favourite_places.some(place => place.l_id === station.id)));
 
   const mapRef = useRef(null);
 
-  useEffect(() => console.log('user_stations', user_stations.length, shown_stations?.length) )
+  useEffect(() => console.log('user_stations', user_stations.length, shown_stations?.length))
 
   useEffect(() => {
+    if (chargingMessage?.length) {
+      setChargeLevel(chargingMessage[1][1])
+    }
+
     const timer = setTimeout(() => {
       if (mapRef.current) {
         const region = calculateRegion(user_stations);
@@ -83,11 +89,11 @@ const UserFavourites = () => {
     }, 10);
     return () => clearTimeout(timer)
   }, []);
-  
+
   useEffect(() => {
     console.log('user.favourite_places: ', user?.favourite_places?.length);
     if (user && user.favourite_places) {
-      if(user_stations.length != user.favourite_places.length) {
+      if (user_stations.length != user.favourite_places.length) {
         router.replace('account/favourites')
       }
     }
@@ -213,6 +219,27 @@ const UserFavourites = () => {
                       paddingVertical: 4,
                       paddingHorizontal: 8,
                     }}>
+                      {
+                        chargeLevel ? (
+                          <View style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: 4,
+                            backgroundColor: '#00000010',
+                          }}>
+                            <View style={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              right: `${100 - chargeLevel}%`,
+                              height: 4,
+                              backgroundColor: '#000000',
+                            }}></View>
+                          </View>
+                        ) : null
+                      }
                       {/* <View style={{
                         backgroundColor: 'red',
                         borderRadius: 16,
