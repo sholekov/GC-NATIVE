@@ -10,6 +10,9 @@ import { StatusBar } from 'expo-status-bar';
 import * as Location from 'expo-location';
 import { router, Link, Stack } from 'expo-router';
 
+import { onAuthStateChanged, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '@/firebase'
+
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import { userRegister, userLogin, fetchCaptcha, setLocalUser } from '@/helpers'
@@ -87,6 +90,19 @@ const RegisterComponent = () => {
       password: password,
       captcha: captchaInput,
     };
+
+    createUserWithEmailAndPassword(auth, useremail, password)
+      .then(userCredentials => {
+        const user = userCredentials.user;
+        console.log('userCredentials:', userCredentials);
+        console.log('Registered with:', user.email);
+        router.replace('home');
+        setLoading(false);
+      })
+      .catch(error => alert(error.message))
+    
+    return;
+    
     userRegister(data)
       .then((status: boolean) => {
         if (status === true) {
@@ -135,7 +151,7 @@ const RegisterComponent = () => {
             <TextInput placeholder={t('register.placeholder.first_name')} onChangeText={setFirstName} style={styles.input} />
             <TextInput placeholder={t('register.placeholder.last_name')} onChangeText={setLastName} style={styles.input} />
 
-            <TextInput placeholder={t('register.placeholder.username')} keyboardType="email-address" autoCapitalize="none" onChangeText={setUseremail} style={styles.input} />
+            <TextInput placeholder={t('register.placeholder.useremail')} keyboardType="email-address" autoCapitalize="none" onChangeText={setUseremail} style={styles.input} />
             <TextInput placeholder={t('register.placeholder.password')} onChangeText={setPassword} autoCapitalize="none" secureTextEntry style={styles.input} />
 
             <View style={styles.captchaContainer}>

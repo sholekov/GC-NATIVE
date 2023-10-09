@@ -14,7 +14,9 @@
     "cta_lost_pin_label": "Забравен ПИН?",
     "placeholder": {
       "username": "Потребителско име",
-      "password": "ПИН"
+      "useremail": "Имейл",
+      "password": "Парола",
+      "pin": "ПИН"
     },
     "alert-lost-pin": {
       "title": "Забрави своя ПИН?",
@@ -34,7 +36,9 @@
       "first_name": "Име",
       "last_name": "Фамилия",
       "username": "Потребителско име",
-      "password": "ПИН",
+      "useremail": "Имейл",
+      "password": "Парола",
+      "pin": "ПИН",
       "enter_captcha": "Въведи CAPTCHA"
     },
     "alert-permissions": {

@@ -14,7 +14,9 @@
     "cta_lost_pin_label": "Lost your PIN?",
     "placeholder": {
       "username": "Username",
-      "password": "PIN"
+      "useremail": "Email",
+      "password": "Password",
+      "PIN": "PIN"
     },
     "alert-lost-pin": {
       "title": "Lost your PIN?",
@@ -34,7 +36,9 @@
       "first_name": "First Name",
       "last_name": "Last Name",
       "username": "Username",
+      "useremail": "Email",
       "password": "Password",
+      "pin": "PIN",
       "enter_captcha": "Enter CAPTCHA"
     },
     "alert-permissions": {

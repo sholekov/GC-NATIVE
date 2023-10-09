@@ -8,6 +8,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform, Pressable, ActivityIndicator, SafeAreaView, FlatList, } from 'react-native';
 import { Link } from 'expo-router';
 
+import { onAuthStateChanged, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '@/firebase'
+
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import languages from '@/assets/languages.json';
@@ -37,6 +40,18 @@ function Login({ triggerLoading }) {
       })
     }
     triggerLoading(true)
+
+    signInWithEmailAndPassword(auth, username, password)
+      .then(userCredentials => {
+        const user = userCredentials.user;
+        console.log('userCredentials:', userCredentials);
+        console.log('Logged in with:', user.email);
+        triggerLoading(false)
+      })
+      .catch(error => alert(error.message))
+
+    return;
+
     userLogin(data)
       .then(({ status, user }: { status: boolean, user: any }) => {
         if (status && user) {
@@ -98,7 +113,7 @@ function Login({ triggerLoading }) {
             <Text onPress={() => { __DEV__ & setSetCredentials(!setCredentials) }} style={styles.page_title}>
               {t('login.page-title')}
             </Text>
-            <TextInput placeholder={t('login.placeholder.username')} keyboardType="email-address" autoCapitalize="none" onChangeText={setUsername} style={{ ...styles.input }} />
+            <TextInput placeholder={t('login.placeholder.useremail')} keyboardType="email-address" autoCapitalize="none" onChangeText={setUsername} style={{ ...styles.input }} />
             <View style={styles.passwordContainer}>
               <TextInput
                 placeholder={t('login.placeholder.password')}

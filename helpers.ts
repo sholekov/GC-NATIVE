@@ -210,6 +210,29 @@ export const getOwnFunds = () => {
 }
 
 
+export const _setLocalUser = (force?: boolean): Promise<any> | void => {
+  console.log('setLocalUser');
+  if (!force) {
+    return Promise.all([
+      helpers.axiosInstance.get('me'),
+      helpers.axiosInstance.get('favorites')
+    ])
+      .then(([result_of_user, result_of_favourite]) => {
+        const imageUrl = BASE_URI + "images/clients/" + result_of_user.data.id + ".png"
+        const imageRequest = helpers.axiosInstance.get(imageUrl)
+        setupUser(result_of_user.data, result_of_favourite.data, imageRequest);
+        return true
+      })
+      .catch((e: Error) => {
+        console.log('e', e);
+        setupUser(null, null, null)
+        return false
+      })
+  } else {
+    setupUser(null, null, null)
+  }
+}
+
 export const setLocalUser = (force?: boolean): Promise<any> | void => {
   console.log('setLocalUser');
   if (!force) {

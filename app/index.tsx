@@ -1,12 +1,17 @@
 import '@/assets/locales/index';
 import { useTranslation } from 'react-i18next';
 
+import { useEffect } from 'react';
+
 import { Redirect, Stack, useRouter } from 'expo-router';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { setAppUILanguage } from '@/store'
-import { setLocalUser } from '@/helpers'
+import { userLogin, setLocalUser, } from '@/helpers'
+
+import { onAuthStateChanged, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '@/firebase'
 
 // import * as Sentry from 'sentry-expo';
 // Sentry.init({
@@ -18,7 +23,33 @@ import { setLocalUser } from '@/helpers'
 const StartPage = () => {
   console.log('StartPage triggered');
   const { i18n } = useTranslation();
-  setLocalUser()
+
+
+  useEffect(() => {
+    console.log('onAuthStateChanged triggered');
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('onAuthStateChanged', user);
+      if (user) {
+        const data = {
+          provider: '',
+          email: 'sholeka+1@googlemail.com',
+          password: '1234',
+        };
+        userLogin(data)
+        .then(({ status, user }: { status: boolean, user: any }) => {
+          if (status && user) {
+            setLocalUser()
+          } else {
+            Alert.alert(t('login.alert-error.title'), t('login.alert-error.text'), [{ text: t('login.alert-error.btn_text'), style: 'default' }]);
+          }
+        })
+      }
+    })
+
+    // return unsubscribe
+  }, [])
+  
   
   AsyncStorage.getItem('user_preffered_UI_language')
     .then((value) => {
