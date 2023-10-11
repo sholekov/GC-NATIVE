@@ -29,7 +29,6 @@ const StartPage = () => {
     console.log('onAuthStateChanged triggered');
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('onAuthStateChanged', user);
       if (user) {
         const data = {
           provider: '',

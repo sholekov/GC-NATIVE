@@ -6,23 +6,27 @@ function getFirstTwoDigits(num: number) {
 import { toHumanReadable, getPrice } from '@/utils/helpers';
 
 import React, { Component, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { View, Text, StyleSheet, Animated, Image, TouchableOpacity } from 'react-native';
+
+import { usePlace } from '@/app/hooks/usePlace'
 
 import { store, } from '@/store'
+import { fetchStation, getStation, } from '@/helpers'
 import { useSnapshot } from 'valtio';
 import { use } from 'i18next';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const BASE_WS = process.env.EXPO_PUBLIC_API_WS;
 
-const ChargingComponent = () => {
-  const { user, stations, CHARGING, chargingMessage } = useSnapshot(store)
+const ChargingComponent = ({ handleSelectedPlace }) => {
+  const { user, stations, CHARGING, chargingMessage, charged_station_id } = useSnapshot(store)
 
   const [animatedValue, setAnimatedValue] = useState(new Animated.Value(0));
   const [chargeLevel, setChargeLevel] = useState(null);
+  const [chargingLocation, setChargingLocation] = useState(null);
+  const [chargingStationID, setChargingStationID] = useState(null);
 
   useEffect(() => {
-    console.log('chargeLevel', chargeLevel);
     if (chargeLevel) {
       Animated.timing(animatedValue, {
         toValue: chargeLevel,
@@ -37,33 +41,45 @@ const ChargingComponent = () => {
     outputRange: ['0%', '100%'],
   });
 
+  const [socket, setSocket] = useState(null);
   useEffect(() => {
     const ws = new WebSocket(BASE_WS, '', { headers: { 'User-Agent': 'ReactNative' } });
-
-    ws.onopen = () => {
-      // connection opened
-      console.log('connection opened');
-    };
+    setSocket(ws);
 
     ws.onmessage = e => {
       const _data = JSON.parse(e.data);
-      console.log('onmessage', e.data, _data);
-      if (_data[0] === 'session') {
+      console.log('onmessage', _data);
+      if (_data.length && _data[0] === 'session') {
         store.CHARGING = true
+        store.charged_station_id = _data[1][0]
+      }
+      if (_data[0] === 'session' && chargingLocation == null) {
+        fetchStation(_data[1][0])
+          .then((station) => {
+            // loop stations
+            // console.log('store.stations', store.stations);
+            store.stations.forEach((_station: Object) => {
+              if (_station.id === station.data.station.loc_id) {
+                console.log('station loc_id', _station.id);
+                setChargingLocation(_station);
+              }
+            })
+            // {"id": 75, "is_public": 0, "lat": 42.675037, "lng": 23.260613, "name": "10135 - StKr", "region": "Sofia", "stations": 1}
+            // console.log('stationID', _data[1][0], station.data.loc_id);
+          })
+          .catch(error => {
+            console.error('Error fetching station data:', error);
+          })
         store.chargingMessage = _data[1];
       }
     };
 
-    ws.onerror = e => {
-      // an error occurred
-      console.log(e.message);
-    };
+    ws.onerror = e => console.log(e.message)
+    ws.onclose = e => console.log(e.code, e.reason)
 
-    ws.onclose = e => {
-      // connection closed
-      console.log(e.code, e.reason);
-    };
-
+    return () => {
+      ws.close();
+    }
   }, [])
 
   useEffect(() => {
@@ -72,8 +88,38 @@ const ChargingComponent = () => {
     }
   }, [chargingMessage])
 
-  return CHARGING && (
+
+  const stopCharging = () => {
+    console.log('stopCharging pressed')
+    if (socket) {
+      socket.readyState === WebSocket.OPEN && socket.send(JSON.stringify(['drain/end', charged_station_id]));
+
+      socket.onmessage = e => {
+        console.log('stopCharging message', e.data);
+
+        store.CHARGING = false
+        store.chargingMessage = null
+        console.log(socket.readyState, 'drain/end');
+      };
+    }
+  }
+
+  return (CHARGING && chargingMessage) && (
     <View style={styles.container}>
+
+      <TouchableOpacity onPress={() => handleSelectedPlace(chargingLocation, 3)}>
+        <Image
+          style={{
+            width: 62, height: 62,
+          }}
+          source={require('@/assets/images/pin-gigacharger.png')}
+        />
+        {(CHARGING && chargingMessage) ? <Text>{chargingMessage[1]}</Text> : <Text>! chargingMessage</Text>}
+      </TouchableOpacity>
+
+      <View style={{ marginBottom: 6, }}>
+        <Text style={{ width: 'auto', fontSize: 18, textAlign: 'center', fontWeight: '500', }}>{chargingLocation?.name}</Text>
+      </View>
 
       <View style={styles.batteryContainer}>
         <View style={styles.batteryTip} />
@@ -82,56 +128,49 @@ const ChargingComponent = () => {
         </View>
       </View>
 
-      {/* <Text style={styles.label}>{chargeLevel}</Text> */}
-      
-      <Text style={{ width: 'auto' }}>{(chargingMessage[1] / 1000).toFixed(2)} kW</Text>
-      {/* <Text style={{ width: 'auto' }}>{((chargingMessage[1] / 1000).toFixed(2) * getPrice(station.billing, station.ppkw)).toFixed(2)} BGN</Text> */}
-                        
-      <View style={styles.stopButton}>
-        <Text style={styles.labelStop}>stop</Text>
-        <FontAwesome name="stop-circle" size={30} color="#FF0000" onPress={() => {
-          // Handle stop button press here
-          console.log('Stop button pressed!');
-        }} />
+      <View style={{ marginBottom: 6, }}>
+        <Text style={{ width: 'auto', fontSize: 18, textAlign: 'center', fontWeight: '500', }}>{(chargingMessage[1] / 1000).toFixed(2)}</Text>
+        <Text style={{ width: 'auto', fontSize: 22, textAlign: 'center', }}>kW</Text>
       </View>
+      {/* <Text style={{ width: 'auto' }}>{((chargingMessage[1] / 1000).toFixed(2) * getPrice(station.billing, station.ppkw)).toFixed(2)} BGN</Text> */}
+
+      <View style={{ paddingVertical: 8, width: '100%', backgroundColor: '#00000075', }}>
+        <Text style={{ width: 'auto', fontSize: 15, textAlign: 'center', fontWeight: '500', color: '#fff', }}>{(chargingMessage[1] / 1000).toFixed(2)} lv.</Text>
+      </View>
+
+      <TouchableOpacity onPress={stopCharging} style={styles.stopButton}>
+        <Text style={styles.labelStop}>STOP</Text>
+        <FontAwesome name="stop-circle" size={51} color="#FF0000" />
+      </TouchableOpacity>
 
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  stopButton: {
-    // position: 'absolute',
-    // bottom: 10,
-    // alignItems: 'center',
-    // justifyContent: 'center'
- },
- 
+
   container: {
     position: 'absolute',
     top: '10%',
     right: 16,
 
-    width: 52,
-    height: 52 * 3,
+    width: 52 * 1.25,
+    height: 52 * 7,
 
     justifyContent: 'flex-end',
     alignItems: 'center',
 
-    paddingVertical: 8,
-
     backgroundColor: '#fff',
     borderRadius: 99,
-  },
-  labelStop: {
-    maxWidth: '100%',
 
-    justifyContent: 'center',
-    alignItems: 'center',
-
-    textAlign: 'center',
-    fontSize: 12,
-    fontWeight: '500',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5
   },
   label: {
     // opacity: 0,
@@ -153,15 +192,11 @@ const styles = StyleSheet.create({
 
 
   batteryContainer: {
-    marginBottom: 4,
-    // flexDirection: 'row',
+    marginBottom: 8,
     alignItems: 'center',
-    // height: '100%',
-    // borderRadius: 99,
-    // backgroundColor: 'green',
   },
   battery: {
-    width: 24,
+    width: 38,
     height: 58,
     // height: '100%',
     // paddingLeft: 3,
@@ -185,6 +220,27 @@ const styles = StyleSheet.create({
     marginBottom: -1,
   },
 
+  // STOP area
+  labelStop: {
+    maxWidth: '100%',
+
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  stopButton: {
+    paddingTop: 8,
+    paddingBottom: 8,
+    // justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    backgroundColor: '#00000017',
+    borderBottomLeftRadius: 99,
+    borderBottomRightRadius: 99,
+  },
 });
 
 

@@ -124,6 +124,8 @@ const HomeComponent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [blockView, setBlockView] = useState(false);
   const handleSelectedPlace = (station, index) => {
+    console.log('station', station); // station {"id": 8, "is_public": 1, "lat": 43.851807, "lng": 25.952181, "name": "Офис 16", "region": "Ruse", "stations": 1}
+    
     setSelectedStation(null)
     setupSelectedStation(null)
     markerRefs.current[index].showCallout()
@@ -193,7 +195,7 @@ const HomeComponent = () => {
         }
       </MapView>
       {user ? (<>
-        <Charging />
+        <Charging handleSelectedPlace={handleSelectedPlace} />
         {(!blockView && stations) && <MapActions stations={stations} handleSelectedPlace={handleSelectedPlace} userLocation={userLocation} handleUserLocation={handleUserLocation} />}
         <LoggedIn />
         {blockView && <Pressable onTouchMove={() => { setBlockView(false); placeSheetRef.current.close() }} onPress={() => { setBlockView(false); placeSheetRef.current.close() }} style={styles.pressableComponent}></Pressable>}

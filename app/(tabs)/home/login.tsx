@@ -31,8 +31,10 @@ function Login({ triggerLoading }) {
   const handleLogin = () => {
     const data = {
       provider: '',
-      email: setCredentials ? username : 'sholeka+1@googlemail.com',
-      password: setCredentials ? password : '1234',
+      email: setCredentials ? username : 'sholeka@gmail.com',
+      password: setCredentials ? password : '123123',
+      // email: setCredentials ? username : 'sholeka+1@googlemail.com',
+      // password: setCredentials ? password : '1234',
     };
     if (loginWithNetworx) {
       Object.assign(data, {

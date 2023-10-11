@@ -6,10 +6,10 @@ import { View, Text, StyleSheet, Animated } from 'react-native';
 const Battery = ({ chargeLevel }) => {
   const [animatedValue, setAnimatedValue] = useState(new Animated.Value(0));
   const [_chargeLevel, setChargeLevel] = useState(0);
-  
+
   // useEffect(() => {
   // }, []);
-  
+
   useEffect(() => {
     console.log('chargeLevel', chargeLevel);
     Animated.timing(animatedValue, {

@@ -196,6 +196,12 @@ export const fetchRates: Function = () => {
   return helpers.axiosInstance('rates')
 }
 
+export const fetchStation: Function = (station_id: number) => {
+  return helpers.axiosInstance({
+    method: 'GET',
+    url: `station?id=${station_id}&timestamp=true`,
+  })
+}
 
 // export const user = {}
 export const getOwnMoney: Function = () => { }

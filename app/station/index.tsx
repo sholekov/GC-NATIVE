@@ -33,7 +33,7 @@ const BASE_URI = process.env.EXPO_PUBLIC_API_URL;
 import { useTranslation } from 'react-i18next';
 const StationInfo = () => {
   const { t } = useTranslation();
-  const { station, station_location, chargingMessage } = useSnapshot(store)
+  const { station, station_location, chargingMessage, CHARGING } = useSnapshot(store)
 
   const bgImage = BASE_URI + "images/stations/" + station.user.id + ".png"
 
@@ -69,12 +69,14 @@ const StationInfo = () => {
 
   const setHelpers = (data) => {
     console.log('setHelpers triggered');
-    if (station.operating) {
+    if (station.operating || true) {
       const message = JSON.parse(data);
+      const station_id = message[1][0];
+      console.log('setHelpers', station_id, station.user_id);
+      
       store.chargingMessage = message[1];
       if (message[1][1]) {
-        store.CHARGING = true;
-        const station_id = message[1][0];
+        store.CHARGING = true
         // getStation(station_id)
         // .then(response => {
           // const selected_station = { data: station, stations: response.data };
@@ -99,7 +101,7 @@ const StationInfo = () => {
 
   useEffect(() => {
 
-    if (store.CHARGING) {
+    if (CHARGING) {
       // set CHARGING_STATION
       // get station info
 
@@ -107,7 +109,8 @@ const StationInfo = () => {
     }
 
     const ws = new WebSocket(BASE_WS, '', { headers: { 'User-Agent': 'ReactNative' } }); // +'/drain/start?id='+station.user_id
-
+    setSocket(ws);
+    
     ws.onopen = () => {
       // connection opened
       console.log('connection opened');
@@ -116,7 +119,13 @@ const StationInfo = () => {
 
     ws.onmessage = e => {
       console.log('Ooo...', e.data);
-      setHelpers(e.data)
+
+      // if (e.data[0] === 'session') {   
+      //   setHelpers(e.data)
+      // }
+      if (CHARGING) {
+        setHelpers(e.data)
+      }
     };
 
     ws.onerror = e => {
@@ -130,13 +139,11 @@ const StationInfo = () => {
       resetHelpers();
     };
 
-    setSocket(ws);
-
-    // Clean up the connection when the component is unmounted
     return () => {
       setStarted(false)
       setChargeLevel(0)
-      if (!store.CHARGING) {
+      // Clean up the connection when the component is unmounted
+      if (!CHARGING) {
         resetHelpers();
         if (ws) ws.close();
       }
@@ -159,24 +166,25 @@ const StationInfo = () => {
     //     console.error('Error:', error);
     //   });
     if (socket) {
+      console.log('startCharging');
+      console.log(socket.readyState, 'drain/start');
       socket.readyState === WebSocket.OPEN && socket.send(JSON.stringify(['drain/start', station.user_id]));
-      console.log(socket.readyState, 'drain/start', socket);
-      setStarted(true);
       socket.onmessage = e => {
+        console.log('startCharging onmessage', e.data);
         const message = JSON.parse(e.data);
         store.chargingMessage = message[1];
         if (message[1][1]) {
+          store.charged_station_id = message[1][0]
           store.CHARGING = true;
+          setStarted(true);
+          const station_id = message[1][0];
         }
         if ((message[1][1] - 1) === 100 && (message[1][1] - 1) % 100 === 0) {
           setChargeLevel(0);
         } else {
           const _result = getFirstTwoDigits(message[1][1])
-          console.log('getFirstTwoDigits', _result);
           setChargeLevel(_result);
         }
-
-        console.log('onmessage', e.data);
       };
     }
   }
@@ -185,14 +193,11 @@ const StationInfo = () => {
     if (socket) {
       socket.readyState === WebSocket.OPEN && socket.send(JSON.stringify(['drain/end', station.user_id]));
       
-      store.CHARGING = false;
-      resetHelpers();
+      store.CHARGING = false
+      resetHelpers()
+      setStarted(false)
       
-      console.log(socket.readyState, 'drain/end', socket);
-      socket.onmessage = e => {
-        // a message was received
-        console.log('stopCharging message', e.data);
-      };
+      console.log(socket.readyState, 'drain/end');
     }
   }
 
@@ -309,7 +314,7 @@ const StationInfo = () => {
 
                 {
                   started && chargingMessage?.length && (
-                    <TouchableOpacity onPress={() => stopCharging()}>
+                    <TouchableOpacity onPress={stopCharging}>
                       <View style={{ position: 'relative', justifyContent: 'center', alignItems: 'center', marginBottom: 32, }}>
                         <Battery chargeLevel={chargeLevel} />
                         <View style={{
@@ -337,7 +342,7 @@ const StationInfo = () => {
                   )
                 }
                 {
-                  !started &&
+                  !started ?
                   (!station.operating ? (
                     <View style={styles.stationContentCTAWrapper}>
                       <View style={{ ...styles.stationContentCTAWrapperInner, backgroundColor: 'pink', }}>
@@ -352,7 +357,7 @@ const StationInfo = () => {
                         <Text style={styles.stationContentCTAWrapperInnerText}>{t('station.cta')}</Text>
                       </View>
                     </TouchableOpacity>
-                  ))
+                  )) : null
                 }
 
               </View>
