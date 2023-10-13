@@ -206,7 +206,7 @@ const HomeComponent = () => {
           <View style={styles.decoTransparentView}>
             {/* <Image source={require('@/assets/blurredImage.png')} /> */}
           </View>
-          <Login triggerLoading={() => setIsLoading(true)} />
+          <Login triggerLoading={setIsLoading} />
         </>)}
       {isLoading && <ActivityIndicator size="large" style={styles.activityIndicatorStyle} />}
     </View>

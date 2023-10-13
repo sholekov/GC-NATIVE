@@ -22,7 +22,7 @@ const AccountMoneyComponent = () => {
   const { t } = useTranslation();
 
   // TODO: get from server
-  const payment_methods = ["office", "paypal-checkout", "revolut-pay", "bank-card"];
+  const payment_methods = ["office", "paypal", "revolut-pay", "card"];
 
   return (
     <SafeAreaView style={{ ...styles.container, }}>
@@ -35,18 +35,49 @@ const AccountMoneyComponent = () => {
         {/* add money */}
         <View style={{ paddingVertical: 32, }}>
           <View style={{ paddingHorizontal: 12, paddingBottom: 16, }}>
-            <Text style={{ paddingBottom: 8, fontSize: 24, }}>{t('deposit.depositing')}</Text>
-            <Text style={{ fontSize: 14, }}>{t('deposit.depositingDesc')}</Text>
+            <Text style={{ paddingBottom: 8, fontSize: 24, textAlign: "center", }}>{t('deposit.depositing')}</Text>
+            <Text style={{ fontSize: 14, textAlign: "center", }}>{t('deposit.depositingDesc')}</Text>
           </View>
           <View style={{}}>
             <View style={styles.btns_container}>
               {
                 payment_methods.map((item, index) => (
                   <View key={item}>
-                    <Link href={`account/${item}`} asChild >
+                    <Link href={{ pathname: `account/(type)`, params: { type: item } }} asChild >
                       <Pressable>
                         <View style={[{ ...styles.btn_container, }, (index == 0) && { ...styles.roundedTop }, (index + 1 === payment_methods.length) && { ...styles.roundedBottom }]}>
                           <View style={styles.btn_container.textWrapper}>
+                            {
+                              item === 'office' ? (
+                                <Icon
+                                  style={{ width: 32, }}
+                                  name='building'
+                                  size={18}
+                                  color={'#333'}
+                                />
+                              ) : item === 'paypal' ? (
+                                <Icon
+                                  style={{ width: 32, }}
+                                  name='paypal'
+                                  size={18}
+                                  color={'#333'}
+                                />
+                              ) : item === 'revolut-pay' ? (
+                                <Icon
+                                  style={{ width: 32, }}
+                                  name='money-bill-wave'
+                                  size={18}
+                                  color={'#333'}
+                                />
+                              ) : item === 'card' ? (
+                                <Icon
+                                  style={{ width: 32, }}
+                                  name='credit-card'
+                                  size={18}
+                                  color={'#333'}
+                                />
+                              ) : null
+                            }
                             <Text style={styles.btn_container.textWrapperText}>{t(`deposit.${item}`)}</Text>
                           </View>
                           <Icon

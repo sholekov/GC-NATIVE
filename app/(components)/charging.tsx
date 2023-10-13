@@ -14,6 +14,9 @@ import { store, } from '@/store'
 import { fetchStation, getStation, } from '@/helpers'
 import { useSnapshot } from 'valtio';
 import { use } from 'i18next';
+
+// Components
+import Battery from '@/app/(components)/battery';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const BASE_WS = process.env.EXPO_PUBLIC_API_WS;
@@ -21,25 +24,11 @@ const BASE_WS = process.env.EXPO_PUBLIC_API_WS;
 const ChargingComponent = ({ handleSelectedPlace }) => {
   const { user, stations, CHARGING, chargingMessage, charged_station_id } = useSnapshot(store)
 
-  const [animatedValue, setAnimatedValue] = useState(new Animated.Value(0));
   const [chargeLevel, setChargeLevel] = useState(null);
   const [chargingLocation, setChargingLocation] = useState(null);
   const [chargingStationID, setChargingStationID] = useState(null);
 
-  useEffect(() => {
-    if (chargeLevel) {
-      Animated.timing(animatedValue, {
-        toValue: chargeLevel,
-        duration: 250,
-        useNativeDriver: false,
-      }).start();
-    }
-  }, [chargeLevel]);
 
-  const batteryHeight = animatedValue.interpolate({
-    inputRange: [0, 90],
-    outputRange: ['0%', '100%'],
-  });
 
   const [socket, setSocket] = useState(null);
   useEffect(() => {
@@ -121,12 +110,7 @@ const ChargingComponent = ({ handleSelectedPlace }) => {
         <Text style={{ width: 'auto', fontSize: 18, textAlign: 'center', fontWeight: '500', }}>{chargingLocation?.name}</Text>
       </View>
 
-      <View style={styles.batteryContainer}>
-        <View style={styles.batteryTip} />
-        <View style={[styles.battery]}>
-          <Animated.View style={[styles.batteryFill, { height: batteryHeight }]} />
-        </View>
-      </View>
+      <Battery chargeLevel={chargeLevel} />
 
       <View style={{ marginBottom: 6, }}>
         <Text style={{ width: 'auto', fontSize: 18, textAlign: 'center', fontWeight: '500', }}>{(chargingMessage[1] / 1000).toFixed(2)}</Text>
@@ -191,34 +175,6 @@ const styles = StyleSheet.create({
   },
 
 
-  batteryContainer: {
-    marginBottom: 8,
-    alignItems: 'center',
-  },
-  battery: {
-    width: 38,
-    height: 58,
-    // height: '100%',
-    // paddingLeft: 3,
-    borderColor: 'black',
-    borderWidth: 2,
-    borderRadius: 4,
-    justifyContent: 'flex-end',
-  },
-  batteryFill: {
-    maxHeight: 158,
-    width: '100%',
-    backgroundColor: 'limegreen',
-    // justifyContent: 'center',
-    // borderRadius: 99,
-  },
-  batteryTip: {
-    height: 5,
-    width: 12,
-    backgroundColor: 'black',
-    borderRadius: 2,
-    marginBottom: -1,
-  },
 
   // STOP area
   labelStop: {

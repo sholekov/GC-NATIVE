@@ -4,8 +4,22 @@ import { useStripe } from '@stripe/stripe-react-native';
 import { Alert, Text, Linking, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
-const CheckoutScreen = ({amount}) => {
+const CheckoutScreen = ({amount, type, setConfirmAmount}) => {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    console.log('amount', amount);
+    console.log('type', type);
+    if (amount === '') {
+      setConfirmAmount(false);
+      return;
+    }
+
+    initializePaymentSheet()
+      .then( () => {
+        openPaymentSheet();
+      })
+  }, [amount]);
 
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [loading, setLoading] = useState(false);
@@ -52,7 +66,7 @@ const CheckoutScreen = ({amount}) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ amount: parseFloat(amount) }), // Send the amount to your backend
+      body: JSON.stringify({ amount: parseFloat(amount), type: type }), // Send the amount to your backend
     });
 
     // console.log('response', response);
@@ -93,9 +107,11 @@ const CheckoutScreen = ({amount}) => {
 
   const openPaymentSheet = async () => {
     const { error } = await presentPaymentSheet();
-
     if (error) {
-      Alert.alert(`Error code: ${error.code}`, error.message);
+      if (error.code === 'Canceled') {
+        // Alert.alert(`${error.message}`, `Please try again.`)
+        setConfirmAmount(false);
+      } else __DEV__ ? Alert.alert(`Error code: ${error.code}`, error.message) : console.log('error', error);
     } else {
       Alert.alert('Success', 'Your order is confirmed!');
       // redirect to home
@@ -103,18 +119,14 @@ const CheckoutScreen = ({amount}) => {
     }
   };
 
-  useEffect(() => {
-    initializePaymentSheet();
-  }, []);
-
-  return (
-    <View>
-      <TouchableOpacity onPress={openPaymentSheet} style={localStyles.confirmButton}>
-        <Text style={{ color: '#fff' }}>{t('deposit.label-send-payment')}</Text>
-      </TouchableOpacity>
-    </View>
-  );
+  return <View><Text style={{ opacity: 0 }}>{t('deposit.label-send-payment')}</Text></View>;
 }
+
+{/* <View>
+  <TouchableOpacity onPress={openPaymentSheet} style={localStyles.confirmButton}>
+    <Text style={{ color: '#fff' }}>{t('deposit.label-send-payment')}</Text>
+  </TouchableOpacity>
+</View> */}
 
 export default CheckoutScreen;
 

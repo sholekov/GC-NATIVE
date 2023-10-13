@@ -58,7 +58,7 @@
       "wallet": "Your money",
       "payment-methods": "Payment methods",
       "promotional-ballance": "Promotional balance",
-      "transactions": "Billingи"
+      "transactions": "Billing"
     },
     "paymentMethodsLabel": {
       "Networx": "Networx",
@@ -248,6 +248,18 @@
     "noSearchResults": "No results found."
   },
   "deposit": {
+    "label" : {
+      "depositWith": {
+        "paypal": "Paypal",
+        "card": "Bank card",
+        "googlepay": "Google Pay",
+        "revolut": "Revolut",
+        "office": "Networx Bulgaria office"
+      }
+    },
+    "placeholder": {
+      "enter_amount": "Enter amount"
+    },
     "depositing": "Deposit funds",
     "depositingDesc": "Charge your virtual account",
     "depositingDescr": "Below you will find a list of available payment methods.",

@@ -14,7 +14,7 @@ import { store } from '@/store'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 // Components
-import BackToMoneyComponent from '@/app/account/wallet/back-to-money';
+import BackToMoneyComponent from '@/app/account/(type)/back-to-money';
 
 const BASE_URI = process.env.EXPO_PUBLIC_API_URL;
 

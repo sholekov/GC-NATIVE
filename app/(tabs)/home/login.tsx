@@ -29,6 +29,8 @@ function Login({ triggerLoading }) {
   const [setCredentials, setSetCredentials] = useState(true);
 
   const handleLogin = () => {
+    console.log('handleLogin triggered');
+    
     const data = {
       provider: '',
       email: setCredentials ? username : 'sholeka@gmail.com',
@@ -43,17 +45,21 @@ function Login({ triggerLoading }) {
     }
     triggerLoading(true)
 
-    signInWithEmailAndPassword(auth, username, password)
+    signInWithEmailAndPassword(auth, data.email, data.password)
       .then(userCredentials => {
         const user = userCredentials.user;
         console.log('userCredentials:', userCredentials);
         console.log('Logged in with:', user.email);
+      })
+      .catch(error => {
+        alert(error.message)
+        // Alert.alert(t('login.alert-error.title'), t('login.alert-error.text'), [{ text: t('login.alert-error.btn_text'), style: 'default' }]);
         triggerLoading(false)
       })
-      .catch(error => alert(error.message))
 
     return;
 
+    // not used because of firebase auth
     userLogin(data)
       .then(({ status, user }: { status: boolean, user: any }) => {
         if (status && user) {

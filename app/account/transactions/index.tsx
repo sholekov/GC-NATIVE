@@ -13,7 +13,7 @@ import { store } from '@/store'
 
 // Components
 import BackButton from '@/app/(components)/stackBackButton';
-import BackToMoneyComponent from '@/app/account/wallet/back-to-money';
+import BackToMoneyComponent from '@/app/account/(type)/back-to-money';
 
 import { useTranslation } from 'react-i18next';
 const AccountMoneySubComponent = () => {

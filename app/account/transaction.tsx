@@ -11,7 +11,7 @@ import { useSnapshot } from 'valtio'
 import { store } from '@/store'
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import BackToMoneyComponent from '@/app/account/wallet/back-to-money';
+import BackToMoneyComponent from '@/app/account/(type)/back-to-money';
 
 const openURL = (url: string) => {
   Linking.canOpenURL(url).then(supported => {

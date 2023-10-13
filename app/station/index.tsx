@@ -26,7 +26,8 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 
 // Components
 import PlaceHeading from '@/app/partials/(tabs)/(placeHeading)'
-import Battery from './Battery';
+import Battery from '@/app/(components)/battery';
+
 
 const BASE_URI = process.env.EXPO_PUBLIC_API_URL;
 
@@ -73,15 +74,15 @@ const StationInfo = () => {
       const message = JSON.parse(data);
       const station_id = message[1][0];
       console.log('setHelpers', station_id, station.user_id);
-      
+
       store.chargingMessage = message[1];
       if (message[1][1]) {
         store.CHARGING = true
         // getStation(station_id)
         // .then(response => {
-          // const selected_station = { data: station, stations: response.data };
-          // setupSelectedStation(statio
-          // setSelectedStation(selected_station)
+        // const selected_station = { data: station, stations: response.data };
+        // setupSelectedStation(statio
+        // setSelectedStation(selected_station)
         // })
         // setStationData()
       }
@@ -110,7 +111,7 @@ const StationInfo = () => {
 
     const ws = new WebSocket(BASE_WS, '', { headers: { 'User-Agent': 'ReactNative' } }); // +'/drain/start?id='+station.user_id
     setSocket(ws);
-    
+
     ws.onopen = () => {
       // connection opened
       console.log('connection opened');
@@ -192,11 +193,11 @@ const StationInfo = () => {
   const stopCharging = () => {
     if (socket) {
       socket.readyState === WebSocket.OPEN && socket.send(JSON.stringify(['drain/end', station.user_id]));
-      
+
       store.CHARGING = false
       resetHelpers()
       setStarted(false)
-      
+
       console.log(socket.readyState, 'drain/end');
     }
   }
@@ -271,6 +272,27 @@ const StationInfo = () => {
                             }
                         </View> */}
 
+              {
+                started && chargingMessage?.length && (
+                  <View style={{ position: 'relative', justifyContent: 'center', alignItems: 'center', marginBottom: 32, }}>
+                    <Battery chargeLevel={chargeLevel} />
+                    <View style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 18,
+                      bottom: 0,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      paddingHorizontal: 12,
+                      width: 168,
+                    }}>
+                      <Text style={{ width: 'auto' }}>{(chargingMessage[1] / 1000).toFixed(2)} kW</Text>
+                      <Text style={{ width: 'auto' }}>{((chargingMessage[1] / 1000).toFixed(2) * getPrice(station.billing, station.ppkw)).toFixed(2)} BGN</Text>
+                    </View>
+                  </View>
+                )
+              }
               <View style={styles.stationContentWrapper}>
                 {/* {chargingMessage && (
                   <View style={styles.stationContentLabel}>
@@ -315,26 +337,9 @@ const StationInfo = () => {
                 {
                   started && chargingMessage?.length && (
                     <TouchableOpacity onPress={stopCharging}>
-                      <View style={{ position: 'relative', justifyContent: 'center', alignItems: 'center', marginBottom: 32, }}>
-                        <Battery chargeLevel={chargeLevel} />
-                        <View style={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 18,
-                          bottom: 0,
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          paddingHorizontal: 12,
-                          width: 168,
-                        }}>
-                          <Text style={{ width: 'auto' }}>{(chargingMessage[1] / 1000).toFixed(2)} kW</Text>
-                          <Text style={{ width: 'auto' }}>{((chargingMessage[1] / 1000).toFixed(2) * getPrice(station.billing, station.ppkw)).toFixed(2)} BGN</Text>
-                        </View>
-                      </View>
                       <View style={styles.stationContentCTAWrapper}>
-                        <View style={styles.stationContentCTAWrapperInner}>
-                          <Icon name="charging-station" style={styles.stationContentCTAWrapperInnerIcon} />
+                        <View style={{ ...styles.stationContentCTAWrapperInner, paddingHorizontal: 12, backgroundColor: '#FF0000', }}>
+                          <Icon name="stop-circle" style={{ ...styles.stationContentCTAWrapperInnerIcon, fontSize: 32, }} />
                           <Text style={styles.stationContentCTAWrapperInnerText}>{t('station.cta_stop')}</Text>
                         </View>
                       </View>
@@ -343,21 +348,21 @@ const StationInfo = () => {
                 }
                 {
                   !started ?
-                  (!station.operating ? (
-                    <View style={styles.stationContentCTAWrapper}>
-                      <View style={{ ...styles.stationContentCTAWrapperInner, backgroundColor: 'pink', }}>
-                        <Icon name="charging-station" style={{ ...styles.stationContentCTAWrapperInnerText, color: '#00000095', }} />
-                        <Text style={{ ...styles.stationContentCTAWrapperInnerText, color: '#00000095', }}>Заета или не работи</Text>
+                    (!station.operating ? (
+                      <View style={styles.stationContentCTAWrapper}>
+                        <View style={{ ...styles.stationContentCTAWrapperInner, backgroundColor: 'pink', }}>
+                          <Icon name="charging-station" style={{ ...styles.stationContentCTAWrapperInnerText, color: '#00000095', }} />
+                          <Text style={{ ...styles.stationContentCTAWrapperInnerText, color: '#00000095', }}>Заета или не работи</Text>
+                        </View>
                       </View>
-                    </View>
-                  ) : (
-                    <TouchableOpacity onPress={() => startCharging()} style={styles.stationContentCTAWrapper}>
-                      <View style={styles.stationContentCTAWrapperInner}>
-                        <Icon name="charging-station" style={styles.stationContentCTAWrapperInnerIcon} />
-                        <Text style={styles.stationContentCTAWrapperInnerText}>{t('station.cta')}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  )) : null
+                    ) : (
+                      <TouchableOpacity onPress={() => startCharging()} style={styles.stationContentCTAWrapper}>
+                        <View style={styles.stationContentCTAWrapperInner}>
+                          <Icon name="charging-station" style={styles.stationContentCTAWrapperInnerIcon} />
+                          <Text style={styles.stationContentCTAWrapperInnerText}>{t('station.cta')}</Text>
+                        </View>
+                      </TouchableOpacity>
+                    )) : null
                 }
 
               </View>
