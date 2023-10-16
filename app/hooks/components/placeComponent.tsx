@@ -1,15 +1,3 @@
-import globalStyles from '@/assets/styles/styles';
-import placeStyles from '@/assets/styles/place';
-const styles = { ...globalStyles, ...placeStyles };
-
-import React, { Component } from 'react';
-
-import { View, Text, FlatList, TouchableOpacity, } from 'react-native';
-
-import PlaceHeading from '@/app/partials/(tabs)/(placeHeading)'
-import PlaceFavourite from '@/app/partials/(tabs)/(placeFavourite)'
-import PlaceAccessAndDirections from '@/app/partials/(tabs)/(placeAccessAndDirections)'
-import StationRow from '@/app/hooks/components/(station_row)'
 
 const PlaceComponent = ({ station }) => {
 
@@ -29,7 +17,9 @@ const PlaceComponent = ({ station }) => {
         <FlatList
           contentContainerStyle={styles.placeContentContainerStyle}
           data={station.stations}
-          renderItem={({ item }) => <StationRow station={item} />}
+          renderItem={({ item }) => (
+            <StationRow station_id={item.user_id} />
+          )}
           keyExtractor={item => Math.random().toString(36).substr(2, 9)}
         />
       </View>
@@ -37,5 +27,22 @@ const PlaceComponent = ({ station }) => {
     </View>
   );
 };
+
+// Styles
+import globalStyles from '@/assets/styles/styles';
+import placeStyles from '@/assets/styles/place';
+const styles = { ...globalStyles, ...placeStyles };
+
+// React
+import React, { Component, Suspense } from 'react';
+
+// React Native
+import { View, Text, FlatList, TouchableOpacity, } from 'react-native';
+
+// Components
+import PlaceHeading from '@/app/partials/(tabs)/(placeHeading)'
+import PlaceFavourite from '@/app/partials/(tabs)/(placeFavourite)'
+import PlaceAccessAndDirections from '@/app/partials/(tabs)/(placeAccessAndDirections)'
+import StationRow from '@/app/hooks/components/(station_row)'
 
 export default PlaceComponent;

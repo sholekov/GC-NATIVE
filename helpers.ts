@@ -37,7 +37,7 @@ type userRegisterProvidedData = {
 //   }
 // }
 
-import axios from 'axios';
+import axios, { AxiosPromise } from 'axios';
 import { Alert } from 'react-native';
 import { proxy } from 'valtio'
 
@@ -63,7 +63,7 @@ export const userRegister: Function = (data: userRegisterProvidedData): object =
       data: data,
     })
       .then((response: any) => {
-        console.log('Registration response:', response);
+        // console.log('Registration response:', response);
         console.log('Registration response data:', response.data);
         const errors = response.data?.form?.errors;
         if (errors) {
@@ -72,7 +72,7 @@ export const userRegister: Function = (data: userRegisterProvidedData): object =
         } else if (response.data.success) {
           resolve(true)
         } else {
-          resolve(true)
+          resolve(false)
         }
       })
       .catch((error: Error) => {
@@ -165,22 +165,27 @@ export const uploadImageToServer = async (selectedImage: any, csrf: string) => {
     })
 }
 
+import base64 from 'base-64';
 
 export const fetchCaptcha: Function = () => {
   return new Promise((resolve, reject) => {
     helpers.axiosInstance({
       url: `captcha?timestamp=${new Date().getTime()}`,
+      responseType: 'arraybuffer',
       // responseType: 'blob',
       headers: {
-        "content-type": "image/png",
+        "content-type": "image/*",
         'Accept': '*/*',
       },
     })
       .then((response: any) => {
         // const url = window.URL.createObjectURL(new Blob([response.data]));
-        const url = response.config.baseURL + response.config.url
-        if (url) {
-          resolve(url)
+        // const url = response.config.baseURL + response.config.url
+
+        const base64Data = base64.encode(String.fromCharCode(...new Uint8Array(response.data)));
+        const imageURI = "data:image/jpeg;base64," + base64Data;
+        if (imageURI) {
+          resolve(imageURI)
         } else {
           resolve(false)
         }
@@ -262,12 +267,16 @@ export const setLocalUser = (force?: boolean): Promise<any> | void => {
   }
 }
 
+export const setUserCredentials = (data: object) => {
+  helpers.user_credentials.useremail = data.useremail
+  helpers.user_credentials.password = data.password
+}
 
-export const getStations = () => {
+export const getLocations = () => {
   return helpers.axiosInstance('locations')
 }
 
-export const getStation = (loc_id: string) => {
+export const getStation = (loc_id: string): AxiosPromise => {
   // [
   //   {
   //     "billing": null,
@@ -331,8 +340,12 @@ export const withdraw = () => {
 }
 
 
-export const helpers = proxy<{ axiosInstance: axiosInstance, }>({
+export const helpers = proxy<{ axiosInstance: axiosInstance, user_credentials: object }>({
   axiosInstance: initAxios(),
+  user_credentials: {
+    useremail: '',
+    password: '',
+  },
 })
 
 

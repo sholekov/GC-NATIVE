@@ -16,7 +16,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import languages from '@/assets/languages.json';
 import { useSnapshot } from 'valtio'
 import { store, setAppUILanguage } from '@/store'
-import { userLogin, setLocalUser } from '@/helpers'
+import { userLogin, setLocalUser, setUserCredentials } from '@/helpers'
 
 function Login({ triggerLoading }) {
   const { t, i18n } = useTranslation();
@@ -45,6 +45,10 @@ function Login({ triggerLoading }) {
     }
     triggerLoading(true)
 
+    console.log('data', data);
+
+    setUserCredentials(data)
+    
     signInWithEmailAndPassword(auth, data.email, data.password)
       .then(userCredentials => {
         const user = userCredentials.user;

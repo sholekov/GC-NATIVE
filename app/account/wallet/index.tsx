@@ -22,7 +22,7 @@ const AccountMoneyComponent = () => {
   const { t } = useTranslation();
 
   // TODO: get from server
-  const payment_methods = ["office", "paypal", "revolut-pay", "card"];
+  const payment_methods = ["networxoffice", "paypal", "revolut-pay", "card"];
 
   return (
     <SafeAreaView style={{ ...styles.container, }}>

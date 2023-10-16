@@ -12,32 +12,12 @@ const isSimulator = () => {
   return isSim;
 };
 
-import globalStyles from '@/assets/styles/styles';
-import homeStyles from '@/assets/styles/home';
-const styles = { ...globalStyles, ...homeStyles };
-
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Image, ActivityIndicator, Pressable, Alert, Platform, } from 'react-native';
-import * as Location from 'expo-location';
-import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
-
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 
-// Components
-import Charging from '@/app/(components)/charging'
-import MapActions from './mapActions'
-import LoggedIn from '@/app/(tabs)/home/loggedin'
-import Login from '@/app/(tabs)/home/login'
-import CustomCalloutComponent from '@/app/partials/CustomCallout'
-
-import { useSnapshot } from 'valtio'
-import { getStations, getStation } from '@/helpers'
-import { store, setupSelectedStation, setStations } from '@/store'
+import { getLocations, getStation } from '@/helpers'
+import { store, setupSelectedLocation, setLocations, setupStation } from '@/store'
 
 import { usePlace } from '@/app/hooks/usePlace'
-
-import { useTranslation } from 'react-i18next';
 
 import { registerForPushNotificationsAsync } from '@/services/notifications'
 
@@ -65,7 +45,7 @@ const HomeComponent = () => {
   }, []);
 
   const { t } = useTranslation();
-  const { user, stations, CHARGING } = useSnapshot(store)
+  const { user, locations, CHARGING, station } = useSnapshot(store)
 
   const [userLocation, setUserLocation] = useState({ latitude: 43.828805, longitude: 25.9582707 });
   const handleUserLocation = async () => {
@@ -91,9 +71,9 @@ const HomeComponent = () => {
     try {
       if (user) {
         setIsLoading(true)
-        getStations()
+        getLocations()
           .then(response => {
-            setStations(response.data);
+            setLocations(response.data);
             setTimeout(() => {
               setIsLoading(false)
             }, 750);
@@ -123,24 +103,28 @@ const HomeComponent = () => {
   const mapRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
   const [blockView, setBlockView] = useState(false);
-  const handleSelectedPlace = (station, index) => {
-    console.log('station', station); // station {"id": 8, "is_public": 1, "lat": 43.851807, "lng": 25.952181, "name": "Офис 16", "region": "Ruse", "stations": 1}
-    
+  const handleSelectedPlace = (place, index) => {
+    console.log('station (place)', place); // station {"id": 8, "is_public": 1, "lat": 43.851807, "lng": 25.952181, "name": "Офис 16", "region": "Ruse", "stations": 1}
+
     setSelectedStation(null)
-    setupSelectedStation(null)
+    setupSelectedLocation(null)
     markerRefs.current[index].showCallout()
     mapRef.current.animateToRegion({
-      latitude: station.lat - 0.025, longitude: station.lng,
+      latitude: place.lat - 0.025, longitude: place.lng,
       latitudeDelta: 0.0922,
       longitudeDelta: 0.0421,
     }, 250)
     placeSheetRef.current.snapToIndex(0)
     setBlockView(true)
-    getStation(station.id)
+    getStation(place.id)
       .then(response => {
-        const selected_station = { data: station, stations: response.data };
+        const selected_station = { data: place, stations: response.data };
         setSelectedStation(selected_station)
-        setupSelectedStation(station)
+        setupSelectedLocation(place)
+        // if ( ! station ) {
+        //   setupChargingStation(station)
+        // }
+        // router.push(`station`);
       })
   }
 
@@ -175,7 +159,7 @@ const HomeComponent = () => {
         }}
         onPress={() => { placeSheetRef.current.close() }}>
         {
-          stations?.map((place, index) => (
+          locations?.map((place, index) => (
             <Marker
               ref={(ref) => markerRefs.current[index] = ref}
               key={place.id}
@@ -196,7 +180,7 @@ const HomeComponent = () => {
       </MapView>
       {user ? (<>
         <Charging handleSelectedPlace={handleSelectedPlace} />
-        {(!blockView && stations) && <MapActions stations={stations} handleSelectedPlace={handleSelectedPlace} userLocation={userLocation} handleUserLocation={handleUserLocation} />}
+        {(!blockView && locations) && <MapActions locations={locations} handleSelectedPlace={handleSelectedPlace} userLocation={userLocation} handleUserLocation={handleUserLocation} />}
         <LoggedIn />
         {blockView && <Pressable onTouchMove={() => { setBlockView(false); placeSheetRef.current.close() }} onPress={() => { setBlockView(false); placeSheetRef.current.close() }} style={styles.pressableComponent}></Pressable>}
         <PlaceBottomSheetComponent placeSheetRef={placeSheetRef} selectedStation={selectedStation} handleSheetChanges={handleSheetChanges} />
@@ -212,5 +196,30 @@ const HomeComponent = () => {
     </View>
   );
 };
+
+// Styles
+import globalStyles from '@/assets/styles/styles';
+import homeStyles from '@/assets/styles/home';
+const styles = { ...globalStyles, ...homeStyles };
+
+// React, ReactNative, Expo
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Image, ActivityIndicator, Pressable, Alert, Platform, } from 'react-native';
+import * as Location from 'expo-location';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+
+// 
+// Components
+import Charging from '@/app/(components)/charging'
+import MapActions from './mapActions'
+import LoggedIn from '@/app/(tabs)/home/loggedin'
+import Login from '@/app/(tabs)/home/login'
+import CustomCalloutComponent from '@/app/partials/CustomCallout'
+
+import { useTranslation } from 'react-i18next';
+
+import { useSnapshot } from 'valtio'
+import { router } from 'expo-router';
 
 export default HomeComponent;

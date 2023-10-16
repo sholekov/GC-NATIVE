@@ -7,34 +7,13 @@ function getFirstTwoDigits(num: number) {
 import { toHumanReadable, getPrice } from '@/utils/helpers';
 import { getStation } from '@/helpers'
 
-const formatPower: Function = (watts: number) => {
-  return (watts / 1000).toFixed(0);
-}
+import { store, resetCharging, setupStation } from '@/store'
 
-import globalStyles from '@/assets/styles/styles';
-import stationStyles from '@/assets/styles/station';
-const styles = { ...globalStyles, ...stationStyles };
+import useFetchStation from '@/app/hooks/useFetchStation';
 
-import { router, useLocalSearchParams } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, SafeAreaView, StyleSheet, ImageBackground } from 'react-native';
-
-import { useSnapshot } from 'valtio'
-import { store } from '@/store'
-
-import Icon from 'react-native-vector-icons/FontAwesome5';
-
-// Components
-import PlaceHeading from '@/app/partials/(tabs)/(placeHeading)'
-import Battery from '@/app/(components)/battery';
-
-
-const BASE_URI = process.env.EXPO_PUBLIC_API_URL;
-
-import { useTranslation } from 'react-i18next';
 const StationInfo = () => {
   const { t } = useTranslation();
-  const { station, station_location, chargingMessage, CHARGING } = useSnapshot(store)
+  const { station, station_location, chargingMessage, CHARGING, charged_station_id } = useSnapshot(store)
 
   const bgImage = BASE_URI + "images/stations/" + station.user.id + ".png"
 
@@ -61,16 +40,15 @@ const StationInfo = () => {
   //     "user_id": 10085
   //   }
 
-  const BASE_WS = process.env.EXPO_PUBLIC_API_WS;
+  const { data_station, loading } = useFetchStation(station.user_id);
 
   const [socket, setSocket] = useState(null);
-  // const [message, setMessage] = useState(null);
   const [started, setStarted] = useState(false);
   const [chargeLevel, setChargeLevel] = useState(0);
 
   const setHelpers = (data) => {
     console.log('setHelpers triggered');
-    if (station.operating || true) {
+    if (station.operating === 2) {
       const message = JSON.parse(data);
       const station_id = message[1][0];
       console.log('setHelpers', station_id, station.user_id);
@@ -81,7 +59,7 @@ const StationInfo = () => {
         // getStation(station_id)
         // .then(response => {
         // const selected_station = { data: station, stations: response.data };
-        // setupSelectedStation(statio
+        // setupSelectedLocation(statio
         // setSelectedStation(selected_station)
         // })
         // setStationData()
@@ -96,18 +74,10 @@ const StationInfo = () => {
   }
 
   const resetHelpers = () => {
-    store.chargingMessage = null
     console.log('resetHelpers triggered');
   }
 
   useEffect(() => {
-
-    if (CHARGING) {
-      // set CHARGING_STATION
-      // get station info
-
-      setStarted(true)
-    }
 
     const ws = new WebSocket(BASE_WS, '', { headers: { 'User-Agent': 'ReactNative' } }); // +'/drain/start?id='+station.user_id
     setSocket(ws);
@@ -120,10 +90,6 @@ const StationInfo = () => {
 
     ws.onmessage = e => {
       console.log('Ooo...', e.data);
-
-      // if (e.data[0] === 'session') {   
-      //   setHelpers(e.data)
-      // }
       if (CHARGING) {
         setHelpers(e.data)
       }
@@ -137,15 +103,23 @@ const StationInfo = () => {
     ws.onclose = e => {
       // connection closed
       console.log(e.code, e.reason);
-      resetHelpers();
     };
+
+    // station.operating === 1
+    console.log('CHARGING', CHARGING, charged_station_id, station.user_id);
+    if (CHARGING && (charged_station_id === station.user_id)) {
+      
+      setStarted(true)
+    } else {
+      // 
+    }
+
 
     return () => {
       setStarted(false)
       setChargeLevel(0)
       // Clean up the connection when the component is unmounted
       if (!CHARGING) {
-        resetHelpers();
         if (ws) ws.close();
       }
     };
@@ -167,18 +141,17 @@ const StationInfo = () => {
     //     console.error('Error:', error);
     //   });
     if (socket) {
-      console.log('startCharging');
-      console.log(socket.readyState, 'drain/start');
+      store.CHARGING = true
+      setStarted(true);
+      console.log('startCharging', socket.readyState, 'drain/start');
       socket.readyState === WebSocket.OPEN && socket.send(JSON.stringify(['drain/start', station.user_id]));
       socket.onmessage = e => {
-        console.log('startCharging onmessage', e.data);
+        console.log('startCharging onmessage received: ', e.data);
         const message = JSON.parse(e.data);
         store.chargingMessage = message[1];
         if (message[1][1]) {
           store.charged_station_id = message[1][0]
-          store.CHARGING = true;
-          setStarted(true);
-          const station_id = message[1][0];
+          // const station_id = message[1][0];
         }
         if ((message[1][1] - 1) === 100 && (message[1][1] - 1) % 100 === 0) {
           setChargeLevel(0);
@@ -193,11 +166,9 @@ const StationInfo = () => {
   const stopCharging = () => {
     if (socket) {
       socket.readyState === WebSocket.OPEN && socket.send(JSON.stringify(['drain/end', station.user_id]));
-
-      store.CHARGING = false
-      resetHelpers()
+      resetCharging()
       setStarted(false)
-
+      setupStation(data_station);
       console.log(socket.readyState, 'drain/end');
     }
   }
@@ -262,35 +233,41 @@ const StationInfo = () => {
                                 </View>
                             </TouchableOpacity> */}
 
-              {/* <View style={{ ...StyleSheet.absoluteFillObject, backgroundColor: '#ffffffD9', borderRadius: 48, }}>
-                        </View> */}
-
               {/* <View style={{ }}>
                             <Text style={{ marginRight: 8, }}>{station.pref_user_id}</Text>
                             {
                                 station.pref_user_id ? <Icon name="user" solid></Icon> : <Icon name="user-slash"></Icon>
                             }
                         </View> */}
-
               {
-                started && chargingMessage?.length && (
-                  <View style={{ position: 'relative', justifyContent: 'center', alignItems: 'center', marginBottom: 32, }}>
-                    <Battery chargeLevel={chargeLevel} />
-                    <View style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 18,
-                      bottom: 0,
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      paddingHorizontal: 12,
-                      width: 168,
-                    }}>
-                      <Text style={{ width: 'auto' }}>{(chargingMessage[1] / 1000).toFixed(2)} kW</Text>
-                      <Text style={{ width: 'auto' }}>{((chargingMessage[1] / 1000).toFixed(2) * getPrice(station.billing, station.ppkw)).toFixed(2)} BGN</Text>
+                started && (
+                  <Suspense fallback={<Text>Loading...</Text>}>
+                    <View style={{ position: 'relative', justifyContent: 'center', alignItems: 'center', marginBottom: 8, }}>
+
+                      <View style={{ marginBottom: 8, }}>
+                        <Battery />
+                      </View>
+
+                      <View style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingHorizontal: 12,
+                        width: 168,
+                      }}>
+                        {chargingMessage?.length ? (
+                          <>
+                            <Text style={{ width: "auto" }}>{(chargingMessage[1] / 1000).toFixed(2)} kW</Text>
+                            <Text style={{ width: "auto" }}>{((chargingMessage[1] / 1000).toFixed(2) * getPrice(station.billing, station.ppkw)).toFixed(2)} BGN</Text>
+                          </>
+                        ) : (
+                          <>
+                            <Text style={{ width: "100%", textAlign: "center" }}>Waiting...</Text>
+                          </>
+                        )}
+                      </View>
                     </View>
-                  </View>
+                  </Suspense>
                 )
               }
               <View style={styles.stationContentWrapper}>
@@ -302,29 +279,8 @@ const StationInfo = () => {
                     <Text style={{ width: '100%' }}>power: {formatPower(chargingMessage[3])}kW</Text>
                     <Text style={{ width: '100%' }}>smartPower: {chargingMessage[4]}</Text>
                   </View>)} */}
-                <View style={styles.stationContentOutletsWrapper}>
-                  {
-                    station.model.outlets === 'type2' && (
-                      <>
-                        <View style={{ ...styles.stationContentOutletsWrapperImageWrapper, backgroundColor: station.operating ? '#7acb4d' : 'pink', }}>
-                          <Image source={require('@/assets/images/connectors/type2.png')} style={styles.stationContentOutletsImage} />
-                        </View>
-                        <Text style={styles.stationContentOutletsLabel} >TYPE 2</Text>
-                      </>
-                    )
-                  }
-                  {
-                    station.model.outlets === 'shuko' && (
-                      <Image source={require('@/assets/images/connectors/shuko.png')} style={styles.stationContentOutletsImage} />
-                    )
-                  }
-                  {
-                    (station.model.outlets !== 'shuko' && station.model.outlets !== 'type2') && (
-                      <Image source={require('@/assets/images/connectors/ccs2.png')} style={{ width: 50, height: 50, opacity: 0, }} />
-                    )
-                  }
-                  <Text style={{ marginLeft: 8, fontSize: 18, fontWeight: '500', }} >- {formatPower(station.model.maxPow)}kW</Text>
-                </View>
+
+                <OutletStaticComponent station_outlets={station.model.outlets} station_operating={station.operating} station_maxPow={station.model.maxPow} />
 
                 {/* <View style={{ position: 'relative', width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, padding: 18, backgroundColor: '#ffffff90', borderTopColor: 'silver', borderTopWidth: 1, borderBottomColor: 'silver', borderBottomWidth: 1,  }}> */}
                 <View style={styles.stationContentPriceWrapper}>
@@ -347,24 +303,35 @@ const StationInfo = () => {
                   )
                 }
                 {
-                  !started ?
-                    (!station.operating ? (
-                      <View style={styles.stationContentCTAWrapper}>
-                        <View style={{ ...styles.stationContentCTAWrapperInner, backgroundColor: 'pink', }}>
-                          <Icon name="charging-station" style={{ ...styles.stationContentCTAWrapperInnerText, color: '#00000095', }} />
-                          <Text style={{ ...styles.stationContentCTAWrapperInnerText, color: '#00000095', }}>Заета или не работи</Text>
-                        </View>
+                  !started && (station.operating === 0) ? (
+                    <View style={styles.stationContentCTAWrapper}>
+                      <View style={{ ...styles.stationContentCTAWrapperInner, backgroundColor: 'pink', }}>
+                        <Icon name="charging-station" style={{ ...styles.stationContentCTAWrapperInnerText, color: '#00000095', }} />
+                        <Text style={{ ...styles.stationContentCTAWrapperInnerText, color: '#00000095', }}>Не работи</Text>
                       </View>
-                    ) : (
-                      <TouchableOpacity onPress={() => startCharging()} style={styles.stationContentCTAWrapper}>
-                        <View style={styles.stationContentCTAWrapperInner}>
-                          <Icon name="charging-station" style={styles.stationContentCTAWrapperInnerIcon} />
-                          <Text style={styles.stationContentCTAWrapperInnerText}>{t('station.cta')}</Text>
-                        </View>
-                      </TouchableOpacity>
-                    )) : null
+                    </View>
+                  ) : null
                 }
-
+                {
+                  !started && (station.operating === 1) ? (
+                    <TouchableOpacity onPress={() => startCharging()} style={styles.stationContentCTAWrapper}>
+                      <View style={styles.stationContentCTAWrapperInner}>
+                        <Icon name="charging-station" style={styles.stationContentCTAWrapperInnerIcon} />
+                        <Text style={styles.stationContentCTAWrapperInnerText}>{t('station.cta')}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  ) : null
+                }
+                {
+                  !started && (station.operating === 2) ? (
+                    <View style={styles.stationContentCTAWrapper}>
+                      <View style={{ ...styles.stationContentCTAWrapperInner, backgroundColor: 'pink', }}>
+                        <Icon name="charging-station" style={{ ...styles.stationContentCTAWrapperInnerText, color: '#00000095', }} />
+                        <Text style={{ ...styles.stationContentCTAWrapperInnerText, color: '#00000095', }}>Заета</Text>
+                      </View>
+                    </View>
+                  ) : null
+                }
               </View>
 
             </ImageBackground>
@@ -376,5 +343,36 @@ const StationInfo = () => {
     </>
   );
 };
+
+const BASE_URI = process.env.EXPO_PUBLIC_API_URL;
+const BASE_WS = process.env.EXPO_PUBLIC_API_WS;
+
+// React, ReactNative, Expo
+import React, { Suspense, useCallback, useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, Image, SafeAreaView, StyleSheet, ImageBackground } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+
+// Components
+import PlaceHeading from '@/app/partials/(tabs)/(placeHeading)'
+import OutletStaticComponent from './outletStatic'
+const Battery = React.lazy(() => import('@/app/(components)/battery'));
+
+// Styles
+import globalStyles from '@/assets/styles/styles';
+import stationStyles from '@/assets/styles/station';
+const styles = { ...globalStyles, ...stationStyles };
+
+/**
+ * Others
+ */
+
+// Valtio
+import { useSnapshot } from 'valtio'
+
+// i18n
+import { useTranslation } from 'react-i18next';
+
+// Icons
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 export default StationInfo;

@@ -5,24 +5,15 @@ function getFirstTwoDigits(num: number) {
 }
 import { toHumanReadable, getPrice } from '@/utils/helpers';
 
-import React, { Component, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Image, TouchableOpacity } from 'react-native';
 
 import { usePlace } from '@/app/hooks/usePlace'
 
-import { store, } from '@/store'
+import { store, setupChargingStation, } from '@/store'
 import { fetchStation, getStation, } from '@/helpers'
-import { useSnapshot } from 'valtio';
-import { use } from 'i18next';
 
-// Components
-import Battery from '@/app/(components)/battery';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
-const BASE_WS = process.env.EXPO_PUBLIC_API_WS;
 
 const ChargingComponent = ({ handleSelectedPlace }) => {
-  const { user, stations, CHARGING, chargingMessage, charged_station_id } = useSnapshot(store)
+  const { CHARGING, chargingMessage, charged_station_id } = useSnapshot(store)
 
   const [chargeLevel, setChargeLevel] = useState(null);
   const [chargingLocation, setChargingLocation] = useState(null);
@@ -45,12 +36,12 @@ const ChargingComponent = ({ handleSelectedPlace }) => {
       if (_data[0] === 'session' && chargingLocation == null) {
         fetchStation(_data[1][0])
           .then((station) => {
-            // loop stations
-            // console.log('store.stations', store.stations);
-            store.stations.forEach((_station: Object) => {
+            setupChargingStation(station.data.station);
+            store.locations.forEach((_station: Object) => {
               if (_station.id === station.data.station.loc_id) {
                 console.log('station loc_id', _station.id);
                 setChargingLocation(_station);
+
               }
             })
             // {"id": 75, "is_public": 0, "lat": 42.675037, "lng": 23.260613, "name": "10135 - StKr", "region": "Sofia", "stations": 1}
@@ -96,21 +87,20 @@ const ChargingComponent = ({ handleSelectedPlace }) => {
   return (CHARGING && chargingMessage) && (
     <View style={styles.container}>
 
-      <TouchableOpacity onPress={() => handleSelectedPlace(chargingLocation, 3)}>
+      <TouchableOpacity onPress={() => handleSelectedPlace(chargingLocation, charged_station_id)}>
         <Image
           style={{
-            width: 62, height: 62,
+            marginBottom: 12,
+            width: 64, height: 64,
           }}
           source={require('@/assets/images/pin-gigacharger.png')}
         />
-        {(CHARGING && chargingMessage) ? <Text>{chargingMessage[1]}</Text> : <Text>! chargingMessage</Text>}
+        {/* {(CHARGING && chargingMessage) ? <Text>{chargingMessage[1]}</Text> : <Text>! chargingMessage</Text>} */}
       </TouchableOpacity>
 
-      <View style={{ marginBottom: 6, }}>
-        <Text style={{ width: 'auto', fontSize: 18, textAlign: 'center', fontWeight: '500', }}>{chargingLocation?.name}</Text>
+      <View style={{ marginBottom: 8, }}>
+        <Battery />
       </View>
-
-      <Battery chargeLevel={chargeLevel} />
 
       <View style={{ marginBottom: 6, }}>
         <Text style={{ width: 'auto', fontSize: 18, textAlign: 'center', fontWeight: '500', }}>{(chargingMessage[1] / 1000).toFixed(2)}</Text>
@@ -131,6 +121,18 @@ const ChargingComponent = ({ handleSelectedPlace }) => {
   );
 };
 
+import React, { Component, useEffect, useState } from 'react';
+
+import { View, Text, StyleSheet, Animated, Image, TouchableOpacity } from 'react-native';
+
+import { useSnapshot } from 'valtio';
+
+// Components
+import Battery from '@/app/(components)/battery';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
+const BASE_WS = process.env.EXPO_PUBLIC_API_WS;
+
 const styles = StyleSheet.create({
 
   container: {
@@ -139,7 +141,7 @@ const styles = StyleSheet.create({
     right: 16,
 
     width: 52 * 1.25,
-    height: 52 * 7,
+    height: 52 * 6.33,
 
     justifyContent: 'flex-end',
     alignItems: 'center',
@@ -174,8 +176,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#99999950',
   },
 
-
-
   // STOP area
   labelStop: {
     maxWidth: '100%',
@@ -198,6 +198,5 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 99,
   },
 });
-
 
 export default ChargingComponent;

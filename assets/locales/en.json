@@ -248,6 +248,9 @@
     "noSearchResults": "No results found."
   },
   "deposit": {
+    "header": {
+      "depositWith": "Депозиране на средства чрез"
+    },
     "label" : {
       "depositWith": {
         "paypal": "Paypal",
@@ -257,6 +260,14 @@
         "office": "Networx Bulgaria office"
       }
     },
+    "description": {
+      "paypal": "Веведете сумата, която желаете да депозирате",
+      "card": "Веведете сумата, която желаете да депозирате",
+      "googlepay": "Веведете сумата, която желаете да депозирате",
+      "revolut": "Веведете сумата, която желаете да депозирате",
+      "office": "Веведете сумата, която желаете да депозирате"
+    },
+
     "placeholder": {
       "enter_amount": "Enter amount"
     },
@@ -264,10 +275,10 @@
     "depositingDesc": "Charge your virtual account",
     "depositingDescr": "Below you will find a list of available payment methods.",
     "office": "Networx Bulgaria office",
-    "paypal-checkout": "Paypal",
+    "paypal": "Paypal",
     "googlepay": "Google Pay",
     "revolut-pay": "Revolut",
-    "bank-card": "Bank card",
+    "card": "Bank card",
     "depositWith": "Deposit via {{0}}",
     "depositWithPaypal": "Please specify deposit amount.",
     "depositWithRevolut": "Please specify deposit amount.",

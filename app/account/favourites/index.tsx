@@ -10,7 +10,7 @@ import MapView, { Callout, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import { useSnapshot } from 'valtio'
-import { setupSelectedStation, store } from '@/store'
+import { setupSelectedLocation, store } from '@/store'
 
 import { getStation } from '@/helpers'
 
@@ -65,12 +65,12 @@ const UserFavourites = () => {
   const { t } = useTranslation();
 
   const { user } = useSnapshot(store)
-  const { stations, chargingMessage } = useSnapshot(store);
+  const { locations, chargingMessage } = useSnapshot(store);
   const [chargeLevel, setChargeLevel] = useState(0);
 
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [user_stations, setUserStations] = useState(stations.filter(station => user.favourite_places.some(place => place.l_id === station.id)))
-  const [shown_stations, setShownStations] = useState(stations.filter(station => user.favourite_places.some(place => place.l_id === station.id)));
+  const [user_stations, setUserStations] = useState(locations.filter(location => user.favourite_places.some(place => place.l_id === location.id)))
+  const [shown_stations, setShownStations] = useState(locations.filter(location => user.favourite_places.some(place => place.l_id === location.id)));
 
   const mapRef = useRef(null);
 
@@ -127,7 +127,7 @@ const UserFavourites = () => {
           250)
         const selected_station = { data: station, stations: response.data };
 
-        setupSelectedStation(station)
+        setupSelectedLocation(station)
         setSelectedStation(selected_station);
         setShownStations([selected_station.data]);
         setIsCollapsed(true);

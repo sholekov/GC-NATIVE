@@ -3,12 +3,15 @@ import { useTranslation } from 'react-i18next';
 
 import { useEffect } from 'react';
 
+import { Alert } from 'react-native';
+
 import { Redirect, Stack, useRouter } from 'expo-router';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { useSnapshot } from 'valtio';
 import { setAppUILanguage } from '@/store'
-import { userLogin, setLocalUser, } from '@/helpers'
+import { helpers, userLogin, setLocalUser, } from '@/helpers'
 
 import { onAuthStateChanged, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@/firebase'
@@ -22,18 +25,23 @@ import { auth } from '@/firebase'
 
 const StartPage = () => {
   console.log('StartPage triggered');
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
+  const { user_credentials } = useSnapshot(helpers)
 
   useEffect(() => {
     console.log('onAuthStateChanged triggered');
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        console.log('user', user, user_credentials);
+        
         const data = {
           provider: '',
           email: 'sholeka+1@googlemail.com',
+          // email: user_credentials.useremail,
           password: '1234',
+          // password: user_credentials.password,
         };
         userLogin(data)
         .then(({ status, user }: { status: boolean, user: any }) => {

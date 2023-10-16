@@ -5,24 +5,24 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 const { width } = Dimensions.get('window');
 const calculatedWidth = width - 32;
 
-const MapActionsComponent = ({ stations, handleSelectedPlace, userLocation, handleUserLocation }) => {
+const MapActionsComponent = ({ locations, handleSelectedPlace, userLocation, handleUserLocation }) => {
   const inputRef = useRef(null);
   const [showInput, setShowInput] = useState(false);
   const [country, setCountry] = useState('');
-  const [filteredStations, setStations] = useState([]);
+  const [filteredLocations, setLocations] = useState([]);
 
   useEffect(() => {
     if (country) {
-      const filteredStations = stations.map((station, index) => ({ ...station, index })).filter(station => {
-        if (station.name && station.region) {
-          return station.name.toLowerCase().includes(country.toLowerCase()) ||
-            station.region.toLowerCase().includes(country.toLowerCase());
+      const filteredLocations = locations.map((location, index) => ({ ...location, index })).filter(location => {
+        if (location.name && location.region) {
+          return location.name.toLowerCase().includes(country.toLowerCase()) ||
+            location.region.toLowerCase().includes(country.toLowerCase());
         }
       });
-      if (filteredStations.length) {
-        setStations(filteredStations)
+      if (filteredLocations.length) {
+        setLocations(filteredLocations)
       } else {
-        setStations([])
+        setLocations([])
       }
     }
   }, [country])
@@ -49,14 +49,14 @@ const MapActionsComponent = ({ stations, handleSelectedPlace, userLocation, hand
         </View>
         <View style={styles.containerResults}>
           {country && (<FlatList
-            data={filteredStations}
-            renderItem={({ item: station, index }) => (
-              <TouchableOpacity onPress={() => handleSelectedPlace(station, station.index)} style={{ margin: 4, padding: 12, borderColor: '#00000010', borderWidth: 1, borderRadius: 8, backgroundColor: '#eeeeee', }}>
+            data={filteredLocations}
+            renderItem={({ item: location, index }) => (
+              <TouchableOpacity onPress={() => handleSelectedPlace(location, location.index)} style={{ margin: 4, padding: 12, borderColor: '#00000010', borderWidth: 1, borderRadius: 8, backgroundColor: '#eeeeee', }}>
                 <View>
                   <Icon size={12} name="star" solid style={{ position: 'absolute', top: -8, right: -8, color: 'rgb(255, 212, 59)', }}></Icon>
-                  <Text style={{ fontSize: 18, fontWeight: '600', }}>#{station?.id} {station?.name}</Text>
+                  <Text style={{ fontSize: 18, fontWeight: '600', }}>#{location?.id} {location?.name}</Text>
                   <View style={{ marginTop: 4, }}>
-                    <Text style={{ fontSize: 14, fontWeight: '500', color: '#999', }}>{station?.region}</Text>
+                    <Text style={{ fontSize: 14, fontWeight: '500', color: '#999', }}>{location?.region}</Text>
                   </View>
                 </View>
               </TouchableOpacity>

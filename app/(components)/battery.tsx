@@ -1,11 +1,20 @@
-//import liraries
-import React, { Component, useEffect, useState } from 'react';
-import { View, Text, Animated, StyleSheet } from 'react-native';
 
-// create a component
-const BatteryComponent = ({chargeLevel}) => {
+function getFirstTwoDigits(num: number) {
+  const str = Math.abs(num).toString();
+  return parseInt(str.slice(-2), 10);
+}
+
+const BatteryComponent = ({small = false}: {small?: boolean}) => {
+  const { chargingMessage } = useSnapshot(store)
   const [animatedValue, setAnimatedValue] = useState(new Animated.Value(0));
-  
+  const [chargeLevel, setChargeLevel] = useState(null);
+
+  useEffect(() => {
+    if (chargingMessage) {
+      setChargeLevel(getFirstTwoDigits(chargingMessage[1] - 1));
+    }
+  }, [chargingMessage])
+
   useEffect(() => {
     if (chargeLevel) {
       Animated.timing(animatedValue, {
@@ -24,44 +33,24 @@ const BatteryComponent = ({chargeLevel}) => {
   return (
     <View style={styles.batteryContainer}>
       <View style={styles.batteryTip} />
-      <View style={[styles.battery]}>
+      <View style={[small ? styles.batterySmall : styles.battery]}>
         <Animated.View style={[styles.batteryFill, { height: batteryHeight }]} />
       </View>
     </View >
   );
 };
 
-// define your styles
-const styles = StyleSheet.create({
-  batteryContainer: {
-    marginBottom: 8,
-    alignItems: 'center',
-  },
-  battery: {
-    width: 38,
-    height: 58,
-    // height: '100%',
-    // paddingLeft: 3,
-    borderColor: 'black',
-    borderWidth: 2,
-    borderRadius: 4,
-    justifyContent: 'flex-end',
-  },
-  batteryFill: {
-    maxHeight: 158,
-    width: '100%',
-    backgroundColor: 'limegreen',
-    // justifyContent: 'center',
-    // borderRadius: 99,
-  },
-  batteryTip: {
-    height: 5,
-    width: 12,
-    backgroundColor: 'black',
-    borderRadius: 2,
-    marginBottom: -1,
-  },
-});
+import React, { Component, useEffect, useState } from 'react';
 
-//make this component available to the app
+import { View, Text, Animated, StyleSheet } from 'react-native';
+
+import { store, } from '@/store'
+import { useSnapshot } from 'valtio';
+
+
+// Styles
+import globalStyles from '@/assets/styles/styles';
+import batteryStyles from '@/assets/styles/battery';
+const styles = { ...globalStyles, ...batteryStyles };
+
 export default BatteryComponent;

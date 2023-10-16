@@ -108,7 +108,6 @@ export default StyleSheet.create({
   },
   placeItemLeft: {
     marginRight: 8,
-    flexDirection: 'column',
     justifyContent: 'center',
   },
   placeItemLeftLabel: {

@@ -1,14 +1,6 @@
-import globalStyles from '@/assets/styles/styles';
-import registerStyles from '@/assets/styles/register';
-const styles = { ...globalStyles, ...registerStyles };
 
 import locales from '@/assets/locales.json';
 
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, View, Text, TextInput, TouchableOpacity, Image, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import * as Location from 'expo-location';
-import { router, Link, Stack } from 'expo-router';
 
 import { onAuthStateChanged, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@/firebase'
@@ -84,25 +76,15 @@ const RegisterComponent = () => {
     let isoCountryCode = address.isoCountryCode || 'bg_BG';
 
     const data = {
-      locale: locales[isoCountryCode],
-      email: useremail,
-      name: firstName + ' ' + lastName,
-      password: password,
-      captcha: captchaInput,
+      locale: setCredentials ? locales[isoCountryCode] : 'BG',
+      name: (setCredentials ? firstName : 'I') + ' ' + (setCredentials ? lastName : 'S'),
+      email: setCredentials ? useremail : 'sholeka+2@googlemail.com',
+      password: setCredentials ? password : '123123',
+      captcha: setCredentials ? captchaInput : 'bgxw',
     };
 
-    createUserWithEmailAndPassword(auth, useremail, password)
-      .then(userCredentials => {
-        const user = userCredentials.user;
-        console.log('userCredentials:', userCredentials);
-        console.log('Registered with:', user.email);
-        router.replace('home');
-        setLoading(false);
-      })
-      .catch(error => alert(error.message))
-    
-    return;
-    
+    console.log('data to send', data);
+
     userRegister(data)
       .then((status: boolean) => {
         if (status === true) {
@@ -111,23 +93,45 @@ const RegisterComponent = () => {
             email: useremail,
             password: password,
           };
-          userLogin(data)
-            .then(({ status, user }: { status: boolean, user: any }) => {
-              if (status && user) {
-                setLocalUser()
-                  .then(() => {
-                    router.replace('home');
-                    setLoading(false);
-                  })
-                  .catch((e: Error) => {
-                    console.log('e', e);
-                    setLoading(false);
-                  })
-              } else {
-                Alert.alert(t('login.alert-error.title'), t('login.alert-error.text'), [{ text: t('login.alert-error.btn_text'), style: 'default' }]);
-                setLoading(false);
-              }
+
+          createUserWithEmailAndPassword(auth, useremail, password)
+            .then(userCredentials => {
+              const user = userCredentials.user;
+              console.log('userCredentials:', userCredentials);
+              console.log('Registered with:', user.email);
+
+              signInWithEmailAndPassword(auth, data.email, data.password)
+                .then(userCredentials => {
+                  const user = userCredentials.user;
+                  console.log('userCredentials:', userCredentials);
+                  console.log('Logged in with:', user.email);
+                  router.replace('home');
+                  setLoading(false);
+                })
+                .catch(error => {
+                  alert(error.message)
+                  // Alert.alert(t('login.alert-error.title'), t('login.alert-error.text'), [{ text: t('login.alert-error.btn_text'), style: 'default' }]);
+                })
+
             })
+            .catch(error => alert(error.message));
+          // userLogin(data)
+          //   .then(({ status, user }: { status: boolean, user: any }) => {
+          //     if (status && user) {
+          //       setLocalUser()
+          //         .then(() => {
+          //           router.replace('home');
+          //           setLoading(false);
+          //         })
+          //         .catch((e: Error) => {
+          //           console.log('e', e);
+          //           setLoading(false);
+          //         })
+          //     } else {
+          //       Alert.alert(t('login.alert-error.title'), t('login.alert-error.text'), [{ text: t('login.alert-error.btn_text'), style: 'default' }]);
+          //       setLoading(false);
+          //     }
+          //   })
         } else {
           Alert.alert(t('register.alert-error.title'), t('register.alert-error.text'), [
             {
@@ -140,13 +144,14 @@ const RegisterComponent = () => {
       })
   };
 
+  const [setCredentials, setSetCredentials] = useState(true);
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} >
       <ScrollView keyboardShouldPersistTaps="never" contentContainerStyle={styles.scrollView}>
         {isLoading ? <ActivityIndicator size="large" style={styles.activityIndicator} /> : (
           <View style={styles.innerContainer}>
 
-            <Text style={styles.page_header}>{t('register.page-title')}</Text>
+            <Text style={styles.page_header} onPress={() => { __DEV__ & setSetCredentials(!setCredentials) }}>{t('register.page_title')}</Text>
 
             <TextInput placeholder={t('register.placeholder.first_name')} onChangeText={setFirstName} style={styles.input} />
             <TextInput placeholder={t('register.placeholder.last_name')} onChangeText={setLastName} style={styles.input} />
@@ -177,6 +182,22 @@ const RegisterComponent = () => {
     </KeyboardAvoidingView>
   );
 };
+
+// Styles
+import globalStyles from '@/assets/styles/styles';
+import registerStyles from '@/assets/styles/register';
+const styles = { ...globalStyles, ...registerStyles };
+
+// React
+import React, { useEffect, useState } from 'react';
+
+// React Native
+import { ActivityIndicator, View, Text, TextInput, TouchableOpacity, Image, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+
+// Expo
+import { StatusBar } from 'expo-status-bar';
+import * as Location from 'expo-location';
+import { router, Link, Stack } from 'expo-router';
 
 
 export default RegisterComponent;

@@ -42,7 +42,7 @@ export const setupUser: Function = (user_data: User, favourites: any[], imageReq
     })
 }
 
-export const setupSelectedStation: Function = (_object: any): void => {
+export const setupSelectedLocation: Function = (_object: any): void => {
   store.station_location = _object
 }
 
@@ -50,12 +50,16 @@ export const setupStation: Function = (station: any): void => {
   store.station =  station
 }
 
+export const setupChargingStation: Function = (station: any): void => {
+  store.CHARGING_STATION =  station
+}
+
 export const setupChargedStation: Function = (id: number): void => {
   store.charged_station_id =  id
 }
 
-export const setStations: Function = (data: any): void => {
-  store.stations =  data
+export const setLocations: Function = (data: any): void => {
+  store.locations =  data
 }
 
 
@@ -68,13 +72,19 @@ export const setAppUILanguage: Function = (selectedLang: Lang, i18n: any): void 
   store.language =  selectedLang
 }
 
-export const store = proxy<{ user: User, station_location: any, station: any, charged_station_id: number | null, language: string | null, stations: any, CHARGING: boolean, CHARGING_STATION: null | any, chargingMessage: JSON | null}>({
+export const resetCharging: Function = (): void => {
+  store.CHARGING = false
+  store.CHARGING_STATION = null
+  store.chargingMessage = null
+}
+
+export const store = proxy<{ user: User, station_location: any, station: any, charged_station_id: number | null, language: string | null, locations: any, CHARGING: boolean, CHARGING_STATION: null | any, chargingMessage: JSON | null}>({
   language: null,
   user: null,
   station_location: null,
   station: null,
   charged_station_id: null,
-  stations: null,
+  locations: null,
   CHARGING: false,
   CHARGING_STATION: null,
   chargingMessage: null,
