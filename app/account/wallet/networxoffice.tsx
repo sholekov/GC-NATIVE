@@ -31,9 +31,9 @@ const AccountMoneySubComponent = () => {
     <SafeAreaView style={{ ...styles.container, }}>
 
       <View style={{ flex: 1, justifyContent: 'space-between', }}>
-        {/* add money */}
+        
         <View style={{ paddingVertical: 64, }}>
-
+          <Text>{t('deposit.depositWithOffice')}</Text>
         </View>
 
         <BackToMoneyComponent />

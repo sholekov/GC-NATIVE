@@ -16,6 +16,7 @@ type User = {
 } | null
 
 import { proxy } from 'valtio'
+import '@/assets/locales/index';
 
 export const getArticles: Function = (axiosInstance): Array<object> => {
   return axiosInstance.get('https://gigacharger.net/wp-json/wp/v2/posts')
@@ -78,13 +79,14 @@ export const resetCharging: Function = (): void => {
   store.chargingMessage = null
 }
 
-export const store = proxy<{ user: User, station_location: any, station: any, charged_station_id: number | null, language: string | null, locations: any, CHARGING: boolean, CHARGING_STATION: null | any, chargingMessage: JSON | null}>({
+export const store = proxy<{ language: Lang | null, user: User, station_location: any, station: any, charged_station_id: number | null, locations: any, CHARGING: boolean, CHARGING_STATION: null | any, chargingMessage: JSON | null}>({
   language: null,
   user: null,
   station_location: null,
   station: null,
   charged_station_id: null,
   locations: null,
+
   CHARGING: false,
   CHARGING_STATION: null,
   chargingMessage: null,

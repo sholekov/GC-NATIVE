@@ -1,11 +1,10 @@
 
-import React, { useCallback, useEffect, useState } from 'react';
 import { useStripe } from '@stripe/stripe-react-native';
-import { Alert, Text, Linking, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native';
 
-import { useTranslation } from 'react-i18next';
 const CheckoutScreen = ({amount, type, setConfirmAmount}) => {
   const { t } = useTranslation();
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     console.log('amount', amount);
@@ -16,63 +15,58 @@ const CheckoutScreen = ({amount, type, setConfirmAmount}) => {
     }
 
     initializePaymentSheet()
-      .then( () => {
+      .then( (error) => {
+        console.log('error', error);
         openPaymentSheet();
       })
   }, [amount]);
 
-  const { initPaymentSheet, presentPaymentSheet } = useStripe();
-  const [loading, setLoading] = useState(false);
 
-  const { handleURLCallback } = useStripe();
+  // const { handleURLCallback } = useStripe();
 
-  const handleDeepLink = useCallback(
-    async (url: string | null) => {
-      if (url) {
-        const stripeHandled = await handleURLCallback(url);
-        if (stripeHandled) {
-          // This was a Stripe URL - you can return or add extra handling here as you see fit
-        } else {
-          // This was NOT a Stripe URL – handle as you normally would
-        }
-      }
-    },
-    [handleURLCallback]
-  );
+  // const handleDeepLink = useCallback(
+  //   async (url: string | null) => {
+  //     if (url) {
+  //       const stripeHandled = await handleURLCallback(url);
+  //       if (stripeHandled) {
+  //         // This was a Stripe URL - you can return or add extra handling here as you see fit
+  //       } else {
+  //         // This was NOT a Stripe URL – handle as you normally would
+  //       }
+  //     }
+  //   },
+  //   [handleURLCallback]
+  // );
 
-  useEffect(() => {
-    const getUrlAsync = async () => {
-      const initialUrl = await Linking.getInitialURL();
-      handleDeepLink(initialUrl);
-    };
+  // useEffect(() => {
+  //   const getUrlAsync = async () => {
+  //     const initialUrl = await Linking.getInitialURL();
+  //     handleDeepLink(initialUrl);
+  //   };
 
-    getUrlAsync();
+  //   getUrlAsync();
 
-    const deepLinkListener = Linking.addEventListener(
-      'url',
-      (event: { url: string }) => {
-        handleDeepLink(event.url);
-      }
-    );
+  //   const deepLinkListener = Linking.addEventListener(
+  //     'url',
+  //     (event: { url: string }) => {
+  //       handleDeepLink(event.url);
+  //     }
+  //   );
 
-    return () => deepLinkListener.remove();
-  }, [handleDeepLink]);
+  //   return () => deepLinkListener.remove();
+  // }, [handleDeepLink]);
 
   // 
 
   const fetchPaymentSheetParams = async () => {
-    const response = await fetch(`http://localhost:4000/payment-sheet`, {
+    const response = await axios(`http://localhost:4000/payment-sheet`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ amount: parseFloat(amount), type: type }), // Send the amount to your backend
+      data: JSON.stringify({ amount: parseFloat(amount), type: type }), // Send the amount to your backend
     });
-
-    // console.log('response', response);
-
-    const { paymentIntent } = await response.json();
-
+    const { paymentIntent } = await response.data
     console.log('paymentIntent', paymentIntent);
     return {
       paymentIntent,
@@ -80,29 +74,22 @@ const CheckoutScreen = ({amount, type, setConfirmAmount}) => {
   };
 
   const initializePaymentSheet = async () => {
-    const {
-      paymentIntent,
-      ephemeralKey,
-      customer,
-      publishableKey,
-    } = await fetchPaymentSheetParams();
+    const { paymentIntent } = await fetchPaymentSheetParams();
 
     const { error } = await initPaymentSheet({
       merchantDisplayName: "Example, Inc.",
-      customerId: customer,
-      customerEphemeralKeySecret: ephemeralKey,
       paymentIntentClientSecret: paymentIntent,
-      // Set `allowsDelayedPaymentMethods` to true if your business can handle payment
-      //methods that complete payment after a delay, like SEPA Debit and Sofort.
       allowsDelayedPaymentMethods: true,
       defaultBillingDetails: {
         name: 'Jane Doe',
       },
       returnURL: 'gigacharger://home',
     });
+    
     if (!error) {
       setLoading(true);
     }
+    return error
   };
 
   const openPaymentSheet = async () => {
@@ -122,22 +109,13 @@ const CheckoutScreen = ({amount, type, setConfirmAmount}) => {
   return <View><Text style={{ opacity: 0 }}>{t('deposit.label-send-payment')}</Text></View>;
 }
 
-{/* <View>
-  <TouchableOpacity onPress={openPaymentSheet} style={localStyles.confirmButton}>
-    <Text style={{ color: '#fff' }}>{t('deposit.label-send-payment')}</Text>
-  </TouchableOpacity>
-</View> */}
+// React
+import React, { useCallback, useEffect, useState } from 'react';
+
+// React Native
+import { Alert, Text, Linking, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native';
+
+import { useTranslation } from 'react-i18next';
+import axios from 'axios';
 
 export default CheckoutScreen;
-
-const localStyles = StyleSheet.create({
-  confirmButton: {
-    marginBottom: 18,
-    padding: 16,
-    backgroundColor: '#5dac30',
-    borderRadius: 8,
-    elevation: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

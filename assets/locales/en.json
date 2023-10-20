@@ -271,9 +271,11 @@
     "placeholder": {
       "enter_amount": "Enter amount"
     },
+    "subDescription": "Веднага след приключване на операцията ще разполагате със средствата и ще може да зареждате вашия автомобил на всички зарядни станции на GigaCharger",
     "depositing": "Deposit funds",
     "depositingDesc": "Charge your virtual account",
     "depositingDescr": "Below you will find a list of available payment methods.",
+    "networxoffice": "Networx Bulgaria office",
     "office": "Networx Bulgaria office",
     "paypal": "Paypal",
     "googlepay": "Google Pay",

@@ -5,7 +5,7 @@ const styles = { ...globalStyles, ...loginStyles };
 import { useTranslation } from 'react-i18next';
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform, Pressable, ActivityIndicator, SafeAreaView, FlatList, } from 'react-native';
+import { Image, View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform, Pressable, ActivityIndicator, SafeAreaView, FlatList, } from 'react-native';
 import { Link } from 'expo-router';
 
 import { onAuthStateChanged, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, sendPasswordResetEmail } from 'firebase/auth';
@@ -80,16 +80,21 @@ function Login({ triggerLoading }) {
   };
 
   const LangItem = ({ checked, item }) => {
-    return (<>
-      {/* <Icon
-        name={checked ? 'check-square' : 'square'}
-        style={[styles.itemIcon, checked && styles.itemColorChecked]}
-      /> */}
-      <Text style={[styles.itemText, checked && styles.itemColorChecked]}>{item.label}</Text>
-    </>)
+    const flags = {
+      bg: require('@/assets/images/flags/tn_bg-flag.jpg'),
+      en: require('@/assets/images/flags/tn_en-flag.jpg'),
+      ro: require('@/assets/images/flags/tn_ro-flag.jpg'),
+    };
+    return (<View style={[styles.flagWrapper]}>
+      <View style={[checked && styles.langChecked]}></View>
+      <Image source={flags[item.value]}
+        style={[styles.flag]}
+      />
+      <Text style={[styles.langLabel,]}>{item.label.split(' ')[0]}</Text>
+    </View>)
   }
   const LangItemComponent = ({ checked = false, item }) => {
-    return (<TouchableOpacity onPress={() => setLang(val => item.value)} style={styles.item}>
+    return (<TouchableOpacity onPress={() => setLang(val => item.value)}>
       <LangItem checked={checked} item={item} />
     </TouchableOpacity>)
   }
@@ -112,13 +117,13 @@ function Login({ triggerLoading }) {
       style={styles.container}
     >
       <SafeAreaView style={{ flex: 1, }}>
-        <View style={styles.containerLanguages}>
-          <FlatList
-            data={_langs}
-            renderItem={({ item }) => <LangItemComponent checked={item.value == selectedLang} item={item} />}
-            keyExtractor={item => item.value}
-          />
-        </View>
+        <FlatList
+          contentContainerStyle={styles.flagsWrapper}
+          horizontal
+          data={_langs}
+          renderItem={({ item }) => <LangItemComponent checked={item.value == selectedLang} item={item} />}
+          keyExtractor={item => item.value}
+        />
         <ScrollView keyboardShouldPersistTaps="never" contentContainerStyle={{ flexGrow: 1, paddingBottom: 70, }}>
 
           <View style={styles.container}>

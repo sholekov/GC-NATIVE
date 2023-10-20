@@ -48,7 +48,7 @@ const AccountMoneyComponent = () => {
                         <View style={[{ ...styles.btn_container, }, (index == 0) && { ...styles.roundedTop }, (index + 1 === payment_methods.length) && { ...styles.roundedBottom }]}>
                           <View style={styles.btn_container.textWrapper}>
                             {
-                              item === 'office' ? (
+                              item === 'networxoffice' ? (
                                 <Icon
                                   style={{ width: 32, }}
                                   name='building'

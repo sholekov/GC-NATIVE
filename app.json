@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "gc-client-new",
-    "slug": "gc-client-new",
+    "name": "gc-client-dev",
+    "slug": "gc-client-dev",
     "version": "1.0.0",
     "scheme": "gigacharger",
     "orientation": "portrait",
@@ -17,7 +17,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.sholeka.gcclientnew",
+      "bundleIdentifier": "com.sholeka.gcclientdev",
       "config": {
         "googleMapsApiKey": "AIzaSyBkZBxH9wphpgAKxyoEbEUTbhWN862r46c"
       }
@@ -30,12 +30,13 @@
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.sholeka.gcclientnew",
+      "package": "com.sholeka.gcclientdev",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyBWMlk6E5B8zSZui90Ev0MCHjsghCFq55k"
         }
-      }
+      },
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -59,8 +60,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "b6b4896c-7aac-4f06-bd28-d5b2b360d3d2"
+        "projectId": "7c3c5fd5-90cc-49de-8632-032c0c84d3e6"
       }
-    }
+    },
+    "owner": "sholeka"
   }
 }

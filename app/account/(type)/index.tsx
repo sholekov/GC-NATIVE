@@ -11,23 +11,6 @@ import { Alert, View, Text, TouchableOpacity, Image, SafeAreaView, StyleSheet, I
 import { useSnapshot } from 'valtio'
 import { store } from '@/store'
 
-// Components
-import Icon from 'react-native-vector-icons/FontAwesome5';
-import BackButton from '@/app/(components)/stackBackButton';
-import { StripeProvider } from '@stripe/stripe-react-native';
-import BackToMoneyComponent from '@/app/account/(type)/back-to-money';
-import PaymentSheet from './PaymentSheet';
-
-const openURL = (url: string) => {
-  Linking.canOpenURL(url).then(supported => {
-    if (supported) {
-      Linking.openURL(url);
-    } else {
-      console.log(`Don't know how to open this URL: ${url}`);
-    }
-  });
-};
-
 const HeaderText = ({ children }) => <Text style={localStyles.headerText}>{children}</Text>;
 const ConfirmButton = ({ onPress }) => (
   <TouchableOpacity onPress={onPress} style={localStyles.confirmCancelButton}>
@@ -84,7 +67,7 @@ const AccountMoneySubComponent = () => {
 
             <View style={localStyles.iconWrapper}>
               {
-                type === 'office' ? (
+                type === 'networxoffice' ? (
                   <Icon name='building' style={localStyles.iconStyle} />
                 ) : type === 'paypal' ? (
                   <Icon name='paypal' style={localStyles.iconStyle} />
@@ -121,7 +104,7 @@ const AccountMoneySubComponent = () => {
                         value={amount}
                         onChangeText={setAmount}
                         keyboardType="numeric"
-                        placeholder={t(`deposit.placeholder`)}
+                        placeholder={t(`deposit.placeholder.enter_amount`)}
                         editable={!confirmAmount}
                       />
                       {!confirmAmount && amount && (parseInt(amount) > 19) && (
@@ -134,18 +117,21 @@ const AccountMoneySubComponent = () => {
                       )}
                     </View>
                   </View>
-                  </>) : type === 'office' ? (
+                  </>) : type === 'networxoffice' ? (
                     <>
                     <View style={{ paddingHorizontal: 24, paddingBottom: 16, }}>
                       <Text style={{ paddingBottom: 8, fontSize: 16, textAlign: 'center', }}>{t('deposit.depositWithOffice')}</Text>
                     </View>
 
                     <TouchableOpacity onPress={() => openURL(`https://www.google.com/maps/search/networx/`)} style={{ flexDirection: 'row', justifyContent: 'center', }}>
-                      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 16, backgroundColor: '#00000035', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5, borderRadius: 8, }}>
+                      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 16, backgroundColor: '#9a9a9a', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5, borderRadius: 8, }}>
                         <Text style={{ marginRight: 12, fontSize: 18, color: '#ffffff', }}>{t('deposit.depositWithOfficeButton')}</Text>
                         <Icon name="chevron-right" style={{ fontSize: 18, color: '#fff' }} />
                       </View>
                     </TouchableOpacity>
+                    </>
+                  ) : type === 'revolut' ? (
+                    <>
                     </>
                   ) : null
               }
@@ -170,7 +156,24 @@ const AccountMoneySubComponent = () => {
   );
 };
 
+// Components
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import BackButton from '@/app/(components)/stackBackButton';
+import { StripeProvider } from '@stripe/stripe-react-native';
+import BackToMoneyComponent from '@/app/account/(type)/back-to-money';
+import PaymentSheet from './PaymentSheet';
+
 export default AccountMoneySubComponent;
+
+const openURL = (url: string) => {
+  Linking.canOpenURL(url).then(supported => {
+    if (supported) {
+      Linking.openURL(url);
+    } else {
+      console.log(`Don't know how to open this URL: ${url}`);
+    }
+  });
+};
 
 const localStyles = StyleSheet.create({
   outerWrapper: { flex: 1, paddingVertical: 32, },

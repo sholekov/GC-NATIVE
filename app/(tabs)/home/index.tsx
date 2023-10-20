@@ -1,52 +1,19 @@
-const isSimulator = () => {
-  let isSim = false;
-  if (Constants.isDevice) {
-    if (Platform.OS === 'ios') {
-      isSim = !Constants.isDevice && Constants.deviceName !== 'iPhone Simulator';
-    } else {
-      isSim = !Constants.isDevice;
-    }
-  } else {
-    isSim = true;
-  }
-  return isSim;
-};
-
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 
 import { getLocations, getStation } from '@/helpers'
 import { store, setupSelectedLocation, setLocations, setupStation } from '@/store'
 
+import { usePushNotifications } from '@/services/usePushNotifications';
+
 import { usePlace } from '@/app/hooks/usePlace'
 
-import { registerForPushNotificationsAsync } from '@/services/notifications'
-
 const HomeComponent = () => {
-  const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
-
-  useEffect(() => {
-    // registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
-
-    // notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-    //   setNotification(notification);
-    // });
-
-    // responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-    //   console.log(response);
-    // });
-
-    // return () => {
-    //   Notifications.removeNotificationSubscription(notificationListener.current);
-    //   Notifications.removeNotificationSubscription(responseListener.current);
-    // };
-  }, []);
-
   const { t } = useTranslation();
   const { user, locations, CHARGING, station } = useSnapshot(store)
 
+  // const { expoPushToken } = usePushNotifications();
+  // console.log('expoPushToken', expoPushToken);
+  
   const [userLocation, setUserLocation] = useState({ latitude: 43.828805, longitude: 25.9582707 });
   const handleUserLocation = async () => {
     if (!isSimulator()) {
@@ -56,15 +23,16 @@ const HomeComponent = () => {
         Alert.alert('Permission to access location was denied');
         return;
       }
-    }
 
-    let location = await Location.getCurrentPositionAsync({});
-    const coords = location.coords;
-    setUserLocation(coords)
+      let location = await Location.getCurrentPositionAsync({});
+      const coords = location.coords;
+      setUserLocation(coords)
+    }
   }
-  // useEffect(() => {
-  // handleUserLocation();
-  // }, []);
+  
+  useEffect(() => {
+    handleUserLocation();
+  }, []);
 
   const loadStations = async () => {
     console.log('loadStations', user?.id);
@@ -208,8 +176,8 @@ import { View, Image, ActivityIndicator, Pressable, Alert, Platform, } from 'rea
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import { router } from 'expo-router';
 
-// 
 // Components
 import Charging from '@/app/(components)/charging'
 import MapActions from './mapActions'
@@ -220,6 +188,19 @@ import CustomCalloutComponent from '@/app/partials/CustomCallout'
 import { useTranslation } from 'react-i18next';
 
 import { useSnapshot } from 'valtio'
-import { router } from 'expo-router';
+
+const isSimulator = () => {
+  let isSim = false;
+  if (Constants.isDevice) {
+    if (Platform.OS === 'ios') {
+      isSim = !Constants.isDevice && Constants.deviceName !== 'iPhone Simulator';
+    } else {
+      isSim = !Constants.isDevice;
+    }
+  } else {
+    isSim = true;
+  }
+  return isSim;
+};
 
 export default HomeComponent;
