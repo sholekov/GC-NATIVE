@@ -15,8 +15,10 @@ const StationRow = ({ station_data }: {station_data: any}) => {
   const [station, setStation] = useState(null);
 
   useEffect(() => {
+    console.log('station_data', station_data);
+    
     setStation(station_data);
-  }, [station_data])
+  }, [])
 
   const handleSetupStation = () => {
     setupStation(station);
@@ -30,12 +32,6 @@ const StationRow = ({ station_data }: {station_data: any}) => {
     <TouchableOpacity onPress={handleSetupStation} style={styles.placeItemContainer}>
       <View style={styles.placeItemWrapper}>
         <View style={[CHARGING && station?.user_id == charged_station_id ? { flexDirection: 'row', } : { flexDirection: 'column', }]}>
-          {
-            CHARGING && station?.user_id == charged_station_id ? (
-              <View style={{ marginRight: 8, }}>
-                <Battery small={true} />
-              </View>) : null
-          }
           <View style={styles.placeItemLeft}>
             <Text style={styles.placeItemLeftLabel}>{t('place.stationNumberLabel')}: #{station?.user_id}</Text>
             <Text style={styles.placeItemLeftPrice}>{toHumanReadable(getPrice(station?.billing, station?.ppkw), 'BGN')} / kWh.</Text>

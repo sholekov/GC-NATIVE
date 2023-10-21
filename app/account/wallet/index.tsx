@@ -103,6 +103,26 @@ const AccountMoneyComponent = () => {
         <View style={{ paddingVertical: 32, }}>
 
           {/* make transfer */}
+          <View style={styles.btns_container}><Link href='account/payment-methods' asChild>
+              <Pressable>
+                <View style={{ ...styles.btn_container, ...styles.roundedTop, ...styles.roundedBottom, }}>
+                  <View style={styles.btn_container.textWrapper}>
+                    <Icon
+                      name='credit-card'
+                      size={18}
+                      color={'#333'}
+                    />
+                    <Text style={styles.btn_container.textWrapperText}>{t('account.tabLabels.payment-methods')}</Text>
+                  </View>
+                  <Icon
+                    name='chevron-right'
+                    size={18}
+                    color={'grey'}
+                  />
+                </View>
+              </Pressable>
+            </Link>
+          </View>
           <View style={styles.btns_container}>
             <Link href='account/transaction' asChild>
               <Pressable>

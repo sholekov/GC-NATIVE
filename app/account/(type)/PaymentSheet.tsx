@@ -1,7 +1,7 @@
 
 import { useStripe } from '@stripe/stripe-react-native';
 
-const CheckoutScreen = ({amount, type, setConfirmAmount}) => {
+const CheckoutScreen = ({ amount, type, setConfirmAmount }) => {
   const { t } = useTranslation();
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [loading, setLoading] = useState(false);
@@ -15,9 +15,14 @@ const CheckoutScreen = ({amount, type, setConfirmAmount}) => {
     }
 
     initializePaymentSheet()
-      .then( (error) => {
+      .then((error) => {
         console.log('error', error);
-        openPaymentSheet();
+        if (!error) { 
+          openPaymentSheet();
+        } else {
+          Alert.alert('Error', 'Please try again.');
+          setConfirmAmount(false);
+        }
       })
   }, [amount]);
 
@@ -59,23 +64,33 @@ const CheckoutScreen = ({amount, type, setConfirmAmount}) => {
   // 
 
   const fetchPaymentSheetParams = async () => {
-    const response = await axios(`http://localhost:4000/payment-sheet`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: JSON.stringify({ amount: parseFloat(amount), type: type }), // Send the amount to your backend
-    });
-    const { paymentIntent } = await response.data
-    console.log('paymentIntent', paymentIntent);
-    return {
-      paymentIntent,
-    };
+    try {
+      const response = await axios(`http://localhost:4000/payment-sheet`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: JSON.stringify({ amount: parseFloat(amount), type: type }), // Send the amount to your backend
+      });
+      const { paymentIntent } = await response.data
+      console.log('paymentIntent', paymentIntent);
+      return {
+        paymentIntent,
+      };
+    } catch (error) {
+      console.error("Error occurred:", error.message);
+      // You might also want to handle this error in a user-friendly manner, 
+      // for instance showing a notification or a message in your UI.
+      return { paymentIntent: null };
+    }
   };
 
   const initializePaymentSheet = async () => {
     const { paymentIntent } = await fetchPaymentSheetParams();
 
+    if (paymentIntent === null) {
+      return { error: 'Failed to fetch the PaymentSheet params' }
+    }
     const { error } = await initPaymentSheet({
       merchantDisplayName: "Example, Inc.",
       paymentIntentClientSecret: paymentIntent,
@@ -85,7 +100,7 @@ const CheckoutScreen = ({amount, type, setConfirmAmount}) => {
       },
       returnURL: 'gigacharger://home',
     });
-    
+
     if (!error) {
       setLoading(true);
     }

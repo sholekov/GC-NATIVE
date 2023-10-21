@@ -149,6 +149,14 @@ const StationInfo = () => {
         console.log('startCharging onmessage received: ', e.data);
         const message = JSON.parse(e.data);
         store.chargingMessage = message[1];
+        console.log('startCharging onmessage received: ', message[1]);
+        if ( message[1][1] === 'danger') {
+          if (message[1][0][0] === 'notEnoughCurrency') {
+            Alert.alert('Not enough currency');
+            setStarted(false);
+            return
+          }
+        }
         if (message[1][1]) {
           store.charged_station_id = message[1][0]
           // const station_id = message[1][0];
@@ -349,7 +357,7 @@ const BASE_WS = process.env.EXPO_PUBLIC_API_WS;
 
 // React, ReactNative, Expo
 import React, { Suspense, useCallback, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, SafeAreaView, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, TouchableOpacity, Image, SafeAreaView, StyleSheet, ImageBackground, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
 // Components

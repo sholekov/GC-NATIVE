@@ -58,7 +58,7 @@ const AccountComponent = () => {
             <View style={styles.btns_container}>
               <Link href='account/favourites' asChild>
                 <Pressable>
-                  <View style={{ ...styles.btn_container, ...styles.roundedTop, ...styles.roundedTop }}>
+                  <View style={{ ...styles.btn_container, ...styles.roundedTop, ...styles.roundedBottom }}>
                     <View style={styles.btn_container.textWrapper}>
                       <Icon
                         name='star'
@@ -76,10 +76,14 @@ const AccountComponent = () => {
                   </View>
                 </Pressable>
               </Link>
-              <Divider />
+            </View>
+
+
+
+            <View style={styles.btns_container}>
               <Link href='account/wallet' asChild>
                 <Pressable>
-                  <View style={{ ...styles.btn_container, ...styles.roundedBottom }}>
+                  <View style={{ ...styles.btn_container, ...styles.roundedTop }}>
                     <View style={styles.btn_container.textWrapper}>
                       <Icon
                         name='wallet'
@@ -88,30 +92,6 @@ const AccountComponent = () => {
                         solid
                       />
                       <Text style={styles.btn_container.textWrapperText}>{t('account.tabLabels.wallet')}</Text>
-                    </View>
-                    <Icon
-                      name='chevron-right'
-                      size={18}
-                      color={'grey'}
-                    />
-                  </View>
-                </Pressable>
-              </Link>
-            </View>
-
-
-
-            <View style={styles.btns_container}>
-              <Link href='account/payment-methods' asChild>
-                <Pressable>
-                  <View style={{ ...styles.btn_container, ...styles.roundedTop, }}>
-                    <View style={styles.btn_container.textWrapper}>
-                      <Icon
-                        name='credit-card'
-                        size={18}
-                        color={'#333'}
-                      />
-                      <Text style={styles.btn_container.textWrapperText}>{t('account.tabLabels.payment-methods')}</Text>
                     </View>
                     <Icon
                       name='chevron-right'

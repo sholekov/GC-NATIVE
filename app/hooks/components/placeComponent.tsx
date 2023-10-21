@@ -18,7 +18,7 @@ const PlaceComponent = ({ station }) => {
           contentContainerStyle={styles.placeContentContainerStyle}
           data={station.stations}
           renderItem={({ item }) => (
-            <StationRow station_id={item.user_id} />
+            <StationRow station_data={item} />
           )}
           keyExtractor={item => Math.random().toString(36).substr(2, 9)}
         />
@@ -43,6 +43,7 @@ import { View, Text, FlatList, TouchableOpacity, } from 'react-native';
 import PlaceHeading from '@/app/partials/(tabs)/(placeHeading)'
 import PlaceFavourite from '@/app/partials/(tabs)/(placeFavourite)'
 import PlaceAccessAndDirections from '@/app/partials/(tabs)/(placeAccessAndDirections)'
+import StationData from '@/app/hooks/components/(station_data)'
 import StationRow from '@/app/hooks/components/(station_row)'
 
 export default PlaceComponent;
