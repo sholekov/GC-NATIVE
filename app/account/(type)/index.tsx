@@ -56,6 +56,7 @@ const AccountMoneySubComponent = () => {
 
         <Stack.Screen options={{
           title: t(`deposit.depositing`),
+          headerTitleAlign: 'center',
           headerLeft: () => <BackButton />,
         }} />
 
@@ -176,10 +177,10 @@ const openURL = (url: string) => {
 };
 
 const localStyles = StyleSheet.create({
-  outerWrapper: { flex: 1, paddingVertical: 32, },
+  outerWrapper: { flex: 1, paddingVertical: 0, },
   innerWrapper: {
     flex: 1, justifyContent: 'center',
-    marginHorizontal: 24,
+    marginHorizontal: 0,
     backgroundColor: '#fff',
 
     borderColor: '#99999950', borderWidth: 1, borderRadius: 8,

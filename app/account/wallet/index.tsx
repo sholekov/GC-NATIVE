@@ -28,6 +28,7 @@ const AccountMoneyComponent = () => {
     <SafeAreaView style={{ ...styles.container, }}>
       <Stack.Screen options={{
         title: t('account.tabLabels.wallet'),
+        headerTitleAlign: 'center',
         headerLeft: () => <BackButton />,
       }} />
 
