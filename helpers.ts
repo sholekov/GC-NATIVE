@@ -12,8 +12,6 @@ const BASE_URI = process.env.EXPO_PUBLIC_API_URL;
  * Local Types
  **/
 
-type axiosInstance = any
-
 type userRegisterProvidedData = {
   locale: string,
   email: string,
@@ -37,7 +35,7 @@ type userRegisterProvidedData = {
 //   }
 // }
 
-import axios, { AxiosPromise } from 'axios';
+import axios, { AxiosPromise, AxiosProxyConfig, AxiosInstance } from 'axios';
 import { Alert } from 'react-native';
 import { proxy } from 'valtio'
 
@@ -198,7 +196,11 @@ export const fetchCaptcha: Function = () => {
 }
 
 export const fetchRates: Function = () => {
-  return helpers.axiosInstance('rates')
+  return helpers.axiosInstance('rates').then((response: any) => response.data)
+}
+export const setRates: Function = async () => {
+  const data = await fetchRates();
+  helpers.rates = data.rates;
 }
 
 export const fetchStation: Function = (station_id: number) => {
@@ -214,10 +216,10 @@ export const credit: Function = () => { }
 export const frozen: Function = () => { }
 
 export const getAvailableFunds = () => {
-  return this.balance() + this.credit() - this.frozen();
+  // return this.balance() + this.credit() - this.frozen();
 }
 export const getOwnFunds = () => {
-  return this.balance() - this.frozen();
+  // return this.balance() - this.frozen();
 }
 
 
@@ -267,9 +269,8 @@ export const setLocalUser = (force?: boolean): Promise<any> | void => {
   }
 }
 
-export const setUserCredentials = (data: object) => {
-  helpers.user_credentials.useremail = data.useremail
-  helpers.user_credentials.password = data.password
+export const setUserCredentials = ({ email, password }: { email: string; password: string }) => {
+  Object.assign(helpers.user_credentials, { email, password });
 }
 
 export const getLocations = () => {
@@ -304,7 +305,7 @@ export const getStation = (loc_id: string): AxiosPromise => {
   })
 }
 
-export const toggleStationToFavourites: Function = (id: any, csrf: any): void => {
+export const toggleStationToFavourites: Function = (id: any, csrf: any): any => {
   return helpers.axiosInstance({
     method: 'POST',
     url: 'favorites',
@@ -340,12 +341,10 @@ export const withdraw = () => {
 }
 
 
-export const helpers = proxy<{ axiosInstance: axiosInstance, user_credentials: object }>({
+export const helpers = proxy<{ axiosInstance: AxiosInstance, user_credentials: object, rates: object }>({
   axiosInstance: initAxios(),
-  user_credentials: {
-    useremail: '',
-    password: '',
-  },
+  user_credentials: {},
+  rates: {},
 })
 
 
@@ -361,7 +360,7 @@ export const helpers = proxy<{ axiosInstance: axiosInstance, user_credentials: o
  * 
  */
 
-function initAxios() {
+function initAxios(): AxiosInstance {
 
   const customUserAgent = 'ReactNative';
   axios.defaults.baseURL = `${BASE_URI}`

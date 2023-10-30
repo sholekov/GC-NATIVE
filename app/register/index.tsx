@@ -2,7 +2,7 @@
 import locales from '@/assets/locales.json';
 
 
-import { onAuthStateChanged, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, sendPasswordResetEmail } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@/firebase'
 
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';

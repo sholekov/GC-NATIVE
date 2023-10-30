@@ -1,6 +1,6 @@
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 
-import { getLocations, getStation } from '@/helpers'
+import { helpers, getLocations, getStation } from '@/helpers'
 import { store, setupSelectedLocation, setLocations, setupStation } from '@/store'
 
 import { usePushNotifications } from '@/services/usePushNotifications';
@@ -10,6 +10,7 @@ import { usePlace } from '@/app/hooks/usePlace'
 const HomeComponent = () => {
   const { t } = useTranslation();
   const { user, locations, CHARGING, station } = useSnapshot(store)
+  const { rates } = useSnapshot(helpers)
 
   // const { expoPushToken } = usePushNotifications();
   // console.log('expoPushToken', expoPushToken);
@@ -172,7 +173,7 @@ const styles = { ...globalStyles, ...homeStyles };
 
 // React, ReactNative, Expo
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Image, ActivityIndicator, Pressable, Alert, Platform, } from 'react-native';
+import { Text, View, Image, ActivityIndicator, Pressable, Alert, Platform, } from 'react-native';
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';

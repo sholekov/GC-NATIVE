@@ -3,13 +3,13 @@ import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { router, Link, Redirect, useRouter } from 'expo-router';
 
-import { signOut, onAuthStateChanged, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, sendPasswordResetEmail } from 'firebase/auth';
+import { signOut, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@/firebase'
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import { useSnapshot } from 'valtio'
-import { userLogout, setLocalUser } from '@/helpers'
+import { userLogout, setLocalUser, setUserCredentials } from '@/helpers'
 import { store } from '@/store'
 
 import { useTranslation } from 'react-i18next';
@@ -33,6 +33,7 @@ const Logout = ({ triggerLoading, styles }) => {
           const t1 = performance.now();
           console.log('user are Logged out', t1 - t0);
           if (status) {
+            setUserCredentials({useremail: "", password: ""})
             setLocalUser(true)
           } else {
             Alert.alert('Logout failed');

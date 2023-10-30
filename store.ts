@@ -51,14 +51,6 @@ export const setupStation: Function = (station: any): void => {
   store.station =  station
 }
 
-export const setupChargingStation: Function = (station: any): void => {
-  store.CHARGING_STATION =  station
-}
-
-export const setupChargedStation: Function = (id: number): void => {
-  store.charged_station_id =  id
-}
-
 export const setLocations: Function = (data: any): void => {
   store.locations =  data
 }
@@ -73,21 +65,10 @@ export const setAppUILanguage: Function = (selectedLang: Lang, i18n: any): void 
   store.language =  selectedLang
 }
 
-export const resetCharging: Function = (): void => {
-  store.CHARGING = false
-  store.CHARGING_STATION = null
-  store.chargingMessage = null
-}
-
-export const store = proxy<{ language: Lang | null, user: User, station_location: any, station: any, charged_station_id: number | null, locations: any, CHARGING: boolean, CHARGING_STATION: null | any, chargingMessage: JSON | null}>({
+export const store = proxy<{ language: Lang | null, user: User, station_location: any, station: any, locations: any, }>({
   language: null,
   user: null,
   station_location: null,
   station: null,
-  charged_station_id: null,
   locations: null,
-
-  CHARGING: false,
-  CHARGING_STATION: null,
-  chargingMessage: null,
 })

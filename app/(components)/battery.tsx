@@ -5,15 +5,15 @@ function getFirstTwoDigits(num: number) {
 }
 
 const BatteryComponent = ({small = false}: {small?: boolean}) => {
-  const { chargingMessage } = useSnapshot(store)
+  const { messages } = useSnapshot(charging)
   const [animatedValue, setAnimatedValue] = useState(new Animated.Value(0));
   const [chargeLevel, setChargeLevel] = useState(null);
 
   useEffect(() => {
-    if (chargingMessage) {
-      setChargeLevel(getFirstTwoDigits(chargingMessage[1] - 1));
+    if (messages) {
+      setChargeLevel(getFirstTwoDigits(messages[1] - 1));
     }
-  }, [chargingMessage])
+  }, [messages])
 
   useEffect(() => {
     if (chargeLevel) {
@@ -44,9 +44,8 @@ import React, { Component, useEffect, useState } from 'react';
 
 import { View, Text, Animated, StyleSheet } from 'react-native';
 
-import { store, } from '@/store'
 import { useSnapshot } from 'valtio';
-
+import { charging, } from '@/charging'
 
 // Styles
 import globalStyles from '@/assets/styles/styles';

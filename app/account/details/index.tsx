@@ -48,6 +48,12 @@ const AccountDetailsComponent = () => {
     Alert.alert(t('account.profile.delete_label'), t('account.profile.delete_alert'));
   };
 
+  console.log('user', user);
+  
+  const userHasAttr = (attr: number) => {
+    return (user.attr & attr) === attr;
+  }
+
   return (
     <SafeAreaView style={{ ...styles.container }}>
       <Stack.Screen options={{
@@ -63,7 +69,7 @@ const AccountDetailsComponent = () => {
             <UserPhotoComponent />
 
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginHorizontal: 32, marginBottom: 32, paddingHorizontal: 12, }}>
-              <Text style={{ fontSize: 28, fontWeight: '600', }}>John Doe</Text>
+              <Text style={{ fontSize: 28, fontWeight: '600', }}>{user?.name}</Text>
               {/* <Text style={{ fontSize: 28, fontWeight: '600', }}>{constants.MONEY_FACTOR}</Text> */}
               {/* <Text>{user.name}</Text> */}
             </View>
@@ -79,6 +85,15 @@ const AccountDetailsComponent = () => {
             </View>
           </View>
 
+          {userHasAttr(constants.ATTR_STATION_OWNER) && (
+            <View style={{ flex: 1, ...styles.btns_container, }}>
+              <TouchableOpacity onPress={() => {}} style={{ ...styles.btn_container, marginHorizontal: 32, paddingHorizontal: 12, paddingVertical: 12, borderColor: 'brown', borderWidth: 1, borderRadius: 180, }}>
+                <View style={{ ...styles.btn_container.textWrapper, width: '100%', justifyContent: 'center', }}>
+                  <Text style={{ ...styles.btn_container.textWrapperText, color: 'brown', fontWeight: '500', }}>{t('account.profile.edit_label')}</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          )}
 
           <View style={{ flex: 1, ...styles.btns_container, }}>
             <TouchableOpacity onPress={handleAlert} style={{ ...styles.btn_container, marginHorizontal: 32, paddingHorizontal: 12, paddingVertical: 12, borderColor: 'brown', borderWidth: 1, borderRadius: 180, }}>

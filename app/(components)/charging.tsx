@@ -8,12 +8,10 @@ import { toHumanReadable, getPrice } from '@/utils/helpers';
 
 import { usePlace } from '@/app/hooks/usePlace'
 
-import { store, setupChargingStation, } from '@/store'
-import { fetchStation, getStation, } from '@/helpers'
 
 
 const ChargingComponent = ({ handleSelectedPlace }) => {
-  const { CHARGING, chargingMessage, charged_station_id } = useSnapshot(store)
+  const { messages, CHARGING, CHARGING_STATION_ID, CHARGING_STATION} = useSnapshot(charging)
 
   const [chargeLevel, setChargeLevel] = useState(null);
   const [chargingLocation, setChargingLocation] = useState(null);
@@ -30,8 +28,9 @@ const ChargingComponent = ({ handleSelectedPlace }) => {
       const _data = JSON.parse(e.data);
       console.log('onmessage', _data);
       if (_data.length && _data[0] === 'session') {
-        store.CHARGING = true
-        store.charged_station_id = _data[1][0]
+        setChargingStatus(true)
+        setupChargingStationID(_data[1][0])
+        setChargingMessages(_data[1]);
       }
       if (_data[0] === 'session' && chargingLocation == null) {
         fetchStation(_data[1][0])
@@ -50,7 +49,6 @@ const ChargingComponent = ({ handleSelectedPlace }) => {
           .catch(error => {
             console.error('Error fetching station data:', error);
           })
-        store.chargingMessage = _data[1];
       }
     };
 
@@ -63,31 +61,30 @@ const ChargingComponent = ({ handleSelectedPlace }) => {
   }, [])
 
   useEffect(() => {
-    if (CHARGING && chargingMessage) {
-      setChargeLevel(getFirstTwoDigits(chargingMessage[1] - 1));
+    if (CHARGING && messages) {
+      setChargeLevel(getFirstTwoDigits(messages[1] - 1));
     }
-  }, [chargingMessage])
+  }, [messages])
 
 
   const stopCharging = () => {
     console.log('stopCharging pressed')
     if (socket) {
-      socket.readyState === WebSocket.OPEN && socket.send(JSON.stringify(['drain/end', charged_station_id]));
+      socket.readyState === WebSocket.OPEN && socket.send(JSON.stringify(['drain/end', CHARGING_STATION_ID]));
 
       socket.onmessage = e => {
         console.log('stopCharging message', e.data);
-
-        store.CHARGING = false
-        store.chargingMessage = null
+        setChargingStatus(false)
+        setChargingMessages(null)
         console.log(socket.readyState, 'drain/end');
       };
     }
   }
 
-  return (CHARGING && chargingMessage) && (
+  return (CHARGING && messages) && (
     <View style={styles.container}>
 
-      <TouchableOpacity onPress={() => handleSelectedPlace(chargingLocation, charged_station_id)}>
+      <TouchableOpacity onPress={() => handleSelectedPlace(chargingLocation, CHARGING_STATION_ID)}>
         <Image
           style={{
             marginBottom: 12,
@@ -103,14 +100,15 @@ const ChargingComponent = ({ handleSelectedPlace }) => {
       </View>
 
       <View style={{ marginBottom: 6, }}>
-        <Text style={{ width: 'auto', fontSize: 18, textAlign: 'center', fontWeight: '500', }}>{(chargingMessage[1] / 1000).toFixed(2)}</Text>
+        <Text style={{ width: 'auto', fontSize: 18, textAlign: 'center', fontWeight: '500', }}>{(messages[1] / 1000).toFixed(2)}</Text>
         <Text style={{ width: 'auto', fontSize: 22, textAlign: 'center', }}>kW</Text>
       </View>
       {/* <Text style={{ width: 'auto' }}>{((chargingMessage[1] / 1000).toFixed(2) * getPrice(station.billing, station.ppkw)).toFixed(2)} BGN</Text> */}
 
-      <View style={{ paddingVertical: 8, width: '100%', backgroundColor: '#00000075', }}>
+      {/* <View style={{ paddingVertical: 8, width: '100%', backgroundColor: '#00000075', }}>
         <Text style={{ width: 'auto', fontSize: 15, textAlign: 'center', fontWeight: '500', color: '#fff', }}>{(chargingMessage[1] / 1000).toFixed(2)} lv.</Text>
-      </View>
+        <Text style={{ width: "auto" }}>{((chargingMessage[1] / 1000).toFixed(2) * getPrice(station.billing, station.ppkw)).toFixed(2)} BGN</Text>
+      </View> */}
 
       <TouchableOpacity onPress={stopCharging} style={styles.stopButton}>
         <Text style={styles.labelStop}>STOP</Text>
@@ -125,11 +123,14 @@ import React, { Component, useEffect, useState } from 'react';
 
 import { View, Text, StyleSheet, Animated, Image, TouchableOpacity } from 'react-native';
 
-import { useSnapshot } from 'valtio';
-
 // Components
 import Battery from '@/app/(components)/battery';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
+import { useSnapshot } from 'valtio';
+import { charging, setChargingStatus, setupChargingStationID, setupChargingStation, setChargingMessages } from '@/charging'
+import { store, } from '@/store'
+import { fetchStation, getStation, } from '@/helpers'
 
 const BASE_WS = process.env.EXPO_PUBLIC_API_WS;
 
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
     right: 16,
 
     width: 52 * 1.25,
-    height: 52 * 6.33,
+    height: 52 * 5.65,
 
     justifyContent: 'flex-end',
     alignItems: 'center',

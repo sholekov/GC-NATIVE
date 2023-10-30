@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, Alert } from 'react-native';
 
 
 const formatPower: Function = (watts: number) => {
@@ -8,6 +8,9 @@ const formatPower: Function = (watts: number) => {
 
 
 const OutletStaticComponent = ({ station_outlets, station_operating, station_maxPow }) => {
+  
+  // Alert.alert('station_outlets', station_outlets);
+
   return (
     <View style={styles.stationContentOutletsWrapper}>
       {
@@ -28,6 +31,14 @@ const OutletStaticComponent = ({ station_outlets, station_operating, station_max
       {
         (station_outlets !== 'shuko' && station_outlets !== 'type2') && (
           <Image source={require('@/assets/images/connectors/ccs2.png')} style={{ width: 50, height: 50, opacity: 0, }} />
+        )
+      }
+      {
+        (station_outlets === 'shuko,type2') && (
+          <>
+            <Image source={require('@/assets/images/connectors/type2.png')} style={styles.stationContentOutletsImage} />
+            <Image source={require('@/assets/images/connectors/shuko.png')} style={styles.stationContentOutletsImage} />
+          </>
         )
       }
       <Text style={{ marginLeft: 8, fontSize: 18, fontWeight: '500', }} >- {formatPower(station_maxPow)}kW</Text>

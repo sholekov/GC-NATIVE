@@ -1,4 +1,3 @@
-import { toHumanReadable, getPrice } from '@/utils/helpers';
 
 import global from '@/assets/styles/styles';
 import page from '@/assets/styles/page';
