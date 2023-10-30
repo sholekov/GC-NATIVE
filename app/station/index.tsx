@@ -270,7 +270,10 @@ const StationInfo = () => {
               }
               {
                 station.pref_user_id === user?.id &&
-                (<Link href='/account/meter' asChild>
+                (<Link href={{
+                    pathname: "/account/meter",
+                    params: { station_id: station.user_id }
+                  }} asChild>
                   <Pressable>
                     <Text style={{ marginRight: 8, }}>{t('station.meter')}</Text>
                   </Pressable>

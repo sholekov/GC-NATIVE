@@ -68,7 +68,6 @@ const StartPage = () => {
     })
 
   useEffect(() => {
-    Alert.alert('setRates')
     setRates()
   //   const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
   //   const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
