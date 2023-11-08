@@ -1,39 +1,25 @@
-import globalStyles from '@/assets/styles/styles';
-import loginStyles from '@/assets/styles/login';
-const styles = { ...globalStyles, ...loginStyles };
-
-import { useTranslation } from 'react-i18next';
-
-import React, { useEffect, useState } from 'react';
-import { Image, View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform, Pressable, ActivityIndicator, SafeAreaView, FlatList, } from 'react-native';
-import { Link } from 'expo-router';
-
-import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithCredential, createUserWithEmailAndPassword, signInWithRedirect, sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '@/firebase'
-
-import Icon from 'react-native-vector-icons/FontAwesome';
-
-import languages from '@/assets/languages.json';
-import { useSnapshot } from 'valtio'
-import { store, setAppUILanguage } from '@/store'
+import { store } from '@/store'
 import { helpers, userLogin, setLocalUser, setUserCredentials } from '@/helpers'
 
+import setupLanguage from '@/hooks/useSetupLanguage'
+import loginActions from '@/hooks/useLoginActions'
 
 // import * as Google from "expo-auth-session/providers/google";
 // import * as WebBrowser from 'expo-web-browser';
 // WebBrowser.maybeCompleteAuthSession();
 
-function Login({ triggerLoading }) {
+
+function LoginComponent({ triggerLoading }) {
   const { t, i18n } = useTranslation();
-  const { language } = useSnapshot(store)
-  const { user_credentials } = useSnapshot(helpers)
+  const { LanguagesComponent } = setupLanguage();
+  const { login, forgetPassword } = loginActions();
+
   const [username, setUsername] = useState('');
   const [password, setPIN] = useState('');
   const [loginWithNetworx, setLoginWithNetworx] = useState(false);
 
   const [showPIN, setShowPIN] = useState(false);
   const [setCredentials, setSetCredentials] = useState(true);
-
 
   // const [request, response, promptAsync] = Google.useAuthRequest({
   //   iosClientId: "270750900606-sb793cv8pjnl9shg1rrhlcamn1528do5.apps.googleusercontent.com",
@@ -48,116 +34,50 @@ function Login({ triggerLoading }) {
   // }, [response]);
 
 
-  // TODO: add trigger for forget password CTA
-  // firebase.auth().sendPasswordResetEmail(firebase.auth().currentUser.email)
-  const forgetPassword = (email: string) => {
-    sendPasswordResetEmail(auth, email)
-      .then(() => {
-        alert("Password reset email sent")
-      })
-      .catch((error) => {
-        alert(error)
-      })
-  }
-
   const handleLogin = () => {
     console.log('handleLogin triggered');
     
     const data = {
-      provider: '',
       email: setCredentials ? username : 'sholeka@gmail.com',
       password: setCredentials ? password : '123123',
       // email: setCredentials ? username : 'sholeka+1@googlemail.com',
       // password: setCredentials ? password : '1234',
     };
     if (loginWithNetworx) {
-      Object.assign(data, {
-        provider: 'networx',
-      })
+      helpers.provider = 'networx'
     }
     triggerLoading(true)
     
-    signInWithEmailAndPassword(auth, data.email, data.password)
+    login(data)
       .then(user_data => {
         const user = user_data.user;
-
         console.log('data', data.email, data.password);
         // setUserCredentials(data)
-        helpers.user_credentials.email = data.email
-        helpers.user_credentials.password = data.password
         console.log('user_data:', user_data);
         console.log('Logged in with:', user.email);
       })
       .catch(error => {
-        alert(error.message)
+        console.log(error.message)
         // Alert.alert(t('login.alert-error.title'), t('login.alert-error.text'), [{ text: t('login.alert-error.btn_text'), style: 'default' }]);
         triggerLoading(false)
       })
 
     return;
-
-    // not used because of firebase auth
-    userLogin(data)
-      .then(({ status, user }: { status: boolean, user: any }) => {
-        if (status && user) {
-          setLocalUser()
-        } else {
-          triggerLoading(false)
-          Alert.alert(t('login.alert-error.title'), t('login.alert-error.text'), [{ text: t('login.alert-error.btn_text'), style: 'default' }]);
-        }
-      })
   };
 
   const handleLostPIN = () => {
     Alert.alert(t('login.alert-lost-pin.title'), t('login.alert-lost-pin.text'));
   };
 
-  const LangItem = ({ checked, item }) => {
-    const flags = {
-      bg: require('@/assets/images/flags/tn_bg-flag.jpg'),
-      en: require('@/assets/images/flags/tn_en-flag.jpg'),
-      ro: require('@/assets/images/flags/tn_ro-flag.jpg'),
-    };
-    return (<View style={[styles.flagWrapper]}>
-      <View style={[checked && styles.langChecked]}></View>
-      <Image source={flags[item.value]}
-        style={[styles.flag]}
-      />
-      <Text style={[styles.langLabel,]}>{item.label.split(' ')[0]}</Text>
-    </View>)
-  }
-  const LangItemComponent = ({ checked = false, item }) => {
-    return (<TouchableOpacity onPress={() => setLang(val => item.value)}>
-      <LangItem checked={checked} item={item} />
-    </TouchableOpacity>)
-  }
-  const [_langs, setLangs] = useState([]);
-  useEffect(() => {
-    const _languages: Object[] = []
-    Object.keys(languages).forEach(locale => {
-      _languages.push({ label: languages[locale], value: locale })
-    });
-    _languages.sort((a, b) => a.label.localeCompare(b.label))
-    setLangs(_languages)
-  }, []);
-  const [selectedLang, setLang] = useState(language);
-  useEffect(() => {
-    console.log('selectedLang', selectedLang);
-    setAppUILanguage(selectedLang, i18n);
-  }, [selectedLang]);
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
       <SafeAreaView style={{ flex: 1, }}>
-        <FlatList
-          contentContainerStyle={styles.flagsWrapper}
-          horizontal
-          data={_langs}
-          renderItem={({ item }) => <LangItemComponent checked={item.value == selectedLang} item={item} />}
-          keyExtractor={item => item.value}
-        />
+        
+        <LanguagesComponent />
+
         <ScrollView keyboardShouldPersistTaps="never" contentContainerStyle={{ flexGrow: 1, paddingBottom: 70, }}>
 
           <View style={styles.container}>
@@ -220,4 +140,22 @@ function Login({ triggerLoading }) {
   );
 }
 
-export default Login;
+import { useTranslation } from 'react-i18next';
+
+import React, { useEffect, useState, useContext } from 'react';
+import { Image, View, Text, TextInput, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView, Platform, Pressable, ActivityIndicator, SafeAreaView, FlatList, } from 'react-native';
+import { Link } from 'expo-router';
+
+import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithCredential, createUserWithEmailAndPassword, signInWithRedirect, sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '@/firebase'
+
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+import { useSnapshot } from 'valtio'
+
+// Styles
+import globalStyles from '@/assets/styles/styles';
+import loginStyles from '@/assets/styles/login';
+const styles = { ...globalStyles, ...loginStyles };
+
+export default LoginComponent;

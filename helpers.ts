@@ -1,6 +1,7 @@
 
 import { store, setupUser } from '@/store'
 import { useSnapshot } from 'valtio'
+import httpGCInstance from '@/utils/httpInstance';
 
 /**
  * Local Constants
@@ -41,11 +42,11 @@ import { proxy } from 'valtio'
 
 
 export const resetRequest = () => {
-  helpers.axiosInstance = null
+  httpGCInstance = null
 }
 
 export const setRequest = () => {
-  helpers.axiosInstance = initAxios()
+  httpGCInstance = initAxios()
 }
 
 /**
@@ -55,7 +56,7 @@ export const setRequest = () => {
  **/
 export const userRegister: Function = (data: userRegisterProvidedData): object => {
   return new Promise((resolve, reject) => {
-    helpers.axiosInstance({
+    httpGCInstance({
       method: 'POST',
       url: 'register',
       data: data,
@@ -88,7 +89,7 @@ export const userRegister: Function = (data: userRegisterProvidedData): object =
  **/
 export const userLogin: Function = ({ email, password, provider }: { email: string, password: string, provider: string }): object => {
   return new Promise((resolve, reject) => {
-    helpers.axiosInstance({
+    httpGCInstance({
       method: 'POST',
       url: 'login',
       data: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&provider=${encodeURIComponent(provider)}`
@@ -114,7 +115,7 @@ export const userLogin: Function = ({ email, password, provider }: { email: stri
 
 export const userLogout: Function = (csrf: string) => {
   return new Promise((resolve, reject) => {
-    helpers.axiosInstance({
+    httpGCInstance({
       method: 'POST',
       url: 'logout',
       data: `manix-csrf=${encodeURIComponent(csrf)}&manix-method=DELETE`
@@ -142,7 +143,7 @@ export const uploadImageToServer = async (selectedImage: any, csrf: string) => {
     uri: uri,
     name: 'some_photo.jpg',
   });
-  helpers.axiosInstance({
+  httpGCInstance({
     method: 'POST',
     url: 'avatar',
     data: formData,
@@ -167,7 +168,7 @@ import base64 from 'base-64';
 
 export const fetchCaptcha: Function = () => {
   return new Promise((resolve, reject) => {
-    helpers.axiosInstance({
+    httpGCInstance({
       url: `captcha?timestamp=${new Date().getTime()}`,
       responseType: 'arraybuffer',
       // responseType: 'blob',
@@ -196,7 +197,7 @@ export const fetchCaptcha: Function = () => {
 }
 
 export const fetchRates: Function = () => {
-  return helpers.axiosInstance('rates').then((response: any) => response.data)
+  return httpGCInstance('rates').then((response: any) => response.data)
 }
 export const setRates: Function = async () => {
   const data = await fetchRates();
@@ -204,7 +205,7 @@ export const setRates: Function = async () => {
 }
 
 export const fetchStation: Function = (station_id: number) => {
-  return helpers.axiosInstance({
+  return httpGCInstance({
     method: 'GET',
     url: `station?id=${station_id}&timestamp=true`,
   })
@@ -227,12 +228,12 @@ export const _setLocalUser = (force?: boolean): Promise<any> | void => {
   console.log('setLocalUser');
   if (!force) {
     return Promise.all([
-      helpers.axiosInstance.get('me'),
-      helpers.axiosInstance.get('favorites')
+      httpGCInstance.get('me'),
+      httpGCInstance.get('favorites')
     ])
       .then(([result_of_user, result_of_favourite]) => {
         const imageUrl = BASE_URI + "images/clients/" + result_of_user.data.id + ".png"
-        const imageRequest = helpers.axiosInstance.get(imageUrl)
+        const imageRequest = httpGCInstance.get(imageUrl)
         setupUser(result_of_user.data, result_of_favourite.data, imageRequest);
         return true
       })
@@ -250,12 +251,12 @@ export const setLocalUser = (force?: boolean): Promise<any> | void => {
   console.log('setLocalUser');
   if (!force) {
     return Promise.all([
-      helpers.axiosInstance.get('me'),
-      helpers.axiosInstance.get('favorites')
+      httpGCInstance.get('me'),
+      httpGCInstance.get('favorites')
     ])
       .then(([result_of_user, result_of_favourite]) => {
         const imageUrl = BASE_URI + "images/clients/" + result_of_user.data.id + ".png"
-        const imageRequest = helpers.axiosInstance.get(imageUrl)
+        const imageRequest = httpGCInstance.get(imageUrl)
         setupUser(result_of_user.data, result_of_favourite.data, imageRequest);
         return true
       })
@@ -274,7 +275,14 @@ export const setUserCredentials = ({ email, password }: { email: string; passwor
 }
 
 export const getLocations = () => {
-  return helpers.axiosInstance('locations')
+  return httpGCInstance('locations')
+}
+
+export const getMeter = (station_id: number) => {
+  return httpGCInstance({
+    method: 'GET',
+    url: `meter?station=${station_id}`,
+  }).then((response: any) => response.data)
 }
 
 export const getStation = (loc_id: string): AxiosPromise => {
@@ -299,28 +307,28 @@ export const getStation = (loc_id: string): AxiosPromise => {
   //     "user_id": 10085
   //   }
   // ]
-  return helpers.axiosInstance({
+  return httpGCInstance({
     method: 'GET',
     url: `stations?loc_id=${loc_id}`,
   })
 }
 
 export const toggleStationToFavourites: Function = (id: any, csrf: any): any => {
-  return helpers.axiosInstance({
+  return httpGCInstance({
     method: 'POST',
     url: 'favorites',
     data: `l_id=${encodeURIComponent(id)}&manix-csrf=${encodeURIComponent(csrf)}`,
   })
 }
 export const getFavouriteStations = () => {
-  return helpers.axiosInstance('favorites')
+  return httpGCInstance('favorites')
 }
 export const getReports = () => {
-  return helpers.axiosInstance('reports')
+  return httpGCInstance('reports')
 }
 
 export const paymentMethods = (locale) => {
-  return helpers.axiosInstance('paymentMethods', {
+  return httpGCInstance('paymentMethods', {
     data: {
       locale: locale
     }
@@ -329,7 +337,7 @@ export const paymentMethods = (locale) => {
 
 
 export const withdraw = () => {
-  return helpers.axiosInstance({
+  return httpGCInstance({
     method: 'POST',
     url: 'withdraw',
     data: {
@@ -341,8 +349,8 @@ export const withdraw = () => {
 }
 
 
-export const helpers = proxy<{ axiosInstance: AxiosInstance, user_credentials: object, rates: object }>({
-  axiosInstance: initAxios(),
+export const helpers = proxy<{ provider: string, user_credentials: object, rates: object }>({
+  provider: '',
   user_credentials: {},
   rates: {},
 })
@@ -360,23 +368,23 @@ export const helpers = proxy<{ axiosInstance: AxiosInstance, user_credentials: o
  * 
  */
 
-function initAxios(): AxiosInstance {
+function initAxios(): any {
 
-  const customUserAgent = 'ReactNative';
-  axios.defaults.baseURL = `${BASE_URI}`
-  axios.defaults.headers.common['User-Agent'] = customUserAgent;
-  // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
-  // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-  return axios.create({
-    headers: {
-      // ContentType: 'application/json',
-      // UserAgent: customUserAgent,
-      // Accept: 'application/json',
-      timeout: 1000,
-    },
-    // maxRedirects: 0,
-    // validateStatus: function(status) {
-    //     return status >= 200 && status < 303;
-    // },
-  })
+  // const customUserAgent = 'ReactNative';
+  // axios.defaults.baseURL = `${BASE_URI}`
+  // axios.defaults.headers.common['User-Agent'] = customUserAgent;
+  // // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+  // // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+  // return axios.create({
+  //   headers: {
+  //     // ContentType: 'application/json',
+  //     // UserAgent: customUserAgent,
+  //     // Accept: 'application/json',
+  //     timeout: 1000,
+  //   },
+  //   // maxRedirects: 0,
+  //   // validateStatus: function(status) {
+  //   //     return status >= 200 && status < 303;
+  //   // },
+  // })
 }

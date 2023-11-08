@@ -11,30 +11,16 @@ import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-import { useSnapshot } from 'valtio'
-import { store, setAppUILanguage } from '@/store'
 import { Stack } from 'expo-router';
 
 // Components
 import BackButton from '@/app/(components)/stackBackButton';
 
+import setupLanguage from '@/hooks/useSetupLanguage'
+
 const LanguagesScreenComponent = () => {
   const { t, i18n } = useTranslation();
-  const { language } = useSnapshot(store)
-
-  const [_langs, setLangs] = useState([]);
-  useEffect(() => {
-    const _languages: Object[] = []
-    Object.keys(languages).forEach(locale => {
-      _languages.push({ label: languages[locale], value: locale })
-    });
-    setLangs(_languages)
-  }, []);
-  const [selectedLang, setLang] = useState(language);
-
-  useEffect(() => {
-    setAppUILanguage(selectedLang, i18n);
-  }, [selectedLang]);
+  const { languages, changeLanguage } = setupLanguage();
 
   const LangItem = ({ checked, item }) => {
     return (<>
@@ -48,7 +34,7 @@ const LanguagesScreenComponent = () => {
   const LangItemComponent = ({ checked, item }) => {
     return checked ? (<View style={styles.item}>
       <LangItem checked={checked} item={item} />
-    </View>) : (<TouchableOpacity onPress={() => setLang(item.value)} style={styles.item}>
+    </View>) : (<TouchableOpacity onPress={() => changeLanguage(item.value)} style={styles.item}>
       <LangItem checked={checked} item={item} />
     </TouchableOpacity>)
   }
@@ -68,8 +54,8 @@ const LanguagesScreenComponent = () => {
       </View>
 
       <FlatList
-        data={_langs}
-        renderItem={({ item }) => <LangItemComponent checked={item.value == selectedLang} item={item} />}
+        data={languages}
+        renderItem={({ item }) => <LangItemComponent checked={item.value == i18n.language} item={item} />}
         keyExtractor={item => item.value}
       />
 

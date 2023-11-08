@@ -11,16 +11,20 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useSnapshot } from 'valtio'
 import { userLogout, setLocalUser, setUserCredentials } from '@/helpers'
 import { store } from '@/store'
+import { user } from '@/utils/user'
 
 import { useTranslation } from 'react-i18next';
-const Logout = ({ triggerLoading, styles }) => {
+const LogoutComponent = ({ triggerLoading, styles }) => {
   const { t } = useTranslation();
-  const { user } = useSnapshot(store)
+  const { data: User } = useSnapshot(user)
 
   const handleLogout = () => {
     console.log('userLogout', performance.now());
     const t0 = performance.now();
-    if (user) {
+
+    console.log('User', User);
+    
+    if (User) {
       triggerLoading(true)
 
       signOut(auth)
@@ -28,7 +32,7 @@ const Logout = ({ triggerLoading, styles }) => {
         })
         .catch(error => alert(error.message))
   
-      userLogout(user.csrf)
+      userLogout(User.csrf)
         .then((status: boolean) => {
           const t1 = performance.now();
           console.log('user are Logged out', t1 - t0);
@@ -67,4 +71,4 @@ const Logout = ({ triggerLoading, styles }) => {
   ) : <Text>You should not see this screen!</Text>
 };
 
-export default Logout;
+export default LogoutComponent;

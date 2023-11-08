@@ -419,7 +419,7 @@ const styles = { ...globalStyles, ...stationStyles };
 
 // Valtio
 import { useSnapshot } from 'valtio'
-import { store } from '@/store'
+import { store, setupStation } from '@/store'
 
 // i18n
 import { useTranslation } from 'react-i18next';

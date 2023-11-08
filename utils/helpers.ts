@@ -1,5 +1,4 @@
 import constants from '@/constants.json';
-import { helpers, setRates, userLogin, setLocalUser, } from '@/helpers'
 import { Alert } from 'react-native';
 import { useSnapshot } from 'valtio';
 
@@ -68,3 +67,70 @@ export const formatPower: Function = (watts: number) => {
   return (watts / 1000).toFixed(0);
 }
 
+export const isCyrillic = (text) => {
+  // This regex matches any character in the range of Cyrillic characters.
+  return /[а-яА-ЯЁё]/.test(text);
+}
+
+export const transliterateCyrillicToLatin = (cyrillicString) => {
+  const transliterationTable = {
+    'А': 'A', 'а': 'a',
+    'Б': 'B', 'б': 'b',
+    'В': 'V', 'в': 'v',
+    'Г': 'G', 'г': 'g',
+    'Д': 'D', 'д': 'd',
+    'Е': 'E', 'е': 'e',
+    'Ё': 'Yo', 'ё': 'yo',
+    'Ж': 'Zh', 'ж': 'zh',
+    'З': 'Z', 'з': 'z',
+    'И': 'I', 'и': 'i',
+    'Й': 'J', 'й': 'j',
+    'К': 'K', 'к': 'k',
+    'Л': 'L', 'л': 'l',
+    'М': 'M', 'м': 'm',
+    'Н': 'N', 'н': 'n',
+    'О': 'O', 'о': 'o',
+    'П': 'P', 'п': 'p',
+    'Р': 'R', 'р': 'r',
+    'С': 'S', 'с': 's',
+    'Т': 'T', 'т': 't',
+    'У': 'U', 'у': 'u',
+    'Ф': 'F', 'ф': 'f',
+    'Х': 'H', 'х': 'h',
+    'Ц': 'Ts', 'ц': 'ts',
+    'Ч': 'Ch', 'ч': 'ch',
+    'Ш': 'Sh', 'ш': 'sh',
+    'Щ': 'Shch', 'щ': 'shch',
+    'Ъ': '', 'ъ': '',
+    'Ы': 'Y', 'ы': 'y',
+    'Ь': '', 'ь': '',
+    'Э': 'E', 'э': 'e',
+    'Ю': 'Yu', 'ю': 'yu',
+    'Я': 'Ya', 'я': 'ya',
+  };
+
+  return cyrillicString.split('').map((char) => 
+    transliterationTable[char] || char
+  ).join('');
+}
+// Example usage:
+// const cyrillicText = 'Привет, как дела?';
+// const latinText = transliterateCyrillicToLatin(cyrillicText);
+// console.log(latinText); // Should print: Privet, kak dela?
+
+import CryptoJS from 'crypto-js';
+export const stringTo8DigitNumber: Function = (str: string) => {
+    const hash = CryptoJS.MD5(str).toString(); // Convert to MD5 hash
+
+    // Take the first 8 characters of the MD5 hash and convert them to a decimal number
+    const portion = parseInt(hash.substring(0, 8), 16);
+
+    return portion % 100000000;  // Ensure it's 8 digits
+}
+
+import { Lang, Provider } from '@/types';
+import { proxy } from 'valtio'
+export const helpers = proxy<{ language: Lang | null, provider: Provider, }>({
+  language: null,
+  provider: '',
+})

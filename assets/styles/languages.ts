@@ -1,5 +1,10 @@
 import { StyleSheet } from 'react-native';
 
+const flagSize = {
+  width: 120,
+  height: 80
+};
+
 export default StyleSheet.create({
   containerHeader: {
     marginBottom: 16,
@@ -39,4 +44,44 @@ export default StyleSheet.create({
     color: '#333',
   },
 
+  // Login page
+  flagsWrapper: {
+    justifyContent: 'center', alignItems: 'flex-end',
+    marginBottom: 16,
+    width: '100%',
+    // height: flagSize.height,
+    // backgroundColor: 'red',
+  },
+  flagWrapper: {
+    marginHorizontal: 4,
+    justifyContent: 'center', alignItems: 'center',
+    width: flagSize.width*0.8,
+  },
+  flag: {
+    marginBottom: 8,
+    width: flagSize.width*0.4,
+    height: flagSize.height*0.4,
+    borderColor: '#99999950',
+    borderWidth: 0.5,
+    borderRadius: 5,
+    backgroundColor: 'white',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  langChecked: {
+    position: 'absolute',
+    top: -10, right: -10, bottom: -10, left: -10,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+  },
+  langLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#555',
+  },
 });

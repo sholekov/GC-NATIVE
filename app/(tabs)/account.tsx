@@ -10,16 +10,16 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import { useSnapshot } from 'valtio'
 import { store } from '@/store'
+import { user } from '@/utils/user'
 
 // Components
 import AccountHeader from '@/app/partials/(tabs)/account/accountHeader'
 import Divider from '@/app/partials/divider'
-import Logout from '@/app/partials/(tabs)/(logout)'
+import LogoutComponent from '@/app/partials/(tabs)/(logout)'
 
 import { useTranslation } from 'react-i18next';
 const AccountComponent = () => {
   const { t } = useTranslation();
-  const { user } = useSnapshot(store)
   const [isLoading, setIsLoading] = useState(false);
 
   return (
@@ -124,7 +124,7 @@ const AccountComponent = () => {
             </View>
 
             <View style={styles.btns_container}>
-              <Logout triggerLoading={(state: boolean) => setIsLoading(state)} styles={styles} />
+              <LogoutComponent triggerLoading={(state: boolean) => setIsLoading(state)} styles={styles} />
             </View>
           </ScrollView>
         </SafeAreaView>

@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import React, { Component, useEffect, useRef, useState } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, TextInput, Dimensions, Pressable, FlatList, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -13,10 +14,15 @@ const MapActionsComponent = ({ locations, handleSelectedPlace, userLocation, han
 
   useEffect(() => {
     if (country) {
+      let text = country
+      if (isCyrillic(country)) {
+        text = transliterateCyrillicToLatin(country)
+      }
+      
       const filteredLocations = locations.map((location, index) => ({ ...location, index })).filter(location => {
         if (location.name && location.region) {
-          return location.name.toLowerCase().includes(country.toLowerCase()) ||
-            location.region.toLowerCase().includes(country.toLowerCase());
+          return location.name.toLowerCase().includes(text.toLowerCase()) ||
+            location.region.toLowerCase().includes(text.toLowerCase());
         }
       });
       if (filteredLocations.length) {
@@ -68,6 +74,9 @@ const MapActionsComponent = ({ locations, handleSelectedPlace, userLocation, han
 
       {/* CTAs */}
       {!showInput && (<>
+        <Pressable onPress={() => { router.push(`account/favourites`); }} style={[styles.containerCTA, styles.containerFavouritesCTA]}>
+          <Icon name='star' style={styles.containerFavouritesIcon} />
+        </Pressable>
         <Pressable onPress={() => { handleUserLocation() }} style={[styles.containerCTA, styles.containerUserLocationCTA]}>
           <Icon name='location-arrow' style={styles.containerIcon} />
         </Pressable>
@@ -77,6 +86,9 @@ const MapActionsComponent = ({ locations, handleSelectedPlace, userLocation, han
     </>
   );
 };
+
+// import helpers from utils
+import { isCyrillic, transliterateCyrillicToLatin } from '@/utils/helpers';
 
 const styles = StyleSheet.create({
   container: {
@@ -134,6 +146,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 99,
   },
+  containerFavouritesCTA: {
+    bottom: 148,
+  },
   containerUserLocationCTA: {
     bottom: 84,
   },
@@ -141,8 +156,13 @@ const styles = StyleSheet.create({
     bottom: 16,
   },
 
+  containerFavouritesIcon: {
+    fontSize: 24,
+    color: '#333',
+  },
+
   containerIcon: {
-    fontSize: 18,
+    fontSize: 20,
     color: '#333',
   },
 

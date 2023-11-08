@@ -55,18 +55,11 @@ export const setLocations: Function = (data: any): void => {
   store.locations =  data
 }
 
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AxiosPromise } from 'axios';
-type Lang = 'bg' | 'en' | 'ro' | 'de' | 'ru' | 'fr' | 'it' | 'es' | 'pt' | 'pl' | 'hu' | 'cs' | 'sk' | 'sl' | 'hr' | 'sr' | 'mk' | 'sq' | 'el' | 'tr' | 'ar' | 'fa' | 'ur' | 'hi' | 'bn' | 'th' | 'zh' | 'ja' | 'ko' | 'he' | 'id' | 'ms' | 'vi' | 'tl' | 'ta' | 'ml' | 'kn' | 'te' | 'mr' | 'ne' | 'si' | 'my' | 'km' | 'lo' | 'am' | 'ti' | 'so' | 'sw' | 'rw' | 'ny' | 'ha' | 'ig' | 'yo' | 'zu' | 'xh' | 'st' | 'tn' | 'ts' | 'ss' | 've' | 'nr' | 'wo' | 'ff' | 'ak' | 'tw' | 'ee' | 'fo' | 'is' | 'et' | 'lv' | 'lt' | 'pl' | 'uk' | 'be' | 'kk' | 'ky' | 'uz' | 'tt' | 'tr' | 'tk' | 'az' | 'hy' | 'eu' | 'ca' | 'gl' | 'eu' | 'mt' | 'gd' | 'cy' | 'ga' | 'sq' | 'mk' | 'bs' | 'hr' | 'sr' | 'sl' | 'sk' | 'cs' | 'hu' | 'pl' | 'ru' | 'uk' | 'be' | 'kk' | 'ky' | 'uz' | 'tt' | 'tr' | 'tk' | 'az' | 'hy' | 'eu' | 'ca' | 'gl' | 'eu' | 'mt' | 'gd' | 'cy' | 'ga' | 'sq' | 'mk' | 'bs' | 'hr' | 'sr' | 'sl' | 'sk' | 'cs' | 'hu' | 'pl' | 'ru' | 'uk' | 'be' | 'kk' | 'ky' | 'uz' | 'tt' | 'tr' | 'tk' | 'az' | 'hy' | 'eu' | 'ca' | 'gl' | 'eu' | 'mt' | 'gd' | 'cy' | 'ga' | 'sq' | 'mk' | 'bs' | 'hr' | 'sr' | 'sl' | 'sk' | 'cs' | 'hu' | 'pl' | 'ru' | 'uk' | 'be' | 'kk' | 'ky' | 'uz';
-export const setAppUILanguage: Function = (selectedLang: Lang, i18n: any): void => {
-  AsyncStorage.setItem('user_preffered_UI_language', selectedLang ? selectedLang : 'en')
-  i18n.changeLanguage(selectedLang);
-  store.language =  selectedLang
-}
 
-export const store = proxy<{ language: Lang | null, user: User, station_location: any, station: any, locations: any, }>({
-  language: null,
+
+export const store = proxy<{ user: User, station_location: any, station: any, locations: any, }>({
+  
   user: null,
   station_location: null,
   station: null,

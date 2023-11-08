@@ -2,6 +2,7 @@ import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 
 import { helpers, getLocations, getStation } from '@/helpers'
 import { store, setupSelectedLocation, setLocations, setupStation } from '@/store'
+import { user } from '@/utils/user'
 
 import { usePushNotifications } from '@/services/usePushNotifications';
 
@@ -9,8 +10,9 @@ import { usePlace } from '@/app/hooks/usePlace'
 
 const HomeComponent = () => {
   const { t } = useTranslation();
-  const { user, locations, CHARGING, station } = useSnapshot(store)
+  const { locations, station } = useSnapshot(store)
   const { rates } = useSnapshot(helpers)
+  const { data: User } = useSnapshot(user)
 
   // const { expoPushToken } = usePushNotifications();
   // console.log('expoPushToken', expoPushToken);
@@ -36,9 +38,9 @@ const HomeComponent = () => {
   }, []);
 
   const loadStations = async () => {
-    console.log('loadStations', user?.id);
+    console.log('loadStations', User?.id);
     try {
-      if (user) {
+      if (User) {
         setIsLoading(true)
         getLocations()
           .then(response => {
@@ -147,7 +149,7 @@ const HomeComponent = () => {
           ))
         }
       </MapView>
-      {user ? (<>
+      {User ? (<>
         <Charging handleSelectedPlace={handleSelectedPlace} />
         {(!blockView && locations) && <MapActions locations={locations} handleSelectedPlace={handleSelectedPlace} userLocation={userLocation} handleUserLocation={handleUserLocation} />}
         <LoggedIn />
@@ -159,7 +161,7 @@ const HomeComponent = () => {
           <View style={styles.decoTransparentView}>
             {/* <Image source={require('@/assets/blurredImage.png')} /> */}
           </View>
-          <Login triggerLoading={setIsLoading} />
+          <LoginComponent triggerLoading={setIsLoading} />
         </>)}
       {isLoading && <ActivityIndicator size="large" style={styles.activityIndicatorStyle} />}
     </View>
@@ -183,7 +185,7 @@ import { router } from 'expo-router';
 import Charging from '@/app/(components)/charging'
 import MapActions from './mapActions'
 import LoggedIn from '@/app/(tabs)/home/loggedin'
-import Login from '@/app/(tabs)/home/login'
+import LoginComponent from '@/app/(tabs)/home/login'
 import CustomCalloutComponent from '@/app/partials/CustomCallout'
 
 import { useTranslation } from 'react-i18next';
