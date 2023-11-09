@@ -1,61 +1,44 @@
-
-import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { router, Link, Redirect, useRouter } from 'expo-router';
-
-import { signOut, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '@/firebase'
-
-import Icon from 'react-native-vector-icons/FontAwesome5';
-
-import { useSnapshot } from 'valtio'
-import { userLogout, setLocalUser, setUserCredentials } from '@/helpers'
+import { httpUserLogout } from '@/utils/http/httpLoginRegisterRequests'
 import { store } from '@/store'
 import { user } from '@/utils/user'
 
-import { useTranslation } from 'react-i18next';
 const LogoutComponent = ({ triggerLoading, styles }) => {
   const { t } = useTranslation();
   const { data: User } = useSnapshot(user)
 
   const handleLogout = () => {
-    console.log('userLogout', performance.now());
-    const t0 = performance.now();
+    triggerLoading(true)
 
-    console.log('User', User);
+    const t0 = performance.now();
+    console.log('userLogout', t0);
     
     if (User) {
-      triggerLoading(true)
-
-      signOut(auth)
-        .then(() => {
-        })
-        .catch(error => alert(error.message))
-  
-      userLogout(User.csrf)
-        .then((status: boolean) => {
+      Promise.all([
+        signOut(auth),
+        httpUserLogout(User.csrf)
+      ])
+        .then(([nothing, statusGCLogout]: [void, boolean]) => {
           const t1 = performance.now();
-          console.log('user are Logged out', t1 - t0);
-          if (status) {
-            setUserCredentials({useremail: "", password: ""})
-            setLocalUser(true)
+          console.log('user are Logged out', t1 - t0, statusGCLogout);
+          if (statusGCLogout) {
+            user.data = null;
           } else {
             Alert.alert('Logout failed');
           }
-          setTimeout(() => {
-            console.log('triggerLoading false');
-            triggerLoading(false)
-          }, 1000);
         })
         .catch(error => {
           console.log('userLogout error', error);
         })
+        .finally(() => {
+          triggerLoading(false)
+        })
+  
     } else {
       Alert.alert('The user is not settled.');
     }
   };
 
-  return user ? (
+  return User ? (
     <>
       <TouchableOpacity onPress={handleLogout} style={[styles.btn_container, styles.roundedTop, styles.roundedBottom]}>
         <View style={styles.btn_container.textWrapper}>
@@ -70,5 +53,22 @@ const LogoutComponent = ({ triggerLoading, styles }) => {
     </>
   ) : <Text>You should not see this screen!</Text>
 };
+
+// React
+import React, { Component } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+
+// Expo
+import { router, Link, Redirect, useRouter } from 'expo-router';
+
+// Firebase
+import { signOut, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '@/firebase'
+
+import { useTranslation } from 'react-i18next';
+
+import { useSnapshot } from 'valtio'
+
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 export default LogoutComponent;

@@ -19,7 +19,6 @@ function LoginComponent({ triggerLoading }) {
   const [loginWithNetworx, setLoginWithNetworx] = useState(false);
 
   const [showPIN, setShowPIN] = useState(false);
-  const [setCredentials, setSetCredentials] = useState(true);
 
   // const [request, response, promptAsync] = Google.useAuthRequest({
   //   iosClientId: "270750900606-sb793cv8pjnl9shg1rrhlcamn1528do5.apps.googleusercontent.com",
@@ -33,10 +32,10 @@ function LoginComponent({ triggerLoading }) {
   //   }
   // }, [response]);
 
-
+  const [setCredentials, setSetCredentials] = useState(true);
   const handleLogin = () => {
     console.log('handleLogin triggered');
-    
+
     const data = {
       email: setCredentials ? username : 'sholeka@gmail.com',
       password: setCredentials ? password : '123123',
@@ -47,7 +46,7 @@ function LoginComponent({ triggerLoading }) {
       helpers.provider = 'networx'
     }
     triggerLoading(true)
-    
+
     login(data)
       .then(user_data => {
         const user = user_data.user;
@@ -75,7 +74,7 @@ function LoginComponent({ triggerLoading }) {
       style={styles.container}
     >
       <SafeAreaView style={{ flex: 1, }}>
-        
+
         <LanguagesComponent />
 
         <ScrollView keyboardShouldPersistTaps="never" contentContainerStyle={{ flexGrow: 1, paddingBottom: 70, }}>
@@ -124,6 +123,16 @@ function LoginComponent({ triggerLoading }) {
               </Text>
             </TouchableOpacity>
 
+            <View style={styles.passwordContainer}>
+              <TouchableOpacity
+                onPress={() => promptAsync()}
+                style={styles.showPasswordButton}
+              >
+                <Text style={styles.buttonText}>
+                  {t('login.with_google.cta_label')}
+                </Text>
+              </TouchableOpacity>
+            </View>
             <Link href="register" style={styles.ctaSecondaryContainer} asChild>
               <Pressable>
                 <Text style={styles.link}>{t('login.cta_register_label')}</Text>

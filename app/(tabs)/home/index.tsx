@@ -56,7 +56,7 @@ const HomeComponent = () => {
   };
   useEffect(() => {
     loadStations()
-  }, [user?.id]);
+  }, [User?.id]);
 
   useEffect(() => {
     const _mapRef = mapRef.current

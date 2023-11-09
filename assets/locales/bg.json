@@ -18,6 +18,9 @@
       "password": "Парола",
       "pin": "ПИН"
     },
+    "with_google": {
+      "cta_label": "Вход с Google"
+    },
     "alert-lost-pin": {
       "title": "Забрави своя ПИН?",
       "text": "Свържи се с нас на support@gigacharger.net за да смениш своя ПИН."

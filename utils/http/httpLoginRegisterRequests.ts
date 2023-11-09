@@ -1,5 +1,5 @@
 import { User } from 'firebase/auth';
-import httpGCInstance from './../httpInstance';
+import httpGCInstance from './httpInstance';
 import { GCUser } from '@/types';
 
 type Response = {
@@ -29,12 +29,15 @@ type Response = {
 
 import { Provider } from '@/types';
 import { stringTo8DigitNumber } from '@/utils/helpers';
+import { helpers } from '@/utils/helpers'
 
-export const httpUserLogin: Function  = async (user: User, provider: Provider): Promise<Response> => {
+export const httpUserLogin: Function  = async (user: User, ): Promise<Response> => {
+  const provider: Provider = helpers.provider
 
-  let email = user.email || ''; // TODO: refactor this to const email = user.email || '';
+  /** TODO: const **/ let email = user.email || '';
   let password = user.uid || '';
 
+  // TODO: implement this
   password = stringTo8DigitNumber(password);
   
   // TODO: remove this
@@ -51,3 +54,24 @@ export const httpUserLogin: Function  = async (user: User, provider: Provider): 
   // })
 }
 
+export const httpUserLogout: Function = (csrf: string): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    httpGCInstance({
+      method: 'POST',
+      url: 'logout',
+      data: `manix-csrf=${encodeURIComponent(csrf)}&manix-method=DELETE`
+    })
+      .then((response: any) => {
+        console.log('logout response', response.data.success);
+        if (response.data.success) {
+          resolve(true)
+        } else {
+          resolve(false)
+        }
+      })
+      .catch((error: Error) => {
+        console.log('error', error);
+        reject(error);
+      })
+  })
+}

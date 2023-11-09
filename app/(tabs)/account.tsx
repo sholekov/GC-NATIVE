@@ -20,15 +20,17 @@ import LogoutComponent from '@/app/partials/(tabs)/(logout)'
 import { useTranslation } from 'react-i18next';
 const AccountComponent = () => {
   const { t } = useTranslation();
+  const { data: User } = useSnapshot(user)
+
   const [isLoading, setIsLoading] = useState(false);
 
   return (
     <>
-      {user ? (
+      {User ? (
         <SafeAreaView style={{ flex: 1, }}>
           <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 16, paddingVertical: 32 }}>
             <View style={{ ...styles.btns_container, paddingTop: 14, }}>
-              <AccountHeader user={user} />
+              <AccountHeader user={User} />
             </View>
 
             <View style={styles.btns_container}>

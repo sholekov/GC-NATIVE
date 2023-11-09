@@ -9,6 +9,9 @@
       "username": "Username",
       "password": "PIN"
     },
+    "with_google": {
+      "cta_label": "Login with Google"
+    },
     "alert-lost-pin": {
       "title": "Lost your PIN?",
       "text": "Please contact our support team at support@gigacharger.net to reset your PIN."
